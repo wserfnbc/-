@@ -1,0 +1,185 @@
+{extend name="../../admin/view/main"}
+{block name="button"}
+<!--{if auth("store/goods/remove")}-->
+<button data-action='{:url("remove")}' data-rule="id#{key}" class='layui-btn layui-btn-sm layui-btn-primary'>删除订单</button>
+<!--{/if}-->
+{/block}
+
+{block name="content"}
+<div class="think-box-shadow">
+    {include file='store/order/index_search'}
+    <table class="layui-table margin-top-10" lay-skin="line">
+        {notempty name='list'}
+        <thead>
+        <tr>
+            <th class='list-table-check-td think-checkbox'>
+                <input data-auto-none data-check-target='.list-check-box' type='checkbox'>
+            </th>
+            <th class="text-left nowrap">会员信息</th>
+            <th class='text-left nowrap'>订单信息</th>
+            <th class="text-left nowrap">支付方式</th>
+            <th class='text-left nowrap layui-hide'>发货信息</th>
+            <th class='text-left nowrap layui-hide'>状态设置操作</th>
+            <th class='text-right nowrap'></th>
+            <th></th>
+        </tr>
+        </thead>
+        {/notempty}
+        <tbody>
+        {foreach $list as $key=>$vo}
+        <tr style="background: {if isset($vo.is_new) and $vo.is_new eq 1}background:#1E9FFF;{/if}" >
+            <td class='list-table-check-td think-checkbox'><input class="list-check-box" value='{$vo.id}' type='checkbox'></td>
+            <td class="text-left nowrap relative">
+                {notempty name='vo.member.headimg'}
+                <img data-tips-image style="width:80px;height:80px" src="{$vo.member.headimg|default=''}" class="margin-right-5 text-top">
+                {/notempty}
+                <div class="inline-block">
+                    会员昵称：{$vo.member.realname|default='--'}<br>
+                    会员手机：{$vo.member.phone|default='--'}<br>
+                </div>
+            </td>
+            <td class='text-left nowrap'>
+                订单单号：<span class="color-blue">{$vo.order_no|default=''}</span>
+                {eq name='vo.status' value='0'}<span class="layui-badge layui-bg-red margin-left-5">已取消</span>{/eq}
+                {eq name='vo.status' value='1'}<span class="layui-badge layui-bg-gray margin-left-5">预订单</span>{/eq}
+                {eq name='vo.status' value='2'}<span class="layui-badge layui-bg-orange margin-left-5">待付款</span>{/eq}
+                {eq name='vo.status' value='3'}<span class="layui-badge layui-bg-black margin-left-5">待发货</span>{/eq}
+                {eq name='vo.status' value='4'}<span class="layui-badge layui-bg-green margin-left-5">已发货</span>{/eq}
+                {eq name='vo.status' value='5'}<span class="layui-badge layui-bg-blue margin-left-5">已完成</span>{/eq}
+                <br>
+                订单金额：<strong class="color-blue">{$vo.price_total+0}</strong> 元
+                已支付 <strong class="color-blue">{$vo.pay_price+0}</strong> 元<br>
+                下单时间：{$vo.create_at|format_datetime}<br>
+            </td>
+            <td class="text-left nowrap layui-hide">
+                收货信息：{$vo.express_name|default='--'}<span class="margin-left-5 color-blue">{$vo.express_phone}</span><br>
+                收货地址：{$vo.express_province|default='--'}{$vo.express_city}{$vo.express_area}{$vo.express_address}<br>
+                发货状态：{eq name='vo.express_state' value='0'}
+                <span class="layui-badge layui-bg-black">未发货</span>
+                {else}
+                <span class="layui-badge layui-bg-blue">{$vo.express_company_title|default='--'}</span>
+                <a data-title="{$vo.express_company_title}（{$vo.express_send_no}）" data-tips-text="快递追踪查询"
+                   data-modal="{:url('expressQuery')}?code={$vo.express_company_code}&no={$vo.express_send_no}"
+                   class="layui-badge layui-bg-gray margin-left-5">{$vo.express_send_no|default='--'}</a>
+                {/eq}
+                {if $vo.status eq 3}
+                <a class=" margin-left-5" data-title="填写订单信息" data-modal="{:url('express')}?id={$vo.id}">填写发货信息</a>
+                {elseif $vo.status eq 4}
+                <a class=" margin-left-5" data-title="修改发货信息" data-modal="{:url('express')}?id={$vo.id}">修改发货信息</a>
+                {/if}
+                <br>
+                发货时间：{$vo.express_send_at|format_datetime}<br>
+            </td>
+            <td class="text-left nowrap relative">
+                <div class="inline-block">
+                    支付方式：{$vo.pay_type|default='--'}<br>
+                    支付单号：{$vo.pay_no|default='--'}<br>
+                    支付时间：{$vo.pay_at|format_datetime|default='--'}<br>
+                </div>
+            </td>
+            <td class="text-left nowrap layui-hide">
+
+
+                {if isset($vo.status) and $vo.status eq 2}
+                <!--{if auth("store/order/status")}-->
+                <a class="layui-btn layui-btn-sm" data-action="{:url('set_status_3')}?price_total={$vo.price_total+0}&order_no={$vo.order_no}" data-value="id#{$vo.id};status#3">设置已付款</a>
+                <!--{else}-->
+                <a data-tips-text="您没有设置状态的权限哦！" class="layui-btn layui-btn-sm layui-disabled">设置已付款</a>
+                <!--{/if}-->
+                {/if}
+
+                {if isset($vo.status) and $vo.status eq 3}
+                <!--{if auth("store/order/status")}-->
+                <a class="layui-btn layui-btn-sm layui-btn-warm" data-action="{:url('set_status_2')}?order_no={$vo.order_no}" data-value="id#{$vo.id};status#2">取消付款</a>
+                <!--{else}-->
+                <a data-tips-text="您没有设置状态的权限哦！" class="layui-btn layui-btn-sm layui-btn-warm layui-disabled">取消付款</a>
+                <!--{/if}-->
+
+                <!--{if auth("store/order/status")}-->
+                <a class="layui-btn layui-btn-sm" data-action="{:url('set_status_h4')}" data-value="id#{$vo.id};status#5">开始发货</a>
+                <!--{else}-->
+                <a data-tips-text="您没有设置状态的权限哦！" class="layui-btn layui-btn-sm layui-disabled">开始发货</a>
+                <!--{/if}-->
+                {/if}
+
+                {if isset($vo.status) and $vo.status eq 4}
+                <!--{if auth("store/order/status")}-->
+                <a class="layui-btn layui-btn-sm layui-btn-warm" data-action="{:url('set_status_h3')}?order_no={$vo.order_no}" data-value="id#{$vo.id};status#3">取消发货</a>
+                <!--{else}-->
+                <a data-tips-text="您没有设置状态的权限哦！" class="layui-btn layui-btn-sm layui-btn-warm layui-disabled">取消发货</a>
+                <!--{/if}-->
+
+                <!--{if auth("store/order/status")}-->
+                <a class="layui-btn layui-btn-sm" data-action="{:url('set_status_5')}" data-value="id#{$vo.id};status#5">订单完成</a>
+                <!--{else}-->
+                <a data-tips-text="您没有设置状态的权限哦！" class="layui-btn layui-btn-sm layui-disabled">订单完成</a>
+                <!--{/if}-->
+                {/if}
+
+                {if isset($vo.status) and $vo.status eq 5}
+                <!--{if auth("store/order/status")}-->
+                <a class="layui-btn layui-btn-sm layui-btn-warm" data-action="{:url('set_status_h4')}" data-value="id#{$vo.id};status#4">取消完成</a>
+                <!--{else}-->
+                <a data-tips-text="您没有设置状态的权限哦！" class="layui-btn layui-btn-sm layui-btn-warm layui-disabled">取消完成</a>
+                <!--{/if}-->
+                {/if}
+
+                {if isset($vo.status) and $vo.status eq 0}
+                <!--{if auth("store/order/status")}-->
+                <a class="layui-btn layui-btn-sm" data-action="{:url('set_status_h2')}?price_total={$vo.price_total+0}" data-value="id#{$vo.id};status#2">恢复订单</a>
+                <!--{else}-->
+                <a data-tips-text="您没有设置状态的权限哦！" class="layui-btn layui-btn-sm layui-disabled">恢复订单</a>
+                <!--{/if}-->
+                {/if}
+                {if isset($vo.status) and $vo.status eq 2}
+                <!--{if auth("store/order/status")}-->
+                <a class="layui-btn layui-btn-sm layui-btn-danger" data-action="{:url('set_status_0')}" data-value="id#{$vo.id};status#0">取消订单</a>
+                <!--{else}-->
+                <a data-tips-text="您没有设置状态的权限哦！" class="layui-btn layui-btn-sm layui-btn-danger layui-disabled">取消订单</a>
+                <!--{/if}-->
+                {/if}
+            </td>
+
+            <td class="nowrap">
+                {if isset($vo.status) and $vo.status > 2}
+                    <!--{if auth("store/order/express")}-->
+                    <a class="layui-btn layui-btn-sm layui-hide" data-modal="{:url('express')}?id={$vo.id}" data-value="id#{$vo.id};status#5">设置快递信息</a>
+                    <!--{else}-->
+                    <a data-tips-text="您没有设置状态的权限哦！" class="layui-btn layui-btn-sm layui-disabled layui-hide">设置快递信息</a>
+                    <!--{/if}-->
+
+                    {if isset($vo.is_abroad) && $vo.is_abroad == "1"}
+                        <!--{if auth("store/order/expressQuery")}-->
+                        <a class="layui-btn layui-btn-sm layui-btn-normal layui-hide" data-modal="{:url('expressQuery')}?id={$vo.id}" data-value="id#{$vo.id};status#5">快递信息</a>
+                        <!--{else}-->
+                        <a data-tips-text="您没有查看的权限哦！" class="layui-btn layui-btn-sm layui-disabled layui-hide">快递信息</a>
+                        <!--{/if}-->
+                    {else}
+                        <!--{if auth("store/order/expressQuery")}-->
+                        <a class="layui-btn layui-btn-sm layui-btn-normal layui-hide" data-modal="{:url('expressQuery')}?code={$vo.express_company_code}&no={$vo.express_send_no}" data-value="id#{$vo.id};status#5">物流信息</a>
+                        <!--{else}-->
+                        <a data-tips-text="您没有查看的权限哦！" class="layui-btn layui-btn-sm layui-disabled layui-hide">物流信息</a>
+                        <!--{/if}-->
+                    {/if}
+                {/if}
+                <a data-title="查看详情" class="layui-btn  layui-btn-sm layui-btn-normal" data-modal='{:url("info")}?order_no={$vo.order_no}'>订单详情</a>
+            </td>
+
+            <td class='text-left nowrap'>
+                <div class="nowrap margin-bottom-5">
+                    {if auth("store/order/remove")}
+                    <a class="layui-btn layui-btn-sm layui-btn-danger" data-confirm="确定要删除数据吗?" data-action="{:url('remove')}" data-value="id#{$vo.id}">删 除</a>
+                    {else}
+                    <a data-tips-text="您没有删除订单的权限哦！" class="layui-btn layui-btn-sm layui-btn-primary layui-disabled">删 除</a>
+                    {/if}
+                </div>
+            </td>
+        </tr>
+        {/foreach}
+        </tbody>
+    </table>
+
+    {empty name='list'}<span class="notdata">没有记录哦</span>{else}{$pagehtml|raw|default=''}{/empty}
+
+</div>
+{/block}

@@ -1,0 +1,82 @@
+<footer>
+      <div class="foot1">
+   <div class="layui-main ">
+         <a href="/" class="img_box1 footerLogo" >
+            <img src="{$config.footer_pic}">
+         </a>
+           <ul>
+                {foreach name="function->getCatChildList(7)" item="cat"}
+                <li>
+                    <div class="t1">{$cat.title}</div>
+                    {if $cat.id == 8}
+                         <dl class="link ">
+                        {foreach name="function->getCatArticle($cat.id)" item="atc"}
+
+                        <a class="item" {if $atc.keywords}href="{$atc.keywords}" target="_blank"{/if}>
+                            {if $atc.logo}
+                          
+                        
+                            <div class="pic img_box">
+                                <img src="{$atc.logo}">
+                            </div>
+                            {else}
+                            <span>{$atc.title|raw|nl2br}</span>
+                            {/if}
+                        </a>
+                        {/foreach}
+                    </dl>
+                    {else}
+                        <dl >
+                        {foreach name="function->getCatArticle($cat.id)" item="atc"}
+
+                        <a class="item" {if $atc.keywords  }{if $atc.keywords == 'dialog'}lay-on="dialog"{else}href="{$atc.keywords}" target="_blank"{/if}{/if}>
+                        
+                            <span>{$atc.title|raw|nl2br}</span>
+                          <div class="layui-hide">
+                              <h5>{$atc.title}</h5>
+                              <div class="con s_content">{$atc.content|raw|nl2br}</div>
+                          </div>
+                        </a>
+                        {/foreach}
+                    </dl>
+                    {/if}
+                
+                </li>
+                {/foreach}
+            </ul>
+      </div>
+   </div>
+
+   <div class="foot2">
+      <p>{$config.copy|Raw|nl2br}</p>
+   </div>
+</footer>
+</body>
+	<script type="text/javascript" src="/public/home/js/No-Pillow.js"></script>
+<script>
+    layui.use(function(){
+  var $ = layui.$;
+  var layer = layui.layer;
+  var util = layui.util;
+  var form = layui.form;
+  // 事件
+  util.on('lay-on', {
+
+    'dialog': function(){
+        var html = $(this).find('.layui-hide').html()
+      layer.open({
+        type: 1,
+        area: ['70%', '70vh'], // 宽高
+        title: false, // 不显示标题栏
+        closeBtn: 1,
+        skin:'dialog',
+        shadeClose: true, // 点击遮罩关闭层
+        content: html
+      });
+    },
+  })
+});
+	new ZhenshangyinSmoothScroll({})
+</script>
+
+</html>

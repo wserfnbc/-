@@ -1,0 +1,70 @@
+{extend name="../../admin/view/main"}
+
+{block name="button"}
+{if auth("add")}
+<button data-modal='{:url("backup")}' data-title="备份数据" class='layui-btn layui-btn-sm layui-btn-primary'>备份数据</button>
+{/if}
+{if auth("remove")}
+<button data-modal='{:url("recovery")}' data-title="恢复数据" class='layui-btn layui-btn-sm layui-btn-primary'>恢复数据</button>
+{/if}
+{/block}
+
+{block name="content"}
+<div class="think-box-shadow">
+
+    <table class="layui-table margin-top-10" lay-skin="line">
+        {notempty name='list'}
+        <thead>
+        <tr>
+
+            <th class='text-left nowrap'>表名</th>
+            <th class='text-left nowrap'>数据量</th>
+            <th class="text-left">数据大小</th>
+            <th class="text-left">创建时间</th>
+            <th class="text-left">注释</th>
+            <th class="text-center">操作</th>
+        </tr>
+        </thead>
+        {/notempty}
+        <tbody>
+        {foreach $list as $key=>$vo}
+        <tr>
+
+            <td class='text-left nowrap'>
+                {$vo.Name|default=''}
+            </td>
+            <td class='text-left nowrap'>
+                {$vo.Rows}
+            </td>
+            <td class='text-left nowrap'>
+                {$vo.Data_length|default=''}
+            </td>
+            <td class='text-left nowrap'>
+                {$vo.Create_time}
+            </td>
+            <td class='text-left nowrap'>
+                {$vo.Comment}
+            </td>
+            <td class='text-center nowrap'>
+                {if auth("optimize")}
+                    <a class="layui-btn layui-btn-sm" data-confirm="确定优化此表吗?" data-action="{:url('optimize')}" data-value="table#{$vo.Name}">优化表</a>
+                {else}
+                    <a data-tips-text="您无权限进行此操作！" class="layui-btn layui-btn-sm layui-btn-primary layui-disabled">优化表</a>
+                {/if}
+
+                {if auth("repair")}
+                    <a class="layui-btn layui-btn-sm layui-btn-warm" data-confirm="确定修复此表吗?" data-action="{:url('repair')}" data-value="table#{$vo.Name}">修复表</a>
+                {else}
+                    <a data-tips-text="您无权限进行此操作！" class="layui-btn layui-btn-sm layui-btn-primary layui-disabled">修复表</a>
+                {/if}
+            </td>
+
+        </tr>
+
+        {/foreach}
+
+        </tbody>
+    </table>
+    {empty name='list'}<span class="notdata">No record</span>{else}{$pagehtml|raw|default=''}{/empty}
+</div>
+{/block}

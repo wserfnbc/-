@@ -1,0 +1,130 @@
+{extend name="../../admin/view/main"}
+
+{block name="content"}
+
+{include file='member/index/form_style'}
+
+<form onsubmit="return false;" id="GoodsForm" data-auto="true" method="post" class='layui-form layui-card' autocomplete="off">
+
+    <div class="layui-card-body think-box-shadow padding-left-40">
+
+        <div class="layui-form-item">
+            <span class="color-green label-required-prev">会员头像</span>
+            <table class="layui-table layui-col-xs6">
+                <thead>
+                <tr>
+                    <th class="text-center">LOGO</th>
+
+                </tr>
+                <tr>
+                    <td width="90px" class="text-center"><input name="headimg" type="hidden" value="{$vo.headimg|default=''}"></td>
+                </tr>
+                </thead>
+            </table>
+            <script>$('[name="headimg"]').uploadOneImage()</script>
+        </div>
+
+        <div class="layui-form-item layui-row layui-col-space15">
+            <label class="layui-col-xs3 relative">
+                <span class="color-green">会员帐号</span>
+                {notempty name='vo.id'}
+                    <div class="layui-input">
+                        {$vo.username|default=''}
+                    </div>
+                {else}
+                    <input name="username" class="layui-input" placeholder="请输入会员手机号">
+                {/notempty}
+            </label>
+
+
+        </div>
+
+        <div class="layui-form-item layui-row layui-col-space15">
+            <label class="layui-col-xs5 relative">
+                <span class="color-green">修改密码</span>
+                <input name="password" {empty name='vo.id'}required{/empty} class="layui-input" placeholder="修改密码{notempty name='vo.id'}-如不修改密码请留空{/notempty}">
+            </label>
+            <label class="layui-col-xs5 relative">
+                <span class="color-green">确认密码</span>
+                <input name="c_password" {empty name='vo.id'}required{/empty} class="layui-input" placeholder="确认密码">
+            </label>
+        </div>
+
+        <div class="layui-form-item layui-row layui-col-space15">
+            <label class="layui-col-xs3 relative">
+                <span class="color-green">昵称</span>
+                <input name="nickname" required class="layui-input" placeholder="请输入昵称" value="{$vo.nickname|default=''}">
+            </label>
+
+            <label class="layui-col-xs6 relative">
+                <span class="color-green">性别</span>
+                <div>
+                    <label class="think-radio"><input type="radio" name="base_sex" value="1" ignore title="男" {if isset($vo.base_sex) and $vo.base_sex eq 1}checked{/if}> &nbsp;</label>
+                    <label class="think-radio"><input type="radio" name="base_sex" value="2" ignore title="女" {if isset($vo.base_sex) and $vo.base_sex eq 2}checked{/if}> &nbsp;</label>
+                    <label class="think-radio"><input type="radio" name="base_sex" value="0" ignore title="保密" {if isset($vo.base_sex) and $vo.base_sex eq 0}checked{/if}></label>
+                </div>
+            </label>
+
+        </div>
+
+        <div class="layui-form-item layui-row layui-col-space15">
+            <label class="layui-col-xs3 relative">
+                <span class="color-green">真实姓名</span>
+                <input name="realname" class="layui-input" placeholder="请输入真实姓名" value="{$vo.realname|default=''}">
+            </label>
+            <label class="layui-col-xs3 relative">
+                <span class="color-green">身份证号</span>
+                <input name="idcard_no" class="layui-input" placeholder="请输入身份证号" value="{$vo.idcard_no|default=''}">
+            </label>
+
+            <div class="layui-form-item layui-row layui-col-space15">
+                <label class="layui-col-xs3 think-form-group-left">
+                    <input name="idcard_front" value='{$vo.idcard_front|default=""}' placeholder="请上传身份证正面附件" class="layui-input">
+                </label>
+                <a class="layui-col-xs2 layui-btn think-form-group-right" data-file="btn" data-field="idcard_front" data-type="png,jpg,gif,pdf" style="margin: 7.5px;">
+                    <i class="layui-icon layui-icon-upload"></i> 身份证正面附件
+                </a>
+            </div>
+            <div class="layui-form-item layui-row layui-col-space15">
+                <label class="layui-col-xs3 think-form-group-left">
+                    <input name="idcard_back" value='{$vo.idcard_back|default=""}' placeholder="请上传身份证背面附件" class="layui-input">
+                </label>
+                <a class="layui-col-xs2 layui-btn think-form-group-right" data-file="btn" data-field="idcard_back" data-type="png,jpg,gif,pdf" style="margin: 7.5px;">
+                    <i class="layui-icon layui-icon-upload"></i> 身份证背面附件
+                </a>
+            </div>
+
+        </div>
+
+        <div class="layui-form-item text-center">
+            {notempty name='vo.id'}<input type="hidden" name="id" value="{$vo.id}">{/notempty}
+            <button class="layui-btn layui-btn-danger" ng-click="hsitoryBack()" type="button">取消编辑</button>
+            <button class="layui-btn" type="submit">保存会员</button>
+        </div>
+
+    </div>
+</form>
+{/block}
+
+{block name='script'}
+<script>
+    window.form.render();
+    require(['ckeditor', 'angular'], function () {
+        // window.createEditor('[name="content"]', {height: 500});
+        var app = angular.module("GoodsForm", []).run(callback);
+        angular.bootstrap(document.getElementById(app.name), [app.name]);
+
+        function callback($rootScope) {
+            $rootScope.isAddMode = parseInt('{$isAddMode|default=0}');
+
+            // 返回会员列表
+            $rootScope.hsitoryBack = function () {
+                $.msg.confirm('确定要取消编辑吗？', function (index) {
+                    history.back(), $.msg.close(index);
+                });
+            };
+
+        }
+    })
+</script>
+{/block}

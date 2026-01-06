@@ -1,0 +1,64 @@
+<div class="think-box-shadow">
+    <link href="__ROOT__/public/tools/buckup/css/jquery.circliful.css" rel="stylesheet" type="text/css" />
+    <link href="__ROOT__/public/tools/buckup/css/font-awesome.min.css" rel="stylesheet" type="text/css" />
+    <script src="__ROOT__/public/tools/buckup/js/jquery.circliful.js"></script>
+    <table class="layui-table margin-top-10" lay-skin="line">
+        <tbody>
+
+        <tr>
+            <td class='text-center nowrap'>
+                <input  class="layui-btn" type="button" value="开始备份" id="startButton" onclick="backup({})" />
+                <button class="layui-btn layui-btn-danger margin-left-40" id="cancelButton" type='button' data-close>关闭</button>
+            </td>
+        </tr>
+        <tr>
+            <center>
+                <div id="tongji">
+                    <div id="myStat2" data-dimension="250" data-text="0%" data-info="等待备份" data-width="30" data-fontsize="38" data-percent="0" data-fgcolor="#61a9dc" data-bgcolor="#eee"></div>
+                </div>
+            </center>
+        </tr>
+
+
+        </tbody>
+    </table>
+    <script>
+        function backup(predate)
+        {
+            $("#startButton").val("备份中");
+            $("#startButton").attr("disabled", true);
+            $("#cancelButton").hide();
+            $.ajax({
+                url: '/data/database.Management/backup',
+                type: 'POST', //POST
+                async: true, //或false,是否异步
+                dataType: 'json',
+                data:predate,
+                success: function (data, textStatus, jqXHR) {
+
+                    datainfo = '表[' + data.nowtable + ']完成' + data.tablepercentage + '%';
+                    if (data.totalpercentage >= 100)
+                    {
+                        datainfo = '备份完成';
+                        $("#startButton").val(datainfo);
+                        $("#cancelButton").show();
+                    }
+
+                    html = '<div id="myStat2" data-dimension="250" data-text="' + data.totalpercentage + '%" data-info="' + datainfo + '" data-width="30" data-fontsize="38" data-percent="' + data.totalpercentage + '" data-fgcolor="#61a9dc" data-bgcolor="#eee"></div>';
+                    $('#tongji').html(html);
+                    $('#myStat2').circliful();
+                    if (data.totalpercentage < 100)
+                    {
+                        backup(data);
+                    }
+
+
+                }
+            })
+        }
+
+        $(document).ready(function () {
+            $('#myStat2').circliful();
+        });
+    </script>
+</div>

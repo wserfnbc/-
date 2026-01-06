@@ -1,0 +1,40 @@
+<fieldset>
+    <legend>条件搜索</legend>
+    <form class="layui-form layui-form-pane form-search" action="{:request()->url()}" onsubmit="return false" method="get" autocomplete="off">
+        <div class="layui-form-item layui-inline">
+            <label class="layui-form-label">券码</label>
+            <div class="layui-input-inline">
+                <input name="code" value="{$get.code|default=''}" placeholder="请输入券码" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item layui-inline">
+            <label class="layui-form-label">使用状态</label>
+            <div class="layui-input-inline">
+                <select class="layui-select" name="is_used">
+                    {foreach [''=>'- 全部 -','1'=>'已使用','0'=>'未使用','99'=>'已禁用'] as $k=>$v}
+                    {if $k."" eq input('is_used')}
+                    <option selected value="{$k}">{$v}</option>
+                    <!--{else}-->
+                    <option value="{$k}">{$v}</option>
+                    <!--{/if}-->
+                    {/foreach}
+                </select>
+            </div>
+        </div>
+
+        <div class="layui-form-item layui-inline">
+            <label class="layui-form-label">有效日期</label>
+            <div class="layui-input-inline">
+                <input data-date-range name="end_date" value="{$get.end_date|default=''}" placeholder="请选择有效日期" class="layui-input">
+            </div>
+        </div>
+
+        <div class="layui-form-item layui-inline">
+            <button class="layui-btn layui-btn-primary"><i class="layui-icon">&#xe615;</i> 搜索</button>
+        </div>
+    </form>
+    <script>
+        form.render()
+        laydate.render({range: true, elem: '[name="end_date"]', lang:'cn'})
+    </script>
+</fieldset>

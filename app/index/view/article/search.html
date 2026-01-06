@@ -1,0 +1,85 @@
+{include file="common/header" /}
+<style>
+	nav {
+		display: flex;
+		align-items: center;
+		gap: 20px;
+	}
+
+	nav a {
+		width: 180px;
+		display: block;
+		border-radius: 20px !important;
+	}
+
+	main {
+		min-height: 64vh;
+	}
+
+	.layui-input {
+		color: #000;
+	}
+
+	form {
+		display: flex;
+		justify-content: center;
+		margin: var(--p100) auto var(--p50);
+		--btn: 50px;
+	}
+</style>
+<main>
+	<section>
+		<div class="layui-main">
+			<form class="layui-form">
+				<div class="layui-input-group">
+					<input name="keyword" placeholder="搜索" value="{if $keyword}{$keyword}{/if}" class="layui-input">
+					<input type="hidden" name="model" value="产品中心" placeholder="带任意后置内容" class="layui-input">
+
+					<div class="layui-input-suffix">
+						<button class="layui-btn layui-btn-primary">搜索</button>
+					</div>
+
+				</div>
+			</form>
+			<nav class="">
+
+				{foreach name="modelList" item="model"}
+				{if $model.template_name != '默认内容'}
+				<a class="{if isset($modelName) &&
+								$modelName==$model.template_name}layui-btn-primy{/if} layui-btn "
+					href="?keyword={if isset($keyword)}{$keyword}{/if}&model={$model.template_name}">{$model.template_name}</a>
+				{/if}
+				{/foreach}
+			</nav>
+
+			{if $modelName}
+
+			{eq name="$modelName" value="产品"}
+			<ul class="product-list ">
+
+				{foreach name=" articleList" item="atc" } <a
+					href="/index/Article/show/cat_id/{$atc.cat_id}/id/{$atc.id}">
+					<div class="img_100 img1">
+						<img src="{$atc.logo}">
+					</div>
+					<p>{$atc.title}</p>
+
+				</a>
+				{/foreach}
+			</ul>
+			{/eq}
+
+			<div class="pagenum ">{$page|raw}</div>
+
+			{empty name="articleList"}
+			<div class="seach_wu ">无相关数据</div>
+			{/empty}
+
+			{/if}
+		</div>
+		</div>
+	</section>
+</main>
+<script src="__ROOT__/public/home/js/index.js"></script>
+<!-- 中间区域结束 -->
+{include file="common/footer" /}

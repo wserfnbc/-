@@ -1,0 +1,204 @@
+{include file="common/header" /}
+
+<main class="Index">
+    
+<div class="index_swiper">
+	<div class="swiper ">
+		<div class="swiper-wrapper">
+			{foreach name="function->getCatArticle(1)" item="atc"}
+			<div class="swiper-slide">
+				<div class="SwiperItem">
+					<div class="image-container bg img_100 "><img class="image-loading" data-src="{$atc.logo}">
+					</div>
+					<div class="block">
+						<div class="layui-main">
+							<h1 class="">{$atc.title|raw|nl2br}</h1>
+							<div class="sub">{$atc.subtitle|raw|nl2br}</div>
+							
+							    
+							
+							
+						</div>
+					</div>
+				</div>
+			</div>
+			{/foreach}
+		</div>
+	</div>
+</div>
+    {foreach name="function->getCatChildList(1)" item="cat"}
+       {if $cat.id == 28}
+      <section class="IndexServices">
+            <div class="layui-main">
+                <div class="titleCom ">
+                    <div class="key">{$cat.keywords|Raw|nl2br}</div>
+                    <h1>{$cat.title}</h1>
+                    <div class="desc">{$cat.desc_text|Raw|nl2br}</div>
+                </div>
+                
+                <ul>
+                    {foreach name="function->getCatArticle($cat.id)" item="atc"}
+                    <a href="{$atc.keywords}" target="_blank" class="item ">
+                        <div class="img_box img">
+                            <img src="{$atc.logo}">
+                        </div>
+                        <div class="con">
+                                
+                         <h5>{$atc.title|raw|nl2br}</h5>
+                           
+                        </div>
+                    </a>
+                    {/foreach}
+                </ul>
+            </div>
+        
+     </section>
+      {/if}
+       {if $cat.id == 29}
+      <section class="IndexPassiona" style="background-image: url({$cat.logo_s})">
+          <div class="bg " style="background-image: url({$cat.logo})">
+             
+          </div>
+            <div class="layui-main">
+                <div class="titleCom ">
+                    <div class="key">{$cat.keywords|Raw|nl2br}</div>
+                    <h1>{$cat.title}</h1>
+                    <div class="desc">{$cat.desc_text|Raw|nl2br}</div>
+                </div>
+                <ul>
+                    {foreach name="function->getCatArticle($cat.id)" item="atc"}
+                    <li class="item ">
+                           
+             <div class=" img">
+                            <img src="{$atc.logo}">
+                        </div>
+
+
+                           
+                        <div class="con">
+                            <div class="text">
+                                
+                         <h5>{$atc.title|raw|nl2br}</h5>
+                         <div class="sub">{$atc.subtitle|raw|nl2br}</div>
+                            </div>
+                        </div>
+                    </li>
+                    {/foreach}
+                </ul>
+               
+               </div>
+     </section>
+     
+      {/if}
+      {if $cat.id == 30}
+      <section class="IndexEvalua" style="background-image: url({$cat.logo_s})">
+          <div class="layui-main">
+              <div class="Card">
+                    <div class="titleCom left">
+                        <h2>{$cat.title}</h2>
+                        <div class="desc">{$cat.keywords|Raw|nl2br}</div>
+                    </div>
+                    <div class="footCom">
+                    <a class="btn" href="{$cat.force_link}" target="_blank">
+                     
+                        <svg class="highlight" viewBox="0 0 144.75738 77.18431" preserveAspectRatio="none">
+                            <g transform="translate(-171.52826,-126.11624)">
+                                <g fill="none" stroke-width="17" stroke-linecap="round" stroke-miterlimit="10">
+                                    <path
+                                        d="M180.02826,169.45123c0,0 12.65228,-25.55115 24.2441,-25.66863c6.39271,-0.06479 -5.89143,46.12943 4.90937,50.63857c10.22345,4.2681 24.14292,-52.38336 37.86455,-59.80493c3.31715,-1.79413 -5.35094,45.88889 -0.78872,58.34589c5.19371,14.18125 33.36934,-58.38221 36.43049,-56.91633c4.67078,2.23667 -0.06338,44.42744 5.22574,47.53647c6.04041,3.55065 19.87185,-20.77286 19.87185,-20.77286">
+                                    </path>
+                                </g>
+                            </g>
+                        </svg>
+                        <span class="text">{$cat.desc_text|raw|nl2br}</span>
+                    </a>
+                </div>
+              </div>
+          </div>
+          <div class="img_100 img">
+              <img src="{$cat.logo}">
+          </div>
+      </section>
+      {/if}
+      {if $cat.id == 31}
+      <section class="IndexPhoto">
+            <div class="layui-main">
+                <div class="titleCom ">
+                    <div class="key">{$cat.keywords|Raw|nl2br}</div>
+                    <h1>{$cat.title}</h1>
+                    <div class="desc">{$cat.desc_text|Raw|nl2br}</div>
+                </div>
+            </div>
+            
+
+            {foreach name="function->getCatArticle($cat.id)" item="atc"}
+                    			<?php $imgs = explode("|", $atc['imgs']);  ?>
+            <div class="swiper ">
+                <div class="swiper-wrapper">
+                         {foreach name="$imgs" item="val"}
+            			<div class="swiper-slide img_100 img">
+            			    <img src="{$val}">
+            			</div>
+                        {/foreach}
+    
+                </div>
+            </div>
+              {/foreach}
+     </section>
+      {/if}
+    {/foreach}
+
+    
+</main>
+<script src="/public/home/js/index.js"></script>
+<script src="__ROOT__/public/home/js/swiper-bundle.min.js"></script>
+<script>
+    const $swiperContainers = $('.IndexPhoto .swiper');
+
+        $swiperContainers.each(function (index) {
+            const isEven = index % 2 === 1;
+
+            new Swiper($(this)[0], {
+                loop: true,
+                autoplay: {
+                    delay: 0,
+                    disableOnInteraction: false,
+                    reverseDirection: isEven
+                },
+                slidesPerView: 'auto',
+                spaceBetween: 10,
+                simulateTouch: false,
+                breakpoints: {
+                    768: {
+                        slidesPerView: 'auto',
+                        spaceBetween: 35,
+                    },
+                },
+                speed: 30000,
+            });
+        });
+	var swiper = new Swiper(".index_swiper .swiper", {
+		navigation: {
+			nextEl: ".index_swiper .swiper-button-next",
+			prevEl: ".index_swiper .swiper-button-prev",
+		},
+		speed: 1000,
+		loop: true,
+		effect: "fade",
+		fadeEffect: {
+			crossFade: true
+		},
+		autoplay: {
+			loop: false,
+			delay: 5000,
+			stopOnLastSlide: false,
+			disableOnInteraction: false,
+		},
+		pagination: {
+			el: '.index_swiper .swiper-pagination',
+			clickable: true
+		},
+	});
+</script>
+<!-- 声明页脚部分 -->
+{include file="common/footer" /}

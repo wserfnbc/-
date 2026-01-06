@@ -1,0 +1,99 @@
+<style>
+    .layui-form.layui-card > .layui-card-body {
+        padding: 20px 40px !important;
+    }
+    .think-radio input[type=radio]{
+        display: none !important;
+    }
+</style>
+<form onsubmit="return false;" action="{:request()->url()}" data-auto="true" method="post" class='layui-form layui-card' autocomplete="off">
+
+    <div class="layui-card-body">
+        <div class="layui-row margin-bottom-15 layui-hide">
+            <label class="layui-col-xs2 think-form-label">导航分类</label>
+            <label class="layui-col-xs10">
+                <select class="layui-select" required name="parent_id" lay-search>
+                    <option value="0"> - 顶级导航</option>
+                    {foreach $parent_cate as $cate}
+                        <option {if isset($vo.parent_id) and $vo.parent_id eq $cate.id} selected{/if} value="{$cate.id}">{$cate.title|default=''}</option>
+                        {foreach $cate.child_cate_2 as $cate2}
+                            {if $cate2 === end($cate.child_cate_2)}
+                                <option {if isset($vo.parent_id) and $vo.parent_id eq $cate2.id} selected{/if} value="{$cate2.id}">╚ {$cate2.title|default=''}</option>
+                            {else}
+                                <option {if isset($vo.parent_id) and $vo.parent_id eq $cate2.id} selected{/if} value="{$cate2.id}">╠ {$cate2.title|default=''}</option>
+                            {/if}
+                            {foreach $cate2.child_cate_3 as $cate3}
+                                {if $cate3 === end($cate2.child_cate_3)}
+                                    <option {if isset($vo.parent_id) and $vo.parent_id eq $cate3.id} selected{/if} value="{$cate3.id}"> └─ {$cate3.title|default=''}</option>
+                                {else}
+                                    <option {if isset($vo.parent_id) and $vo.parent_id eq $cate3.id} selected{/if} value="{$cate3.id}"> ├─ {$cate3.title|default=''}</option>
+                                {/if}
+                            {/foreach}
+                        {/foreach}
+                    {/foreach}
+                </select>
+            </label>
+        </div>
+
+        <div class="layui-row margin-bottom-15">
+            <label class="layui-col-xs2 think-form-label">导航位置</label>
+            <label class="layui-col-xs10">
+                <select class="layui-select" name="type">
+                    {foreach ['顶部'=>'顶部','中间'=>'中间','底部'=>'底部'] as $k=>$v}
+                        {if isset($vo.type)}
+                            <!--{eq name='$vo.type' value='$k.""'}-->
+                            <option selected value="{$k}">{$v}</option>
+                            <!--{else}-->
+                            <option value="{$k}">{$v}</option>
+                            <!--{/eq}-->
+                        {else}
+                            <option value="{$k}">{$v}</option>
+                        {/if}
+                    {/foreach}
+                </select>
+            </label>
+        </div>
+
+        <div class="layui-row margin-bottom-15">
+            <label class="layui-col-xs2 think-form-label">导航主图</label>
+            <label class="layui-col-xs7 think-form-group-left">
+                <input name="icon" value='{$vo.icon|default=""}' placeholder="请上传图片" class="layui-input">
+            </label>
+            <a class="layui-col-xs3 layui-btn think-form-group-right" data-file="btn" data-field="icon" data-type="png,jpg,gif,ico">
+                <i class="layui-icon layui-icon-upload"></i> 上传图片
+            </a>
+        </div>
+
+        <div class="layui-row margin-bottom-15">
+            <label class="layui-col-xs2 think-form-label">导航名称</label>
+            <label class="layui-col-xs10">
+                <input name="title" required value='{$vo.title|default=""}' placeholder="请输入导航名称名称" class="layui-input">
+            </label>
+        </div>
+
+        <div class="layui-row margin-bottom-15">
+            <label class="layui-col-xs2 think-form-label">导航链接</label>
+            <label class="layui-col-xs10">
+                <input name="url" value='{$vo.url|default=""}' placeholder="请输入导航链接" class="layui-input">
+            </label>
+        </div>
+
+        <div class="layui-row margin-bottom-15">
+            <label class="layui-col-xs2 think-form-label">新窗口打开链接</label>
+            <label class="layui-col-xs10">
+                <label class="think-radio"><input type="radio" name="is_open" value="0" ignore title="否" {if (isset($vo.is_open) and $vo.is_open eq 0) || !isset($vo.is_open)}checked{/if}> &nbsp;</label>
+                <label class="think-radio"><input type="radio" name="is_open" value="1" ignore title="是" {if isset($vo.is_open) and $vo.is_open eq 1}checked{/if}></label>
+            </label>
+        </div>
+
+    </div>
+
+    <div class="hr-line-dashed"></div>
+    <div class="layui-form-item text-center">
+        {notempty name='vo.id'}<input type='hidden' value='{$vo.id}' name='id'>{/notempty}
+        <button class="layui-btn" type='submit'>保存数据</button>
+        <button class="layui-btn layui-btn-danger" type='button' data-confirm="取消修改？" data-close>取消修改</button>
+    </div>
+</form>
+<script>window.form.render();</script>
+

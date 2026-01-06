@@ -1,0 +1,96 @@
+{extend name="../../admin/view/main"}
+
+{block name="button"}
+
+<!--{if auth("add")}-->
+<button data-modal='{:url("add")}?form_id={$formId}' data-title="添加参数" class='layui-btn layui-btn-sm layui-btn-primary'>添加参数</button>
+<!--{/if}-->
+<!--{if auth("remove")}-->
+<button data-action='{:url("remove")}' data-rule="id#{key}" class='layui-btn layui-btn-sm layui-btn-primary'>删除参数</button>
+<!--{/if}-->
+{/block}
+
+{block name="content"}
+<div class="think-box-shadow">
+    <button data-open='{:url("index")}' data-title="返回表单类型" class='layui-btn layui-btn-sm layui-btn-normal'>返回表单类型</button>
+    <table class="layui-table margin-top-10" lay-skin="line">
+        {notempty name='list'}
+        <thead>
+        <tr>
+            <th class='list-table-check-td think-checkbox'>
+                <input data-auto-none data-check-target='.list-check-box' type='checkbox'>
+            </th>
+            <th class='list-table-sort-td'>
+                <button type="button" data-reload class="layui-btn layui-btn-xs">排序</button>
+            </th>
+            <th class="text-left nowrap">参数类型</th>
+            <th class="text-left nowrap">参数名称</th>
+            <th class='text-left nowrap'>参数别名</th>
+            <th class='text-left nowrap'>参数值</th>
+            <th class='text-left nowrap'>状态设置</th>
+            <th></th>
+        </tr>
+        </thead>
+        {/notempty}
+        <tbody>
+        {foreach $list as $key=>$vo}
+        <tr>
+            <td class='list-table-check-td think-checkbox'><input class="list-check-box" value='{$vo.id}' type='checkbox'></td>
+            <td class='list-table-sort-td'><input data-action-blur="{:request()->url()}" data-value="id#{$vo.id};action#sort;sort#{value}" data-loading="false" value="{$vo.sort}" class="list-sort-input"></td>
+            <td class="text-left nowrap relative">
+                {eq name='vo.type' value='1'}下拉选项{/eq}
+                {eq name='vo.type' value='2'}文本{/eq}
+                {eq name='vo.type' value='3'}多行文本{/eq}
+                {eq name='vo.type' value='4'}多选项{/eq}
+                {eq name='vo.type' value='5'}上传文件{/eq}
+            </td>
+            <td class="text-left nowrap relative">
+                {eq name='vo.is_required' value='1'}<span style="color: #ff0000;">*</span>{/eq}&nbsp;{$vo.form_name|default='--'}
+            </td>
+            <td class="text-left nowrap relative">
+                {eq name='vo.is_required' value='1'}<span style="color: #ff0000;">*</span>{/eq}&nbsp;{$vo.form_label|default='--'}
+            </td>
+            <td class="text-left nowrap relative">
+                <div class="layui-table-cell" style="max-width:50vw;">
+                    {$vo.form_value|default='--'}
+                </div>
+            </td>
+
+            <td class="text-left nowrap">
+                    {if isset($vo.status) and $vo.status eq 1}
+                    <!--{if auth("forbid")}-->
+                    <a class="layui-btn layui-btn-sm" data-action="{:url('forbid')}" data-value="id#{$vo.id};status#0">已启用</a>
+                    <!--{else}-->
+                    <a data-tips-text="您没有禁用参数的权限哦！" class="layui-btn layui-btn-sm layui-disabled">已启用</a>
+                    <!--{/if}-->
+                    {else}
+                    <!--{if auth("resume")}-->
+                    <a class="layui-btn layui-btn-sm layui-btn-warm" data-action="{:url('resume')}" data-value="id#{$vo.id};status#1">已禁用</a>
+                    <!--{else}-->
+                    <a data-tips-text="您没有启用参数的权限哦！" class="layui-btn layui-btn-sm layui-btn-primary layui-disabled">已禁用</a>
+                    <!--{/if}-->
+                    {/if}
+            </td>
+
+            <td class='text-left nowrap'>
+                <div class="nowrap margin-bottom-5">
+                    {if auth("edit")}
+                    <a data-title="编辑参数" class="layui-btn  layui-btn-sm layui-btn-warm" data-modal='{:url("edit")}?id={$vo.id}&form_id={$formId}'>编辑</a>
+                    {/if}
+
+                    {if auth("remove")}
+                    <a class="layui-btn layui-btn-sm layui-btn-danger" data-confirm="Are you sure you want to delete the data?" data-action="{:url('remove')}" data-value="id#{$vo.id}">删除</a>
+                    {else}
+                    <a data-tips-text="您没有删除数据的权限哦！" class="layui-btn layui-btn-sm layui-btn-primary layui-disabled">删除</a>
+                    {/if}
+                </div>
+            </td>
+        </tr>
+        {/foreach}
+        </tbody>
+    </table>
+
+    {empty name='list'}<span class="notdata">No record</span>{else}{$pagehtml|raw|default=''}{/empty}
+
+</div>
+{/block}

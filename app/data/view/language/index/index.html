@@ -1,0 +1,54 @@
+{extend name="../../admin/view/main"}
+
+{block name="button"}
+{if auth("add")}
+<button data-open='{:url("add")}' data-title="添加语言" class='layui-btn layui-btn-sm layui-btn-primary'>添加语言</button>
+{/if}
+{/block}
+
+{block name="content"}
+<style>
+    .layui-table td, .layui-table th {
+        padding: 5px 15px !important;
+    }
+</style>
+<div class="think-box-shadow">
+    <blockquote class="layui-elem-quote">
+        创建新语言：请先点击cn语言的编辑，复制文件内容。然后取消编辑返回，再添加语言，把刚才复制的文件内容加进新创建语言的文件内容。<br>
+        然后文件内容里把每个等号后边双引号里的文本改成符合语言的文本，双引号一定要保留。
+    </blockquote>
+    <table class="layui-table margin-top-10" lay-skin="line">
+        {notempty name='LanguageList'}
+        <thead>
+        <tr>
+            <th class='text-center nowrap'>语言名称</th>
+            <th></th>
+        </tr>
+        </thead>
+        {/notempty}
+        <tbody>
+        {foreach $LanguageList as $keyTop=>$vo}
+            <tr>
+                <td class='text-center nowrap'>
+                    <a data-tips-image="{$vo.name|default=''}" class="fa fa-image font-s14 margin-right-5"></a>
+                    {$vo.name}
+                </td>
+
+                <td class='text-left nowrap'>
+                    {if auth("edit")}
+                    <a data-title="修改语言" class="layui-btn  layui-btn-sm layui-btn-warm" data-open='{:url("edit")}?name={$vo.name}'>修改</a>
+                    {/if}
+                    {if auth("remove")}
+                    <a class="layui-btn layui-btn-sm layui-btn-danger" data-confirm="确定删除吗?" data-action="{:url('remove')}" data-value="name#{$vo.name}">删除</a>
+                    {/if}
+
+                </td>
+            </tr>
+
+
+        {/foreach}
+        </tbody>
+    </table>
+    {empty name='LanguageList'}<span class="notdata">No record</span>{/empty}
+</div>
+{/block}

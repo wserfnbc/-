@@ -1,0 +1,72 @@
+{extend name="../../admin/view/main"}
+
+{block name="button"}
+{if auth("add")}
+<button data-modal='{:url("add")}' data-title="添加广告位" class='layui-btn layui-btn-sm layui-btn-primary'>添加广告位</button>
+{/if}
+{if auth("store/ad_position/remove")}
+<button data-action='{:url("remove")}' data-rule="id#{key}" class='layui-btn layui-btn-sm layui-btn-primary layui-hide'>删除广告位</button>
+{/if}
+{/block}
+
+{block name="content"}
+<div class="think-box-shadow">
+
+    <table class="layui-table margin-top-10" lay-skin="line">
+        {notempty name='list'}
+        <thead>
+        <tr>
+            <th class='list-table-check-td think-checkbox'>
+                <input data-auto-none data-check-target='.list-check-box' type='checkbox'>
+            </th>
+            <th class='list-table-sort-td'>
+                <button type="button" data-reload class="layui-btn layui-btn-xs">排序</button>
+            </th>
+            <th class='text-center nowrap'>ID</th>
+            <th class='text-left nowrap'>名称</th>
+            <th class='text-left nowrap'>描述</th>
+            <th class="text-center">状态</th>
+            <th></th>
+        </tr>
+        </thead>
+        {/notempty}
+        <tbody>
+        {foreach $list as $key=>$vo}
+        <tr>
+            <td class='list-table-check-td think-checkbox'>
+                <input class="list-check-box" value='{$vo.id}' type='checkbox'>
+            </td>
+            <td class='list-table-sort-td'>
+                <input data-action-blur="{:request()->url()}" data-value="id#{$vo.id};action#sort;sort#{value}" data-loading="false" value="{$vo.sort}" class="list-sort-input">
+            </td>
+            <td class='text-center nowrap'>
+                {$vo.id}
+            </td>
+            <td class='text-left nowrap'>
+                <a href="admin.html#/data/poster.poster/index.html?spm=m-64-60-62&position_id={$vo.id}">{$vo.title|default=''}</a>
+            </td>
+            <td class='text-left nowrap'>
+                {$vo.desc_text|default=''}
+            </td>
+            <td class='text-center nowrap'>
+                {if $vo.status eq 1 and auth("store/ad_position/forbid")}
+                <a class="layui-btn layui-btn-sm" data-action="{:url('forbid')}" data-value="id#{$vo.id};status#0">正常</a>
+                {elseif auth("store/ad_position/resume")}
+                <a class="layui-btn layui-btn-sm layui-btn-danger" data-action="{:url('resume')}" data-value="id#{$vo.id};status#1">停用</a>
+                {/if}
+            </td>
+            <td class='text-left nowrap'>
+                {if auth("store/ad_position/edit")}
+                <a data-title="修改" class="layui-btn  layui-btn-sm layui-btn-warm" data-modal='{:url("edit")}?id={$vo.id}'>修改</a>
+                {/if}
+                {if auth("store/ad_position/remove")}
+                <a class="layui-btn layui-btn-sm layui-btn-danger layui-hide" data-confirm="确定删除吗?" data-action="{:url('remove')}" data-value="id#{$vo.id}">删除</a>
+                {/if}
+            </td>
+        </tr>
+        {/foreach}
+        </tbody>
+    </table>
+    {empty name='list'}<span class="notdata">No record</span>{else}{$pagehtml|raw|default=''}{/empty}
+</div>
+{/block}

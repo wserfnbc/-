@@ -1,0 +1,102 @@
+<fieldset>
+    <legend>条件搜索</legend>
+    <form class="layui-form layui-form-pane form-search" action="{:request()->url()}" onsubmit="return false" method="get" autocomplete="off">
+        <div class="layui-form-item layui-inline">
+            <label class="layui-form-label">订单单号</label>
+            <div class="layui-input-inline">
+                <input name="order_no" value="{$get.order_no|default=''}" placeholder="请输入订单单号" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item layui-inline layui-hide">
+            <label class="layui-form-label">发货单号</label>
+            <div class="layui-input-inline">
+                <input name="api_tracking_no" value="{$get.api_tracking_no|default=''}" placeholder="请输入发货单号" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item layui-inline layui-hide">
+            <label class="layui-form-label">订单状态</label>
+            <div class="layui-input-inline">
+                <select class="layui-select" name="status">
+                    {foreach [''=>'- 全部订单 -','2'=>'待付款','3'=>'待发货','4'=>'已发货','5'=>'已完成'] as $k=>$v}
+                    {if $k.'' eq input('status')}
+                    <option selected value="{$k}">{$v}</option>
+                    {else}
+                    <option value="{$k}">{$v}</option>
+                    {/if}
+                    {/foreach}
+                </select>
+            </div>
+        </div>
+        <div class="layui-form-item layui-inline">
+            <label class="layui-form-label">付款状态</label>
+            <div class="layui-input-inline">
+                <select class="layui-select" name="pay_state">
+                    {foreach [''=>'- 全部订单 -','0'=>'未支付的订单','1'=>'已支付的订单'] as $k=>$v}
+                    {if $k.'' eq input('pay_state')}
+                    <option selected value="{$k}">{$v}</option>
+                    {else}
+                    <option value="{$k}">{$v}</option>
+                    {/if}
+                    {/foreach}
+                </select>
+            </div>
+        </div>
+        <div class="layui-form-item layui-inline">
+            <label class="layui-form-label">下单时间</label>
+            <div class="layui-input-inline">
+                <input data-date-range name="create_at" value="{$get.create_at|default=''}" placeholder="请选择下单时间" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item layui-inline">
+            <label class="layui-form-label">支付时间</label>
+            <div class="layui-input-inline">
+                <input data-date-range name="pay_at" value="{$get.pay_at|default=''}" placeholder="请选择支付时间" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item layui-inline">
+            <label class="layui-form-label">姓名</label>
+            <div class="layui-input-inline">
+                <input name="express_name" value="{$get.express_name|default=''}" placeholder="请输入姓名" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item layui-inline">
+            <label class="layui-form-label">手机号</label>
+            <div class="layui-input-inline">
+                <input name="express_phone" value="{$getexpress_phone|default=''}" placeholder="请输入手机号" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item layui-inline layui-hide">
+            <label class="layui-form-label">收货省份</label>
+            <div class="layui-input-inline">
+                <input name="express_province" value="{$get.express_province|default=''}" placeholder="请输入收货省份" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item layui-inline layui-hide">
+            <label class="layui-form-label">收货城市</label>
+            <div class="layui-input-inline">
+                <input name="express_city" value="{$get.express_city|default=''}" placeholder="请输入收货城市" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item layui-inline layui-hide">
+            <label class="layui-form-label">收货区域</label>
+            <div class="layui-input-inline">
+                <input name="express_area" value="{$get.express_area|default=''}" placeholder="请输入收货区域" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item layui-inline layui-hide">
+            <label class="layui-form-label">详细地址</label>
+            <div class="layui-input-inline">
+                <input name="express_address" value="{$get.express_address|default=''}" placeholder="请输入详细地址" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item layui-inline">
+            <button class="layui-btn layui-btn-primary"><i class="layui-icon">&#xe615;</i> 搜 索</button>
+        </div>
+    </form>
+    <script>
+        window.form.render();
+        $('[data-export-list]').on('click', function () {
+            window.location.href = '{:url("@")}?s=store/order/index&' + $(this).parents('form').serialize() + '&action=export'
+        });
+    </script>
+</fieldset>

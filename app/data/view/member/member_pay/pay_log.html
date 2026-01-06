@@ -1,0 +1,72 @@
+{extend name="../../admin/view/main"}
+
+{block name="button"}
+<!--{if auth("store/member_pay/remove")}-->
+<button data-action='{:url("remove")}' data-rule="id#{key}" class='layui-btn layui-btn-sm layui-btn-primary'>删除信息</button>
+<!--{/if}-->
+{/block}
+
+{block name="content"}
+<div class="think-box-shadow">
+    {include file='member/member_pay/index_search'}
+    <table class="layui-table margin-top-10" lay-skin="line">
+        {notempty name='list'}
+        <thead>
+        <tr>
+            <th class='list-table-check-td think-checkbox'>
+                <input data-auto-none data-check-target='.list-check-box' type='checkbox'>
+            </th>
+            <th class="text-left nowrap">会员信息</th>
+            <th class='text-left nowrap'>交易类型</th>
+            <th class='text-left nowrap'>金额</th>
+            <th class='text-left nowrap'>交易方式</th>
+            <th class='text-left nowrap'>交易时间</th>
+            <th class='text-left nowrap'>交易详情</th>
+            <th class='text-left nowrap'>状态设置操作</th>
+            <th></th>
+        </tr>
+        </thead>
+        {/notempty}
+        <tbody>
+        {foreach $list as $key=>$vo}
+        <tr {if isset($vo.status) and $vo.status eq 0}style="background: #fbf816;"{/if}>
+            <td class='list-table-check-td think-checkbox'><input class="list-check-box" value='{$vo.lid}' type='checkbox'></td>
+            <td class="text-left nowrap relative">
+                <div class="inline-block">
+                    会员帐号：{$vo.username|default='--'}
+                </div>
+            </td>
+            <td class='text-left nowrap'>
+                {$vo.in_or_ex|default='--'}
+            </td>
+            <td class='text-left nowrap'>
+                {$vo.price_amount|default='--'} 元
+            </td>
+            <td class='text-left nowrap'>
+                {$vo.payment_type|default='--'}
+            </td>
+            <td class='text-left nowrap'>
+                {$vo.create_at|default='--'}
+            </td>
+            <td class='text-left nowrap'>
+                {$vo.payment_desc|default='--'}
+            </td>
+
+            <td class='text-left nowrap'>
+                <div class="nowrap margin-bottom-5">
+                    {if auth("store/member_pay/remove")}
+                    <a class="layui-btn layui-btn-sm layui-btn-danger" data-confirm="确定要删除数据吗?" data-action="{:url('remove')}" data-value="id#{$vo.lid}">删 除</a>
+                    {else}
+                    <a data-tips-text="您没有删除数据的权限哦！" class="layui-btn layui-btn-sm layui-btn-primary layui-disabled">删 除</a>
+                    {/if}
+                </div>
+            </td>
+        </tr>
+        {/foreach}
+        </tbody>
+    </table>
+
+    {empty name='list'}<span class="notdata">没有记录哦</span>{else}{$pagehtml|raw|default=''}{/empty}
+
+</div>
+{/block}

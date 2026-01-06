@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>404 - 页面未找到</title>
+
+    <style>
+        /* 基础样式重置 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        }
+
+        /* 布局工具类 */
+        .flex {
+            display: flex;
+        }
+
+        .items-center {
+            align-items: center;
+        }
+
+        .justify-center {
+            justify-content: center;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        .relative {
+            position: relative;
+        }
+
+        .absolute {
+            position: absolute;
+        }
+
+        .z-10 {
+            z-index: 10;
+        }
+
+        html,
+        body {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background-color: #f9fafb;
+            /* 浅灰底，柔和基础色 */
+        }
+
+        /* 全屏线条背景 - 替换原波浪，更简约 */
+        .line-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.7;
+            /* 线条透明度降低，不抢内容焦点 */
+        }
+
+        /* 横向线条样式 */
+        .horizontal-line {
+            position: absolute;
+            left: 0;
+            width: 100%;
+            height: 1px;
+            background-color: #e5e7eb;
+            /* 浅灰线条，低对比度 */
+            transform-origin: left center;
+            animation: line-stretch 12s linear infinite;
+        }
+
+        /* 纵向线条样式 */
+        .vertical-line {
+            position: absolute;
+            top: 0;
+            height: 100%;
+            width: 1px;
+            background-color: #e5e7eb;
+            /* 浅灰线条，与横向统一 */
+            transform-origin: top center;
+            animation: line-stretch 10s linear infinite reverse;
+        }
+
+        /* 线条拉伸动画 - 从一端延伸到另一端 */
+        @keyframes line-stretch {
+            0% {
+                transform: scaleX(0);
+                /* 横向线条：初始无长度 */
+            }
+
+            20%,
+            80% {
+                transform: scaleX(1);
+                /* 中间阶段保持全长 */
+            }
+
+            100% {
+                transform: scaleX(0);
+                /* 结尾收缩回无长度 */
+            }
+        }
+
+        /* 404数字动画 - 保留原浮动效果，调整幅度更柔和 */
+        @keyframes float {
+            0% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-12px);
+                /* 浮动幅度减小，更细腻 */
+            }
+
+            100% {
+                transform: translateY(0);
+            }
+        }
+
+        .float {
+            animation: float 6s ease-in-out infinite;
+        }
+
+        .float-delay-1 {
+            animation-delay: 1s;
+        }
+
+        .float-delay-2 {
+            animation-delay: 2s;
+        }
+
+        /* 页面主体样式 - 颜色改为低饱和柔和色 */
+        body {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .container {
+            padding: 1rem;
+        }
+
+        /* 404数字 - 浅蓝灰色，不刺眼 */
+        .error-number {
+            font-size: clamp(80px, 25vw, 180px);
+            /* 字号适当缩小，更协调 */
+            font-weight: 600;
+            /* 字体粗细降低，减少压迫感 */
+            color: #6b7280;
+            margin: 0 8px;
+        }
+
+        /* 感叹号图标 - 浅蓝灰色背景，与数字呼应 */
+        .error-icon {
+            width: clamp(40px, 12vw, 80px);
+            height: clamp(40px, 12vw, 80px);
+            border-radius: 50%;
+            background-color: rgba(107, 114, 128, 0.1);
+            /* 透明浅灰背景 */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 8px;
+            backdrop-filter: blur(4px);
+        }
+
+        .error-icon::after {
+            content: "!";
+            color: #6b7280;
+            font-size: clamp(20px, 6vw, 40px);
+            font-weight: 500;
+        }
+
+        /* 标题 - 深灰而非黑色，更柔和 */
+        .error-title {
+            font-size: clamp(1.2rem, 4vw, 2rem);
+            font-weight: 500;
+            color: #374151;
+            margin-bottom: 1rem;
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            /* 阴影减弱 */
+        }
+
+        /* 返回按钮 - 浅蓝主色，低饱和 */
+        .home-button {
+            display: inline-block;
+            margin-top: 1.5rem;
+            padding: 0.75rem 2rem;
+            background-color: #eff6ff;
+            /* 浅蓝背景 */
+            color: #3b82f6;
+            /* 低饱和蓝色文字 */
+            font-weight: 500;
+            border-radius: 9999px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            /* 阴影减弱 */
+        }
+
+        .home-button:hover {
+            background-color: #dbeafe;
+            /*  hover时加深一点，不夸张 */
+            transform: translateY(-2px);
+            box-shadow: 0 6px 8px -1px rgba(0, 0, 0, 0.08);
+        }
+    </style>
+</head>
+
+<body class="relative">
+    <!-- 全屏线条背景（替换原波浪） -->
+    <div class="line-container" id="lineContainer"></div>
+
+    <!-- 404内容 -->
+    <div class="container text-center relative z-10">
+        <div class="flex items-center justify-center my-6">
+            <div class="error-number float">4</div>
+            <div class="error-icon float float-delay-1"></div>
+            <div class="error-number float float-delay-2">4</div>
+        </div>
+
+        <h2 class="error-title">页面未找到</h2>
+        <p style="color: #9ca3af; margin-bottom: 0.5rem;">您访问的页面不存在或已被移动</p> <!-- 新增提示文本，更友好 -->
+
+        <a href="/" class="home-button">返回首页</a>
+    </div>
+
+    <script>
+        // 动态生成线条（避免HTML冗余，数量随屏幕大小自适应）
+        function createLines() {
+            const container = document.getElementById('lineContainer');
+            const width = window.innerWidth;
+            const height = window.innerHeight;
+
+            // 清空原有线条（窗口 resize 时重新生成）
+            container.innerHTML = '';
+
+            // 生成横向线条（每80px一条，覆盖高度）
+            const horizontalCount = Math.ceil(height / 80);
+            for (let i = 0; i < horizontalCount; i++) {
+                const line = document.createElement('div');
+                line.className = 'horizontal-line';
+                line.style.top = `${i * 80}px`;
+                line.style.animationDelay = `${i * 0.8}s`; // 线条动画错开，更自然
+                container.appendChild(line);
+            }
+
+            // 生成纵向线条（每120px一条，覆盖宽度）
+            const verticalCount = Math.ceil(width / 120);
+            for (let i = 0; i < verticalCount; i++) {
+                const line = document.createElement('div');
+                line.className = 'vertical-line';
+                line.style.left = `${i * 120}px`;
+                line.style.animationDelay = `${i * 0.6}s`; // 纵向动画延迟错开
+                container.appendChild(line);
+            }
+        }
+
+        // 初始生成线条
+        createLines();
+
+        // 窗口大小改变时重新生成线条
+        window.addEventListener('resize', createLines);
+
+        // 线条视差效果（鼠标移动时线条轻微偏移，保留交互感）
+        window.addEventListener('mousemove', (e) => {
+            const x = e.clientX / window.innerWidth;
+            const y = e.clientY / window.innerHeight;
+            const lines = document.querySelectorAll('.horizontal-line, .vertical-line');
+
+            lines.forEach((line, index) => {
+                // 偏移量减小，避免过度晃动
+                const moveX = (x - 0.5) * 8 * (index % 3 + 1);
+                const moveY = (y - 0.5) * 6 * (index % 3 + 1);
+                line.style.transform = line.classList.contains('horizontal-line')
+                    ? `scaleX(1) translate(${moveX}px, ${moveY}px)`
+                    : `scaleY(1) translate(${moveX}px, ${moveY}px)`;
+            });
+        });
+    </script>
+</body>
+
+</html>

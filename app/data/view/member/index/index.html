@@ -1,0 +1,113 @@
+{extend name="../../admin/view/main"}
+
+{block name="button"}
+<!--{if auth("add")}-->
+<button data-open='{:url("add")}' data-title="添加会员" class='layui-btn layui-btn-sm layui-btn-primary'>添加会员</button>
+<!--{/if}-->
+<!--{if auth("remove")}-->
+<button data-action='{:url("remove")}' data-rule="id#{key}" class='layui-btn layui-btn-sm layui-btn-primary'>删除会员</button>
+<!--{/if}-->
+{/block}
+
+
+{block name="content"}
+<div class="think-box-shadow">
+    {include file='member/index/index_search'}
+    <table class="layui-table margin-top-10" lay-skin="line">
+        {notempty name='list'}
+        <thead>
+        <tr>
+            <th class='list-table-check-td think-checkbox'>
+                <input data-auto-none data-check-target='.list-check-box' type='checkbox'>
+            </th>
+            <th class='text-left nowrap'>会员帐号</th>
+            <th class='text-left nowrap'>会员昵称</th>
+            <th class='text-left nowrap'>会员状态</th>
+            <th class='text-left nowrap'>认证状态</th>
+            <th class='text-left nowrap'>注册时间</th>
+            <th></th>
+        </tr>
+        </thead>
+        {/notempty}
+        <tbody>
+        {foreach $list as $key=>$vo}
+        <tr>
+            <td class='list-table-check-td think-checkbox'>
+                <label><input class="list-check-box" value='{$vo.id}' type='checkbox'></label>
+            </td>
+            <td class='text-left nowrap'>
+                {notempty name='vo.headimg'}
+                <img data-tips-image style="width:20px;height:20px;vertical-align:top" src="{$vo.headimg|default=''}" class="margin-right-5">
+                {/notempty}
+                <div class="inline-block">{$vo.username|default='--'}</div>
+            </td>
+            <td class='text-left'>{$vo.nickname|default='--'}</td>
+
+
+            <td class='text-left'>
+                {if isset($vo.status) and $vo.status eq 1}
+                <!--{if auth("state")}-->
+                <a class="layui-btn layui-btn-sm" data-action="{:url('state')}" data-confirm="点击后该会员将被封禁无法登陆，确定吗？" data-value="id#{$vo.id};status#0">正常</a>
+                <!--{else}-->
+                <a data-tips-text="您没有封禁会员的权限哦！" class="layui-btn layui-btn-sm layui-disabled">正常</a>
+                <!--{/if}-->
+                {else}
+                <!--{if auth("state")}-->
+                <a class="layui-btn layui-btn-sm layui-btn-warm" data-action="{:url('state')}" data-confirm="确认解封该会员？" data-value="id#{$vo.id};status#1">已封禁</a>
+                <!--{else}-->
+                <a data-tips-text="您没有解封会员的权限哦！" class="layui-btn layui-btn-sm layui-btn-primary layui-disabled">已封禁</a>
+                <!--{/if}-->
+                {/if}
+
+            </td>
+            <td class='text-left'>
+            {if isset($vo.auth_type) and $vo.auth_type eq 1}
+                <!--{if auth("auth_type")}-->
+                <!-- <a class="layui-btn layui-btn-sm" data-action="{:url('auth_type')}" data-confirm="点击后该会员成为未认证状态，确定吗？" data-value="id#{$vo.id};auth_type#0">已认证</a> -->
+                <div class="layui-btn layui-btn-sm">已认证</div>
+                <!--{else}-->
+                <a data-tips-text="您没有操作权限哦！" class="layui-btn layui-btn-sm layui-disabled">已认证</a>
+                <!--{/if}-->
+            {else}
+                <!--{if auth("auth_type")}-->
+                <!-- <a class="layui-btn layui-btn-sm layui-btn-warm" data-action="{:url('auth_type')}" data-confirm="确认该会员为认证通过？" data-value="id#{$vo.id};auth_type#1">未认证</a> -->
+                <button class="layui-btn layui-btn-sm layui-btn-warm">未认证</button>
+                <!--{else}-->
+                <a data-tips-text="您没有操作权限哦！" class="layui-btn layui-btn-sm layui-btn-primary layui-disabled">未认证</a>
+                <!--{/if}-->
+            {/if}
+
+            <!--{if $vo.realname || $vo.idcard_no || $vo.idcard_front || $vo.idcard_front}-->
+                <!--{if auth("audit_info")}-->
+                    <a data-title="实名信息" class="layui-btn layui-btn-sm layui-btn-normal" data-modal='{:url("audit_info")}?id={$vo.id}'>实名信息</a>
+                <!--{/if}-->
+            <!--{/if}-->
+
+            </td>
+            <td class='text-left'>{$vo.create_at|format_datetime}</td>
+            <td class='text-left nowrap'>
+
+                <div class="nowrap margin-bottom-5">
+                    {if auth("edit")}
+                    <a data-dbclick class="layui-btn layui-btn-sm" data-open='{:url("edit")}?id={$vo.id}'>编 辑</a>
+                    {else}
+                    <a data-tips-text="您没有操作权限哦！" class="layui-btn layui-btn-sm layui-btn-primary layui-disabled">编 辑</a>
+                    {/if}
+
+                    {if auth("remove")}
+                    <a class="layui-btn layui-btn-sm layui-btn-danger" data-confirm="确定要删除数据吗?" data-action="{:url('remove')}" data-value="id#{$vo.id}">删 除</a>
+                    {else}
+                    <a data-tips-text="您没有操作权限哦！" class="layui-btn layui-btn-sm layui-btn-primary layui-disabled">删 除</a>
+                    {/if}
+
+                </div>
+
+
+            </td>
+        </tr>
+        {/foreach}
+        </tbody>
+    </table>
+    {empty name='list'}<span class="notdata">没有记录哦</span>{else}{$pagehtml|raw|default=''}{/empty}
+</div>
+{/block}

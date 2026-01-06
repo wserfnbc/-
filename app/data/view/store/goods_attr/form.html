@@ -1,0 +1,196 @@
+{extend name="../../admin/view/main"}
+
+{block name="content"}
+
+<style>
+    .layui-form.layui-card > .layui-card-body {
+        padding: 20px 40px !important;
+    }
+    .think-radio input[type=radio]{
+        display: none !important;
+    }
+</style>
+{if $isAddMode eq "1"}
+<form onsubmit="return false;" id="AttrForm" class='layui-form layui-card' autocomplete="off">
+
+    <div class="layui-card-body think-box-shadow padding-left-40" data-slider-box>
+
+        <div class="layui-form-item layui-row layui-col-space15">
+            <label class="layui-col-xs12 relative">
+                <span class="color-green">商品属性分类名称</span>
+                <div id="attr_value_id"></div>
+            </label>
+
+            <div class="layui-form-item layui-row layui-col-space15" data-slider-item>
+                <label class="layui-col-xs6 relative">
+                    <span class="color-green">商品属性细分值(唯一类型只需设置填写一个属性值即可)</span>
+                    <input name="attr_value[]"  class="layui-input" placeholder="请输入属性值" value="{$vo.attr_value|default=''}">
+                </label>
+
+`
+                <div class="layui-col-xs3">
+                    <span class="color-green">&nbsp;</span>
+                    <div>
+                        <a data-item-up class="layui-btn layui-btn-primary margin-left-5"><i class="layui-icon layui-icon-up margin-0"></i></a>
+                        <a data-item-dn class="layui-btn layui-btn-primary margin-left-5"><i class="layui-icon layui-icon-down margin-0"></i></a>
+                        <a data-item-rm class="layui-btn layui-btn-primary margin-left-5"><i class="layui-icon layui-icon-close margin-0"></i></a>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="layui-form-item text-center">
+                <div class="hr-line-dashed"></div>
+                <p class="help-block text-center"></p>
+                <a data-item-add class="layui-btn layui-btn-primary">添加商品属性细分值</a>
+            </div>
+        </div>
+
+
+
+        <div class="layui-form-item text-center">
+            {notempty name='vo.id'}<input type="hidden" name="id" value="{$vo.id}">{/notempty}
+            <button class="layui-btn layui-btn-danger" data-to-back id="hsitoryBack" type="button">取消编辑</button>
+            <button class="layui-btn" type="submit">保存数据</button>
+        </div>
+
+    </div>
+</form>
+
+<div data-item-tpl class="layui-hide">
+    <div class="layui-form-item layui-row layui-col-space15" data-slider-item>
+        <label class="layui-col-xs6 relative">
+            <span class="color-green">商品属性细分值(唯一类型只需设置填写一个属性细分值即可)</span>
+            <input name="attr_value[]"  class="layui-input" placeholder="请输入属性值" value="{$vo.attr_value|default=''}">
+        </label>
+
+
+        <div class="layui-col-xs3">
+            <span class="color-green">&nbsp;</span>
+            <div>
+                <a data-item-up class="layui-btn layui-btn-primary margin-left-5"><i class="layui-icon layui-icon-up margin-0"></i></a>
+                <a data-item-dn class="layui-btn layui-btn-primary margin-left-5"><i class="layui-icon layui-icon-down margin-0"></i></a>
+                <a data-item-rm class="layui-btn layui-btn-primary margin-left-5"><i class="layui-icon layui-icon-close margin-0"></i></a>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+{else}
+<form onsubmit="return false;" id="AttrForm" class='layui-form layui-card' autocomplete="off">
+
+    <div class="layui-card-body think-box-shadow padding-left-40" data-slider-box>
+
+        <div class="layui-form-item layui-row layui-col-space15" data-slider-item>
+            <label class="layui-col-xs12 relative">
+                <span class="color-green">商品属性细分值</span>
+                <input name="attr_value[]"  class="layui-input" placeholder="请输入属性值" value="{$vo.attr_value|default=''}">
+            </label>
+
+        </div>
+
+
+        <div class="layui-form-item text-center">
+            {notempty name='vo.id'}<input type="hidden" name="id" value="{$vo.id}">{/notempty}
+            <button class="layui-btn layui-btn-danger" data-to-back id="hsitoryBack" type="button">取消编辑</button>
+            <button class="layui-btn" type="submit">保存数据</button>
+        </div>
+
+    </div>
+</form>
+{/if}
+
+{/block}
+{block name='script'}
+<script>
+    window.form.render();
+
+    var catData = {$cates|raw};
+
+    layui.config({
+        base : '/'
+    }).extend({
+        selectN: 'public/static/selectN',
+        selectM: 'public/static/selectM',
+    }).use(['layer','form','jquery','selectN','selectM'],function(){
+        $ = layui.jquery;
+        var form = layui.form
+            ,selectN = layui.selectN
+            ,selectM = layui.selectM;
+
+        //无限级分类-所有配置
+        var catIns2 = selectN({
+            //元素容器【必填】
+            elem: '#attr_value_id'
+            //候选数据【必填】
+            ,data: catData
+            //默认值
+            ,selected: []
+            //为真只取最后一个值
+            ,last:true
+            //空值项提示，可设置为数组['请选择省','请选择市','请选择县']
+            ,tips: '请选择'
+            //input的name 不设置与选择器相同(去#.)
+            ,name: 'attr_value_id'
+            //数据分隔符
+            ,delimiter: ','
+            //数据的键名
+            ,field:{idName:'id',titleName:'name',childName:'children'}
+            //表单区分 form.render(type, filter); 为class="layui-form" 所在元素的 lay-filter="" 的值
+            ,formFilter: null
+        });
+    });
+
+
+    $(function () {
+
+        $('[data-slider-box]').on('click', '[data-item-add]', function () {
+            // 添加图片选项
+            $(this).parent().before($('[data-item-tpl]').html()), setTimeout(function () {
+                $.form.reInit();
+            }, 100);
+        }).on('click', '[data-item-rm]', function () {
+            // 移除图片选项
+            $(this).parents('[data-slider-item]').remove();
+        }).on('click', '[data-item-up]', function () {
+            // 上移图片选项
+            var item = $(this).parents('[data-slider-item]');
+            var prev = item.prev('[data-slider-item]');
+            if (item.index() > 0) item.insertBefore(prev);
+        }).on('click', '[data-item-dn]', function () {
+            // 下移图片选项
+            var item = $(this).parents('[data-slider-item]');
+            var next = item.next('[data-slider-item]');
+            if (next) item.insertAfter(next);
+        });
+
+        // // 表单提交处理
+        $('form#AttrForm').vali(function (ret) {
+            var data = [];
+            var attr_value_id = $(" input[ name='attr_value_id' ] ").val();
+            for (var i in ret.attr_value) {
+
+                console.log(ret.attr_value)
+                {if $isAddMode eq 1}
+                    data.push({attr_value: ret.attr_value[i], attr_value_id: attr_value_id, goods_id: {$goods_id}, is_addMode: {$isAddMode}});
+                {else}
+                    data.push({attr_value: ret.attr_value[i], attr_value_id: attr_value_id, goods_id: {$goods_id}, is_addMode: {$isAddMode}, goods_attr_value_id: {$vo.id}});
+                {/if}
+            }
+
+            $.form.load('{:url()}', {data: JSON.stringify(data)}, 'post');
+        });
+
+        $("#hsitoryBack").click(function () {
+            $.msg.confirm('确定要取消编辑吗？', function (index) {
+                history.back(), $.msg.close(index);
+            });
+        })
+
+    });
+
+
+
+</script>
+{/block}

@@ -1,0 +1,189 @@
+{extend name="../../admin/view/main"}
+
+{block name="content"}
+
+{include file='article/field/form_style'}
+
+<form onsubmit="return false;" id="GoodsForm" data-auto="true" method="post" class='layui-form layui-card' autocomplete="off">
+
+<div class="layui-card-body think-box-shadow padding-left-40">
+
+    <div class="layui-form-item layui-row layui-col-space15">
+        <label class="layui-col-xs5 relative">
+            <span class="color-green block">关联模型</span>
+            {$template.template_name|default=''}
+        </label>
+
+        <label class="layui-col-xs5 relative">
+            <span class="color-green block">关联数据表</span>
+            {$template.table_name|default=''}
+        </label>
+    </div>
+
+
+    <div class="layui-form-item layui-row layui-col-space15">
+        <label class="layui-col-xs12 relative">
+            <span class="color-green block">字段类型</span>
+            <div>
+                <label class="think-radio {if $isAdd ==0 && $vo.filed_type neq "text"}layui-hide{/if}">
+                    <input type="radio" name="filed_type" value="text" ignore title="单行文本" {if (isset($vo.filed_type) and $vo.filed_type eq "text") || !isset($vo.filed_type)}checked{/if}> &nbsp;
+                </label>
+                <label class="think-radio {if $isAdd ==0 && $vo.filed_type neq "radio"}layui-hide{/if}">
+                    <input type="radio" name="filed_type" value="radio" ignore title="单选项" {if isset($vo.filed_type) and $vo.filed_type eq "radio"}checked{/if}>
+                </label>
+                <label class="think-radio {if $isAdd ==0 && $vo.filed_type neq "checkbox"}layui-hide{/if}">
+                    <input type="radio" name="filed_type" value="checkbox" ignore title="多选项" {if isset($vo.filed_type) and $vo.filed_type eq "checkbox"}checked{/if}> &nbsp;
+                </label>
+                <label class="think-radio {if $isAdd ==0 && $vo.filed_type neq "textarea"}layui-hide{/if}">
+                    <input type="radio" name="filed_type" value="textarea" ignore title="多行文本" {if isset($vo.filed_type) and $vo.filed_type eq "textarea"}checked{/if}> &nbsp;
+                </label>
+                <label class="think-radio {if $isAdd ==0 && $vo.filed_type neq "editor"}layui-hide{/if}">
+                    <input type="radio" name="filed_type" value="editor" ignore title="富文本编辑器" {if isset($vo.filed_type) and $vo.filed_type eq "editor"}checked{/if}> &nbsp;
+                </label>
+                <label class="think-radio {if $isAdd ==0 && $vo.filed_type neq "file"}layui-hide{/if}">
+                    <input type="radio" name="filed_type" value="file" ignore title="上传单文件" {if isset($vo.filed_type) and $vo.filed_type eq "file"}checked{/if}> &nbsp;
+                </label>
+                <label class="think-radio {if $isAdd ==0 && $vo.filed_type neq "files"}layui-hide{/if}">
+                    <input type="radio" name="filed_type" value="files" ignore title="上传多图片" {if isset($vo.filed_type) and $vo.filed_type eq "files"}checked{/if}> &nbsp;
+                </label>
+                <label class="think-radio layui-hide">
+                    <input type="radio" name="filed_type" value="date" ignore title="日期" {if isset($vo.filed_type) and $vo.filed_type eq "date"}checked{/if}> &nbsp;
+                </label>
+            </div>
+        </label>
+    </div>
+
+    <div class="layui-form-item layui-row layui-col-space15">
+        <label class="layui-col-xs4 relative">
+            <span class="color-green block">字段名称</span>
+            <input name="field_name" class="layui-input" required lay-verify="notcn" {if $isAdd==0}readonly{/if} placeholder="请输入字段名称(只允许英文数字，且以英文开头)" value="{$vo.field_name|default=''}">
+        </label>
+
+        <label class="layui-col-xs4 relative">
+            <span class="color-green block">字段别名</span>
+            <input name="field_other_name" required class="layui-input" placeholder="请输入别名,做为字段的显示名称" value="{$vo.field_other_name|default=''}">
+        </label>
+
+    </div>
+
+    <div class="layui-form-item layui-row layui-col-space15">
+        {if isset($vo.filed_type) and ($vo.filed_type eq "file")}
+            <label class="layui-col-xs4 relative">
+                <span class="color-green block">允许上传文件格式</span>
+                <input name="filed_default_value" class="layui-input" placeholder="请输入允许上传文件格式，用英文逗号分隔开" value="{$vo.filed_default_value|default='jpg,png,gif'}">
+            </label>
+        {else}
+            <label class="layui-col-xs4 relative">
+                <span class="color-green block">默认值</span>
+                <input name="filed_default_value" class="layui-input" placeholder="请输入默认值" value="{$vo.filed_default_value|default=''}">
+            </label>
+        {/if}
+    </div>
+
+    <div class="layui-form-item layui-row layui-col-space15 setting">
+        <label class="layui-col-xs4 relative">
+            <span class="color-green">选项列表</span>
+            <textarea name="filed_setting" class="layui-textarea"  placeholder="选项名称1|选项值1
+选项名称2|选项值2">{$vo.filed_setting|default=''}</textarea>
+        </label>
+
+        <label class="layui-col-xs4 relative filter">
+            <span class="color-green block">是否为筛选项</span>
+            <label class="think-radio">
+                <input type="radio" name="is_filter" value="0" ignore title="否" {if (isset($vo.is_filter) and $vo.is_filter eq 0) || !isset($vo.is_filter)}checked{/if}> &nbsp;
+            </label>
+            <label class="think-radio">
+                <input type="radio" name="is_filter" value="1" ignore title="是" {if (isset($vo.is_filter) and $vo.is_filter eq 1)}checked{/if}> &nbsp;
+            </label>
+        </label>
+
+
+    </div>
+
+
+    <div class="layui-form-item text-center">
+        {notempty name='vo.id'}<input type="hidden" name="id" value="{$vo.id}">{/notempty}
+        <input type="hidden" name="template_id" value="{$template.id}">
+        <input type="hidden" name="table_name" value="{$template.table_name}">
+        <input type="hidden" name="isAdd" value="{$isAdd}">
+        {if $isAdd == 0}
+            <input type="hidden" name="filed_type" value="{$vo.filed_type}">
+        {/if}
+        <button class="layui-btn layui-btn-danger" ng-click="hsitoryBack()" type="button">取消编辑</button>
+        <button class="layui-btn" type="submit">保存数据</button>
+    </div>
+
+</div>
+</form>
+{/block}
+
+{block name='script'}
+<script>
+    window.form.render();
+    require(['ckeditor', 'angular'], function () {
+        // window.createEditor('[name="content"]', {height: 500});
+        var app = angular.module("GoodsForm", []).run(callback);
+        angular.bootstrap(document.getElementById(app.name), [app.name]);
+
+        function callback($rootScope) {
+            $rootScope.isAddMode = parseInt('{$isAddMode|default=0}');
+
+            // 返回会员列表
+            $rootScope.hsitoryBack = function () {
+                $.msg.confirm('确定要取消编辑吗？', function (index) {
+                    history.back(), $.msg.close(index);
+                });
+            };
+
+        }
+    });
+
+    //默认除字段类型为选项以外时，选项列表关闭
+    var filed_type = $("input[name='filed_type']:checked").val();
+    if(filed_type == "text" || filed_type == "textarea" || filed_type == "file" || filed_type == "files"|| filed_type == "editor"){
+        $(".setting").hide()
+    }
+
+    {if $isAdd == 0}
+    $("input[name='filed_type']:checked").attr("disabled", true);
+    {else}
+    //默认字段类型点击后如果是单多选，开启选项列表，否则关闭
+    $("input[name='filed_type']").click(function (){
+        if($(this).val() == 'radio' || $(this).val() == 'checkbox'){
+            $(".setting").show();
+            if($(this).val() == 'radio'){
+                $(".filter").show();
+            }else{
+                $(".filter").hide();
+            }
+        }else{
+            $(".setting").hide();
+        }
+    });
+    {/if}
+
+    $("input[name='field_name']").keyup(function (){
+        var reg = /[\u4E00-\u9FA5]|[\uFE30-\uFFA0]/g;
+        if (reg.test($("input[name='field_name']").val())) {
+            layer.msg("不允许中文字符", {
+                icon: 5,
+                time: 1000 //2秒关闭（如果不配置，默认是3秒）
+            }, function () {
+                $("input[name='field_name']").val("")
+                return false
+            });
+        }
+        if (/\s/g.test($("input[name='field_name']").val())) {
+            layer.msg("不允许空格", {
+                icon: 5,
+                time: 1000 //2秒关闭（如果不配置，默认是3秒）
+            }, function () {
+                $("input[name='field_name']").val("")
+                return false
+            });
+        }
+        return true;
+    });
+
+</script>
+{/block}

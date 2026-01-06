@@ -1,0 +1,197 @@
+{extend name="../../admin/view/main"}
+
+{block name="content"}
+<style>
+    .layui-card-html{
+        white-space:nowrap!important;
+    }
+    .layui-layout>.layui-body>.think-page-body>.layui-card>.layui-card-body>.layui-card-html {
+        padding: 5px;
+        min-width: 100%;
+        position: absolute;
+        box-sizing: border-box;
+    }
+    .think-box-shadow{
+        padding: 0 !important;
+        scroll: inherit;
+        overflow: scroll;
+        height: 88vh;
+        overflow-x: hidden;
+    }
+    .think-box-shadow table{
+        margin: 0!important;
+    }
+    .layui-table td, .layui-table th {
+        padding: 9px 5px !important;
+    }
+    .layui-table td a, .layui-table th a {
+        color: #666;
+    }
+    .think-box-shadow::-webkit-scrollbar {
+        width: 3px!important;
+    }
+    .think-box-shadow::-webkit-scrollbar-thumb {
+        border-radius: 10px!important;
+        background: @headNormalBackColor!important;
+    }
+    .think-box-shadow::-webkit-scrollbar-track {
+        border-radius: 10px!important;
+        background: #fbfbfb!important;
+    }
+    .act{
+        background: #666;
+        color: #fff !important;
+    }
+    .act a{
+        color: #fff !important;
+    }
+
+</style>
+{if $list}
+<div class="think-box-shadow layui-col-sm2" id="catList" style="width: 13% !important;min-width:10%;">
+    <table class="layui-table margin-top-10" lay-skin="line">
+        <tbody>
+        {foreach $list as $keyTop=>$vo}
+            <tr>
+                <td class='text-left nowrap'>{$vo.id}</td>
+                <td class='text-left nowrap'>
+                    {if $category_ids == 0 || in_array($vo.id,$category_ids)}
+                        {if $vo.is_page == 1}
+                                <!-- 单页跳转 -->
+                                &nbsp;&nbsp;<a href="/admin.html#/data/article.page/show.html?spm=m-64-54&template_id={$vo.template_id}&get_cat_id={$vo.id}" target="content"><b>{$vo.title|default=''}</b></a>
+                        {else}
+                            {if $vo.childCount > 0}
+                                &nbsp;&nbsp;<a href="/admin.html#/data/article.article/index.html?spm=m-64-54&title=&cat={$vo.id}&template_id={$vo.template_id}&content_template_id={$vo.content_template_id}&get_cat_id={$vo.id}" target="content"><b>{$vo.title|default=''}</b></a>
+                            {else}
+                                &nbsp;&nbsp;<a href="/admin.html#/data/article.article/index.html?spm=m-64-54&title=&cat={$vo.id}&template_id={$vo.template_id}&content_template_id={$vo.content_template_id}&get_cat_id={$vo.id}" target="content"><b>{$vo.title|default=''}</b></a>
+                            {/if}
+                        {/if}
+                    {else}
+                        <!--无栏目权限-->
+                        <a href="/admin.html#/data/article.article/index.html?spm=m-64-54&is_error=1" target="content"><b>{$vo.title|default=''}</b></a>
+                    {/if}
+                </td>
+
+
+            </tr>
+            {foreach $vo.childList as $key=>$vc}
+            <tr>
+                <td class='text-left nowrap'>{$vc.id}</td>
+
+                <td class='text-left nowrap'>
+                    {if $category_ids == 0 || (in_array($vc.id,$category_ids) && in_array($vo.id,$category_ids))}
+                        {if $vc.is_page == 1}
+                            <!-- 单页跳转 -->
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="/admin.html#/data/article.page/show.html?spm=m-64-54&template_id={$vc.template_id}&get_cat_id={$vc.id}" target="content"><b>↪ {$vc.title|default=''}</b></a>
+                        {else}
+                            {if $vc.childCount > 0}
+                                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="/admin.html#/data/article.article/index.html?spm=m-64-54&title=&cat={$vc.id}&template_id={$vc.template_id}&content_template_id={$vc.content_template_id}&get_cat_id={$vc.id}" target="content"><b>↪ {$vc.title|default=''}</b></a>
+                            {else}
+                                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="/admin.html#/data/article.article/index.html?spm=m-64-54&title=&cat={$vc.id}&template_id={$vc.template_id}&content_template_id={$vc.content_template_id}&get_cat_id={$vc.id}" target="content"><b>↪ {$vc.title|default=''}</b></a>
+                            {/if}
+                        {/if}
+                    {else}
+                        <!--无栏目权限-->
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="/admin.html#/data/article.article/index.html?spm=m-64-54&is_error=1" target="content"><b>↪ {$vc.title|default=''}</b></a>
+                    {/if}
+                </td>
+
+            </tr>
+
+                {foreach $vc.childList as $k=>$v}
+                <tr>
+                    <td class='text-left nowrap'>{$v.id}</td>
+                    <td class='text-left nowrap'>
+                        {if $category_ids == 0 || (in_array($v.id,$category_ids) && in_array($vc.id,$category_ids) && in_array($vo.id,$category_ids))}
+                            {if $v.is_page == 1}
+                                <!-- 单页跳转 -->
+                                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="/admin.html#/data/article.page/show.html?spm=m-64-54&template_id={$v.template_id}&get_cat_id={$v.id}" target="content"><b>┕━ {$v.title|default=''}</b></a>
+                            {else}
+                                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="/admin.html#/data/article.article/index.html?spm=m-64-54&title=&cat={$v.id}&template_id={$v.template_id}&content_template_id={$v.content_template_id}&get_cat_id={$v.id}" target="content"><b>┕━ {$v.title|default=''}</b></a>
+                            {/if}
+                        {else}
+                            <!--无栏目权限-->
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="/admin.html#/data/article.article/index.html?spm=m-64-54&is_error=1" target="content"><b>┕━ {$v.title|default=''}</b></a>
+                        {/if}
+                    </td>
+
+                </tr>
+                    {foreach $v.childList as $k4=>$v4}
+                    <tr>
+                        <td class='text-left nowrap'>{$v4.id}</td>
+                        <td class='text-left nowrap'>
+                            {if $category_ids == 0 || (in_array($v4.id,$category_ids) && in_array($v.id,$category_ids) && in_array($vc.id,$category_ids) && in_array($vo.id,$category_ids))}
+                                {if $v4.is_page == 1}
+                                <!-- 单页跳转 -->
+                                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="/admin.html#/data/article.page/show.html?spm=m-64-54&template_id={$v4.template_id}&get_cat_id={$v4.id}" target="content"><b>└─ {$v4.title|default=''}</b></a>
+                                {else}
+                                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="/admin.html#/data/article.article/index.html?spm=m-64-54&title=&cat={$v4.id}&template_id={$v4.template_id}&content_template_id={$v4.content_template_id}&get_cat_id={$v4.id}" target="content"><b>└─ {$v4.title|default=''}</b></a>
+                                {/if}
+                            {else}
+                                <!--无栏目权限-->
+                                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="/admin.html#/data/article.article/index.html?spm=m-64-54&is_error=1" target="content"><b>┕━ {$v.title|default=''}</b></a>
+                            {/if}
+                        </td>
+
+                    </tr>
+                    {/foreach}
+                {/foreach}
+
+            {/foreach}
+
+        {/foreach}
+        </tbody>
+    </table>
+    {empty name='list'}<span class="notdata">No record</span>{else}{$pagehtml|raw|default=''}{/empty}
+</div>
+
+<div class="think-box-shadow layui-col-sm10 overhide" style="width: 86.9% !important;">
+    <iframe name="content" src="/admin.html#/data/article.article/index.html?spm=m-64-54&title=&cat=16&template_id=2&content_template_id=6&get_cat_id=16" frameborder="auto" style="width: 100%;height:100%;overflow: hidden;">
+
+    </iframe>
+</div>
+{/if}
+{empty name="list"}
+<div class="think-box-shadow">
+    <table class="layui-table" lay-skin="line">
+        <tbody>
+        <tr>
+            <td class='text-center nowrap'>
+                <span class="notdata margin-10">请在栏目管理中创建新栏目</span>
+
+            </td>
+        </tr>
+
+        </tbody>
+    </table>
+</div>
+{/empty}
+<script>
+    $("#catList table tbody tr td a").click(function (){
+        $(".act").removeClass("act");
+        $(this).parent().addClass("act");
+        $(this).parent().prev().addClass("act");
+
+    });
+
+    $(function () {
+        //页面加载自动运行该代码
+        $("#catList table tbody tr td a").each(function (key, value){
+           console.log(value);
+           if(key == 0){
+               value.click();
+           }
+           return false;
+        });
+
+        // var getColor = $(".layui-header").css("background-color");
+        // // alert(getColor)
+        // $(".layui-table td a").css("color",getColor);
+        // $(".layui-table th a").css("color",getColor);
+        // $(".act").css("background-color",getColor);
+
+    });
+
+
+</script>
+{/block}

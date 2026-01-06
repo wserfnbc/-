@@ -1,0 +1,28 @@
+{include file='form/form/form_style'}
+<form onsubmit="return false;" action="{:request()->url()}" data-auto="true" method="post" class='layui-form layui-card' autocomplete="off">
+
+    <div class="layui-card-body padding-left-40">
+        <div class="layui-form-item margin-bottom-15">
+            <label class="layui-col-xs2 think-form-label">表单类型</label>
+            <label class="layui-col-xs10">
+                <input name="form_type" required value='{$vo.form_type|default=""}' placeholder="请输入表单类型，只限英文或数字" class="layui-input">
+            </label>
+        </div>
+
+        <div class="layui-form-item margin-bottom-15">
+            <label class="layui-col-xs2 think-form-label">表单名称</label>
+            <label class="layui-col-xs10">
+                <input name="form_name" required value='{$vo.form_name|default=""}' placeholder="请输入表单名称" class="layui-input">
+            </label>
+        </div>
+    </div>
+
+
+    <div class="hr-line-dashed"></div>
+    <div class="layui-form-item text-center">
+        {notempty name='vo.id'}<input type='hidden' value='{$vo.id}' name='id'>{/notempty}
+        <button class="layui-btn" type='submit'>保存数据</button>
+        <button class="layui-btn layui-btn-danger" type='button' data-confirm="确定取消编辑吗？" data-close>取消编辑</button>
+    </div>
+</form>
+

@@ -1,0 +1,107 @@
+{extend name="../../admin/view/main"}
+
+{block name="button"}
+{if auth("add")}
+<button data-modal='{:url("add")}' data-title="添加优惠券" class='layui-btn layui-btn-sm layui-btn-primary'>添加优惠券</button>
+{/if}
+{if auth("remove")}
+<button data-action='{:url("remove")}' data-rule="id#{key}" class='layui-btn layui-btn-sm layui-btn-primary'>删除优惠券</button>
+{/if}
+{/block}
+
+{block name="content"}
+<style>
+    .layui-table td, .layui-table th {
+        padding: 5px 15px !important;
+    }
+</style>
+<div class="think-box-shadow">
+    {include file='store/coupon/index_search'}
+    <table class="layui-table margin-top-10" lay-skin="line">
+        {notempty name='list'}
+        <thead>
+        <tr>
+            <th class='list-table-check-td think-checkbox'>
+                <input data-auto-none data-check-target='.list-check-box' type='checkbox'>
+            </th>
+
+            <th class='text-center'>券码</th>
+            <th class='text-center'>券类型</th>
+            <th class='text-center'>优惠内容</th>
+            <th class="text-center">有效期</th>
+            <th class="text-center">使用状态</th>
+            <th class="text-center">使用时间</th>
+            <th class="text-center">使用用户</th>
+
+
+            <th></th>
+        </tr>
+        </thead>
+        {/notempty}
+        <tbody>
+        {foreach $list as $keyTop=>$vo}
+            <tr>
+                <td class='list-table-check-td think-checkbox'>
+                    <input class="list-check-box" value='{$vo.id}' type='checkbox'>
+                </td>
+
+                <td class='text-center nowrap'>
+                    {$vo.code}
+                </td>
+                <td class='text-center'>
+                    {if $vo.code_type == 1}
+                        折扣券
+                    {else}
+                        满减券
+                    {/if}
+                </td>
+
+                <td class='text-center nowrap'>
+                    {if $vo.code_type == 1}
+                    {if empty($vo.reduction)}不限制{else}满{$vo.reduction}/减{$vo.rate}%{/if}
+                    {else}
+                    {if empty($vo.reduction)}不限制{else}满{$vo.reduction}/减{$vo.discount}{/if}
+                    {/if}
+
+                </td>
+
+                <td class='text-center nowrap'>
+                    {$vo.end_date|default="--"}
+                </td>
+
+                <td class='text-center nowrap'>
+                    {if auth("is_used")}
+                        {if $vo.is_used eq 1}
+                        <a class="layui-btn layui-btn-sm layui-btn-disabled">已使用</a>
+                        {elseif $vo.is_used eq 0}
+                        <a class="layui-btn layui-btn-sm" data-action="{:url('is_used')}" data-confirm="禁用此优惠券，确定吗?" data-value="id#{$vo.id};is_used#99">未使用</a>
+                        {else}
+                        <a class="layui-btn layui-btn-sm layui-btn-danger" data-action="{:url('is_used')}" data-confirm="恢复此优惠券，确定吗?" data-value="id#{$vo.id};is_used#0">已禁用</a>
+                        {/if}
+                    {/if}
+                </td>
+
+                <td class='text-center nowrap'>
+                    {$vo.use_date|default="--"}
+                </td>
+
+                <td class='text-center nowrap'>
+                    {$vo.username|default="--"}
+                </td>
+
+
+                <td class='text-right nowrap'>
+                    {if auth("edit")}
+                    <a data-title="修改优惠券" class="layui-btn  layui-btn-sm layui-btn-warm" data-modal='{:url("edit")}?id={$vo.id}'>修改</a>
+                    {/if}
+                    {if auth("remove")}
+                    <a class="layui-btn layui-btn-sm layui-btn-danger" data-confirm="确定删除吗?" data-action="{:url('remove')}" data-value="id#{$vo.id}">删除</a>
+                    {/if}
+                </td>
+            </tr>
+        {/foreach}
+        </tbody>
+    </table>
+    {empty name='list'}<span class="notdata">No record</span>{else}{$pagehtml|raw|default=''}{/empty}
+</div>
+{/block}

@@ -1,0 +1,41 @@
+<fieldset>
+    <legend>条件搜索</legend>
+    <form class="layui-form layui-form-pane form-search" action="{:request()->url()}" onsubmit="return false" method="get" autocomplete="off">
+        <div class="layui-form-item layui-inline">
+            <label class="layui-form-label">提交时间</label>
+            <div class="layui-input-inline">
+                <input data-date-range name="create_at" value="{$get.create_at|default=''}" placeholder="请选择提交时间" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item layui-inline">
+            <label class="layui-form-label">用户名</label>
+            <div class="layui-input-inline">
+                <input name="username" value="{$get.username|default=''}" placeholder="请输入用户名" class="layui-input">
+            </div>
+        </div>
+
+        <div class="layui-form-item layui-inline">
+            <label class="layui-form-label">交易类型</label>
+            <div class="layui-input-inline">
+                <select class="layui-select" name="in_or_ex">
+                    {foreach [''=>'- 全部 -','0'=>'支出','1'=>'收入','3'=>'其它'] as $k=>$v}
+                    {if $k.'' eq input('in_or_ex')}
+                    <option selected value="{$k}">{$v}</option>
+                    <!--{else}-->
+                    <option value="{$k}">{$v}</option>
+                    <!--{/if}-->
+                    {/foreach}
+                </select>
+            </div>
+        </div>
+        <div class="layui-form-item layui-inline">
+            <button class="layui-btn layui-btn-primary"><i class="layui-icon">&#xe615;</i> 搜 索</button>
+        </div>
+    </form>
+    <script>
+        window.form.render();
+        $('[data-export-list]').on('click', function () {
+            window.location.href = '{:url("@")}?s=store/order/index&' + $(this).parents('form').serialize() + '&action=export'
+        });
+    </script>
+</fieldset>

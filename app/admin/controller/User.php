@@ -1,0 +1,291 @@
+<?php
+
+// +----------------------------------------------------------------------
+// | ThinkAdmin
+// +----------------------------------------------------------------------
+// | 版权所有 2014~2022 广州楚才信息科技有限公司 [ http://www.cuci.cc ]
+// +----------------------------------------------------------------------
+// | 官方网站: https://thinkadmin.top
+// +----------------------------------------------------------------------
+// | 开源协议 ( https://mit-license.org )
+// | 免费声明 ( https://thinkadmin.top/disclaimer )
+// +----------------------------------------------------------------------
+// | gitee 代码仓库：https://gitee.com/zoujingli/ThinkAdmin
+// | github 代码仓库：https://github.com/zoujingli/ThinkAdmin
+// +----------------------------------------------------------------------
+
+namespace app\admin\controller;
+
+use think\admin\Controller;
+use think\admin\helper\QueryHelper;
+use think\admin\model\SystemAuth;
+use app\data\model\DataArticle;
+use think\admin\model\SystemBase;
+use think\admin\model\SystemUser;
+use think\admin\service\AdminService;
+use think\model\Relation;
+
+/**
+ * 系统用户管理
+ * Class User
+ * @package app\admin\controller
+ */
+class User extends Controller
+{
+    /**
+     * 系统用户管理
+     * @auth true
+     * @menu true
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
+     */
+    public function index()
+    {
+        //检测是否已开启栏目权限设置
+        $setAdminCategory = $this->app->db->name('SystemConfig')->where(['id'=>'29'])->value('value');
+        $this->setAdminCategory = $setAdminCategory;
+        
+        //检测当前管理员是否有设置栏目权限
+        $systemUser = $this->app->session->get('user');
+        $this->this_system_uid = $systemUser['id'];      //当前管理员的栏目权限值
+        $this->this_set_category = $systemUser['set_category'];      //当前管理员的栏目权限值
+        
+        $this->type = input('get.type', 'index');
+
+        // 创建快捷查询工具
+        SystemUser::mQuery()->layTable(function () {
+            $this->title = '系统用户管理';
+            $this->bases = SystemBase::mk()->items('身份权限');
+        }, function (QueryHelper $query) {
+
+            // 加载对应数据列表
+            if ($this->type === 'index') {
+                $query->where(['is_deleted' => 0, 'status' => 1]);
+            } elseif ($this->type = 'recycle') {
+                $query->where(['is_deleted' => 0, 'status' => 0]);
+            }
+
+            // 关联用户身份资料
+            $query->with(['userinfo' => function (Relation $relation) {
+                $relation->field('code,name,content');
+            }]);
+
+            // 数据列表搜索过滤
+            $query->equal('status,usertype')->dateBetween('login_at,create_at');
+            $query->like('username,nickname,contact_phone#phone,contact_mail#mail');
+        });
+    }
+
+    /**
+     * 添加系统用户
+     * @auth true
+     */
+    public function add()
+    {
+        SystemUser::mForm('form');
+    }
+
+    /**
+     * 编辑系统用户
+     * @auth true
+     */
+    public function edit()
+    {
+        SystemUser::mForm('form');
+    }
+
+    /**
+     * 修改用户密码
+     * @auth true
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
+     */
+    public function pass()
+    {
+        $this->_applyFormToken();
+        if ($this->request->isGet()) {
+            $this->verify = false;
+            SystemUser::mForm('pass');
+        } else {
+            $data = $this->_vali([
+                'id.require'                  => '用户ID不能为空！',
+                'password.require'            => '登录密码不能为空！',
+                'repassword.require'          => '重复密码不能为空！',
+                'repassword.confirm:password' => '两次输入的密码不一致！',
+            ]);
+            $user = SystemUser::mk()->find($data['id']);
+            if (!empty($user) && $user->save(['password' => md5($data['password'])])) {
+                sysoplog('系统用户管理', "修改用户[{$data['id']}]密码成功");
+                $this->success('密码修改成功，请使用新密码登录！', '');
+            } else {
+                $this->error('密码修改失败，请稍候再试！');
+            }
+        }
+    }
+    
+    /**
+     * 指定用户设置栏目权限
+     * @auth true
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
+     */
+    public function category()
+    {
+        $this->_applyFormToken();
+        if ($this->request->isGet()) {
+            $this->uid = $_GET['id'];
+            if($_GET['id'] == 10000){
+                $this->error('不允许为超级管理员进行设置！');
+            }
+            $user = SystemUser::mk()->find($_GET['id']);
+            $userArr = $user->toArray();
+            $this->category_ids = explode(",", $userArr['category_ids']);
+
+            $query = $this->_query("DataArticleCate")->alias("c")->field("c.*,t.template_name,t.file_name,ct.template_name AS content_template_name,ct.file_name AS content_file_name")
+                ->join("data_template t", "c.template_id = t.id", "LEFT")
+                ->join("data_template ct", "c.content_template_id = ct.id", "LEFT")
+                ->like('c.title#title')->equal('c.status#status');
+            $query->where(["c.parent_id" => 0])->order('c.sort desc,c.id asc')->page(false);
+        } else {
+            $data = $_POST['cat_id'];
+            $uid = $_POST['uid'];
+            $category_ids = implode(",", $data);
+            if($uid == 10000){
+                $this->error('不允许为超级管理员进行设置！');
+            }
+            $user = SystemUser::mk()->find($uid);
+            $userArr = $user->toArray();
+
+            if (!empty($user) && $user->save(['category_ids' => $category_ids])) {
+                sysoplog('系统用户管理', "设置用户[{$userArr['username']}]栏目权限成功");
+                $this->success('用户['.$userArr['username'].']栏目权限设置成功！', '');
+            } else {
+                $this->error('用户['.$userArr['username'].'}]栏目权限设置失败，请稍候再试！');
+            }
+        }
+    }
+    
+    /**
+     * 数据列表处理
+     * @param array $data
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\ModelNotFoundException
+     * @throws \think\exception\DbException
+     */
+    protected function _category_page_filter(&$data)
+    {
+        foreach ($data as $key => &$vo) {
+            $data[$key]['childCount'] = $this->app->db->name("DataArticleCate")->where(["parent_id" => $vo['id']])->count();
+            $data[$key]['childList'] = $this->app->db->name("DataArticleCate")->alias("c")
+                ->field("c.*,t.template_name,t.file_name,ct.template_name AS content_template_name,ct.file_name AS content_file_name")
+                ->join("data_template t", "c.template_id = t.id", "LEFT")
+                ->join("data_template ct", "c.content_template_id = ct.id", "LEFT")
+                ->where(["c.parent_id" => $vo['id']])->order('c.sort desc,c.id asc')->select()->toArray();
+            //三级分类
+            foreach ($data[$key]['childList'] AS $k => $v){
+                $data[$key]['childList'][$k]['childCount'] = $this->app->db->name("DataArticleCate")->where(["parent_id" => $v['id']])->count();
+                $data[$key]['childList'][$k]['childList'] = $this->app->db->name("DataArticleCate")->alias("c")
+                    ->field("c.*,t.template_name,t.file_name,ct.template_name AS content_template_name,ct.file_name AS content_file_name")
+                    ->join("data_template t", "c.template_id = t.id", "LEFT")
+                    ->join("data_template ct", "c.content_template_id = ct.id", "LEFT")
+                    ->where(["c.parent_id" => $v['id']])->order('c.sort desc,c.id asc')->select()->toArray();
+                //四级分类
+                foreach ($data[$key]['childList'][$k]['childList'] AS $k4 => $v4){
+                    $data[$key]['childList'][$k]['childList'][$k4]['childCount'] = $this->app->db->name("DataArticleCate")->where(["parent_id" => $v4['id']])->count();
+                    $data[$key]['childList'][$k]['childList'][$k4]['childList'] = $this->app->db->name("DataArticleCate")->alias("c")
+                        ->field("c.*,t.template_name,t.file_name,ct.template_name AS content_template_name,ct.file_name AS content_file_name")
+                        ->join("data_template t", "c.template_id = t.id", "LEFT")
+                        ->join("data_template ct", "c.content_template_id = ct.id", "LEFT")
+                        ->where(["c.parent_id" => $v4['id']])->order('c.sort desc,c.id asc')->select()->toArray();
+                }
+            }
+        }
+        
+    }
+
+    /**
+     * 表单数据处理
+     * @param array $data
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
+     */
+    protected function _form_filter(array &$data)
+    {
+        if ($this->request->isPost()) {
+            // 账号权限绑定处理
+            $data['authorize'] = arr2str($data['authorize'] ?? []);
+            if (isset($data['id']) && $data['id'] > 0) {
+                unset($data['username']);
+            } else {
+                // 检查账号是否重复
+                if (empty($data['username'])) {
+                    $this->error('登录账号不能为空！');
+                }
+                $map = ['username' => $data['username'], 'is_deleted' => 0];
+                if (SystemUser::mk()->where($map)->count() > 0) {
+                    $this->error("账号已经存在，请使用其它账号！");
+                }
+                // 新添加的用户密码与账号相同
+                $data['password'] = md5($data['username']);
+            }
+        } else {
+            // 权限绑定处理
+            $data['authorize'] = str2arr($data['authorize'] ?? '');
+            // 用户身份数据
+            $this->bases = SystemBase::mk()->items('身份权限');
+            // 用户权限管理
+            $this->superName = AdminService::instance()->getSuperName();
+            $this->authorizes = SystemAuth::mk()->items();
+        }
+    }
+
+    /**
+     * 修改用户状态
+     * @auth true
+     */
+    public function state()
+    {
+        $this->_checkInput();
+        SystemUser::mSave($this->_vali([
+            'status.in:0,1'  => '状态值范围异常！',
+            'status.require' => '状态值不能为空！',
+        ]));
+    }
+    
+    /**
+     * 修改栏目权限状态
+     * @auth true
+     */
+    public function set_category()
+    {
+        $this->_checkInput();
+        SystemUser::mSave($this->_vali([
+            'set_category.in:0,1'  => '状态值范围异常！',
+            'set_category.require' => '状态值不能为空！',
+        ]));
+    }
+
+    /**
+     * 删除系统用户
+     * @auth true
+     */
+    public function remove()
+    {
+        $this->_checkInput();
+        SystemUser::mDelete();
+    }
+
+    /**
+     * 检查输入变量
+     */
+    private function _checkInput()
+    {
+        if (in_array('10000', str2arr(input('id', '')))) {
+            $this->error('系统超级账号禁止改动！');
+        }
+    }
+}

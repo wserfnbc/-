@@ -1,0 +1,124 @@
+<style>
+    .layui-form.layui-card > .layui-card-body {
+        padding: 20px 40px !important;
+    }
+     .think-radio input[type=radio]{
+         display: none !important;
+     }
+</style>
+<form onsubmit="return false;" action="{:request()->url()}" data-auto="true" method="post" class='layui-form layui-card' autocomplete="off">
+
+    <div class="layui-card-body">
+
+        <div class="layui-row margin-bottom-15">
+            <label class="layui-col-xs2 think-form-label">上级分类</label>
+            <div class="layui-col-xs6">
+                <select required class="layui-select" name="parent_id">
+                    <option value="0">顶级分类</option>
+                    {foreach $parent_cat as $top_c}
+                        <option {if (isset($vo.parent_id) and $vo.parent_id eq $top_c.id) || ($top_c.id eq $set_parent_id)}selected{/if} {if isset($vo.id) and $vo.id eq $top_c.id}disabled{/if} value="{$top_c.id}">
+                            {$top_c.title|default=''}
+                        </option>
+                        {foreach $top_c.childList as $second_c}
+                            <option {if (isset($vo.parent_id) and $vo.parent_id eq $second_c.id) || ($second_c.id eq $set_parent_id)}selected{/if} {if isset($vo.id) and $vo.id eq $second_c.id}disabled{/if} value="{$second_c.id}">
+                                ┕━ {$second_c.title|default=''}
+                            </option>
+                            {foreach $second_c.childList as $third_c}
+                            <option {if (isset($vo.parent_id) and $vo.parent_id eq $third_c.id) || ($third_c.id eq $set_parent_id)}selected{/if} {if isset($vo.id) and $vo.id eq $third_c.id}disabled{/if} value="{$third_c.id}">
+                                &nbsp;└─ {$third_c.title|default=''}
+                            </option>
+                            {/foreach}
+                        {/foreach}
+                    {/foreach}
+                </select>
+            </div>
+        </div>
+
+        <div class="layui-row margin-bottom-15">
+            <label class="layui-col-xs2 think-form-label">是否为单页</label>
+            <div class="layui-col-xs6">
+                <label class="think-radio"><input type="radio" name="is_page" value="0" ignore title="否" {if (isset($vo.is_page) and $vo.is_page eq 0) || !isset($vo.is_page)}checked{/if}></label>
+                <label class="think-radio"><input type="radio" name="is_page" value="1" ignore title="是" {if isset($vo.is_page) and $vo.is_page eq 1}checked{/if}> &nbsp;</label>
+            </div>
+        </div>
+
+        <div class="layui-row margin-bottom-15">
+            <label class="layui-col-xs2 think-form-label">分类模板</label>
+            <div class="layui-col-xs6">
+                <select required class="layui-select" name="template_id">
+                    {foreach $template AS $key => $val}
+                        <option {if isset($vo.template_id) && $vo.template_id == $val.id}selected {/if} value="{$val.id}">{$val.template_name}[{$val.file_name}]</option>
+                    {/foreach}
+
+                </select>
+            </div>
+        </div>
+
+        <div class="layui-row margin-bottom-15">
+            <label class="layui-col-xs2 think-form-label">内容模板</label>
+            <div class="layui-col-xs6">
+                <select required class="layui-select" name="content_template_id" {if isset($vo.is_page) and $vo.is_page eq 1}disabled{/if}>
+                    <option {if isset($vo.content_template_id) && empty($vo.content_template_id)}selected {/if} value="0">无</option>
+                    {foreach $content_template AS $key => $val}
+                        <option {if isset($vo.content_template_id) && $vo.content_template_id == $val.id}selected {/if} value="{$val.id}">{$val.template_name}[{$val.file_name}]</option>
+                    {/foreach}
+
+                </select>
+            </div>
+        </div>
+
+        <div class="layui-row margin-bottom-15">
+            <label class="layui-col-xs2 think-form-label">分类名称</label>
+            <label class="layui-col-xs10">
+                <textarea class="layui-textarea" name="title" placeholder="多个分类名称请按一行一个分类就进行设置"></textarea>
+            </label>
+        </div>
+
+    </div>
+
+    <div class="hr-line-dashed"></div>
+    <div class="layui-form-item text-center">
+        {notempty name='vo.id'}<input type='hidden' value='{$vo.id}' name='id'>{/notempty}
+
+        <button class="layui-btn" type='submit'>保存数据</button>
+        <button class="layui-btn layui-btn-danger" type='button' data-confirm="确定取消设置？" data-close>取消</button>
+    </div>
+</form>
+<script>
+    form.render();
+    $("input[name='is_page']").click(function(){
+        var is_page = $(this).val();
+        if(is_page == 1){
+            var type = 2;
+            $("select[name='content_template_id']").attr("disabled", true);
+        }else{
+            var type = 0
+            $("select[name='content_template_id']").attr("disabled", false);
+        }
+        $.ajax({
+            type:'post',
+            url:"/data/article.ArticleCate/get_template",
+
+            data: {type:type},  //获得单页模板列表
+            success:function(data){
+                $("select[name='template_id'] option").remove();
+
+                //循环加入下拉框
+                $.each($.parseJSON(data),function(index,t){
+                    $("select[name='template_id']").append("<option value='"+ t.id +"'>"+ t.template_name +" ["+ t.file_name +"]</option>");
+                });
+                form.render();
+
+            },error:function(){
+                layer.msg("获取失败，请稍后再试！", {
+                    icon: 5,
+                    time: 2000 //2秒关闭（如果不配置，默认是3秒）
+                }, function () {
+                    return false
+                });
+            }
+        })
+
+    })
+</script>
+

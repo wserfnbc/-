@@ -1,0 +1,114 @@
+<form class="layui-form layui-card" action="{:request()->url()}" data-auto="true" method="post" autocomplete="off">
+    <div class="layui-card-body" style="padding-left:40px">
+
+        <fieldset>
+            <legend>收货信息</legend>
+            <div class="layui-form-item">
+                <label style='width:50px' class="layui-form-label">收货姓名</label>
+                <div class="layui-input-block" style="margin-left:80px">
+                    <input name="express_name" required value='{$vo.express_name|default=""}' placeholder="请输入收货姓名" class="layui-input">
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <label style='width:50px' class="layui-form-label">收货手机</label>
+                <div class="layui-input-block" style="margin-left:80px">
+                    <input name="express_phone" required value='{$vo.express_phone|default=""}' placeholder="请输入收货手机" class="layui-input">
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <label style='width:50px' class="layui-form-label label-required">收货区域</label>
+                <div class="layui-input-block" style="margin-left:80px">
+                    <div class="color-blue" style="line-height:38px;">{$vo.express_province|default='--'} {$vo.express_city|default=''} {$vo.express_area|default=''}</div>
+                    <div class="layui-row">
+                        <div class="layui-col-xs4"><select class="layui-select block full-width" lay-ignore name="form_province"></select></div>
+                        <div class="layui-col-xs4"><select class="layui-select block full-width" lay-ignore name="form_city"></select></div>
+                        <div class="layui-col-xs4"><select class="layui-select block full-width" lay-ignore name="form_area"></select></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <label style='width:50px' class="layui-form-label">收货地址</label>
+                <div class="layui-input-block" style="margin-left:80px">
+                    <input name="express_address" required value='{$vo.express_address|default=""}' placeholder="请输入收货地址" class="layui-input">
+                </div>
+            </div>
+        </fieldset>
+
+        <div class="layui-tab margin-top-20">
+            <ul class="layui-tab-title">
+                <li {if isset($vo.is_abroad) && $vo.is_abroad == 0} class="layui-this"{/if} data-aboad="0">快递信息设置1</li>
+                <li {if isset($vo.is_abroad) && $vo.is_abroad == 1} class="layui-this"{/if}data-aboad="1">快递信息设置2</li>
+
+            </ul>
+            <div class="layui-tab-content">
+                <div class="layui-tab-item {if isset($vo.is_abroad) && $vo.is_abroad == 0} layui-show{/if}">
+                    <div class="layui-form-item">
+                        <label style='width:50px' class="layui-form-label">快递公司</label>
+                        <div class="layui-input-block" style="margin-left:80px">
+                            <select class="layui-select" name="express_company_code" lay-search>
+                                {foreach $expressList as $express}
+                                {if $vo.express_company_code eq $express.express_code}
+                                <option selected value="{$express.express_code}">{$express.express_title}</option>
+                                {else}
+                                <option value="{$express.express_code}">{$express.express_title}</option>
+                                {/if}
+                                {/foreach}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label style='width:50px' class="layui-form-label">快递单号</label>
+                        <div class="layui-input-block" style="margin-left:80px">
+                            <input name="express_send_no" value='{$vo.express_send_no|default=""}' placeholder="请输入快递单号" class="layui-input">
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label style='width:50px' class="layui-form-label">订单描述</label>
+                        <div class="layui-input-block" style="margin-left:80px">
+                            <textarea placeholder="请输入订单描述" class="layui-textarea" name="order_desc">{$vo.order_desc|default=""}</textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="layui-tab-item {if isset($vo.is_abroad) && $vo.is_abroad == 1} layui-show{/if}">
+                    <div class="layui-form-item">
+                        <label style='width:50px' class="layui-form-label">相关图片</label>
+                    </div>
+                    <div class="layui-input-block" style="margin-left:80px">
+                        <input name="express_image" type="hidden" value="{$vo.express_image|default=''}">
+                    </div>
+                    <script>$('[name="express_image"]').uploadMultipleImage()</script>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+    <div class="hr-line-dashed"></div>
+
+    <div class="layui-form-item text-center">
+        <!--{notempty name='vo.id'}-->
+        <input type='hidden' value='{$vo.id}' name='id'>
+        <!--{/notempty}-->
+
+        <input type="hidden" name="is_abroad" value="{$vo.is_abroad|default=0}">
+        <button class="layui-btn" type='submit'>保存数据</button>
+        <button class="layui-btn layui-btn-danger" type='button' data-confirm="确定要取消编辑吗？" data-close>取消编辑</button>
+    </div>
+    <script>
+        require(['pcasunzips'], function () {
+            new PCAS("form_province", "form_city", "form_area", '{$vo.express_province|default=""}', '{$vo.express_city|default=""}', '{$vo.express_area|default=""}');
+            window.form.render();
+        });
+
+        //切换赋值
+        $(".layui-tab .layui-tab-title li").click(function(){
+            var aboad = $(this).data("aboad");
+            $("input[name='is_abroad']").val(aboad);
+        })
+    </script>
+</form>

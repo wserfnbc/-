@@ -1,0 +1,182 @@
+{extend name="../../admin/view/main"}
+
+{block name="button"}
+{if auth("add")}
+<button data-modal='{:url("add")}' data-title="添加分类" class='layui-btn layui-btn-sm layui-btn-primary'>添加分类</button>
+{/if}
+{if auth("remove")}
+<button data-action='{:url("remove")}' data-rule="id#{key}" class='layui-btn layui-btn-sm layui-btn-primary'>删除分类</button>
+{/if}
+{/block}
+
+{block name="content"}
+<div class="think-box-shadow">
+
+    <table class="layui-table margin-top-10" lay-skin="line">
+        {notempty name='list'}
+        <thead>
+        <tr>
+            <th class='list-table-check-td think-checkbox'>
+                <input data-auto-none data-check-target='.list-check-box' type='checkbox'>
+            </th>
+            <th class='list-table-sort-td'>
+                <button type="button" data-reload class="layui-btn layui-btn-xs">刷 新</button>
+            </th>
+            <th class='text-center nowrap'>分类ID</th>
+            <th class='text-left nowrap'>分类名称</th>
+            <th class='text-left nowrap'>商品数量</th>
+            <th class="text-center">状态</th>
+            <th class="text-center">是否热门</th>
+            <th></th>
+        </tr>
+        </thead>
+        {/notempty}
+        <tbody>
+        {foreach $list as $key=>$vo}
+        <tr>
+            <td class='list-table-check-td think-checkbox'>
+                <input class="list-check-box" value='{$vo.id}' type='checkbox'>
+            </td>
+            <td class='list-table-sort-td'>
+                <input data-action-blur="{:request()->url()}" data-value="id#{$vo.id};action#sort;sort#{value}" data-loading="false" value="{$vo.sort}" class="list-sort-input">
+            </td>
+            <td class='text-center nowrap'>
+                {$vo.id}
+            </td>
+            <td class='text-left nowrap color-red'>
+                <a data-tips-image="{$vo.logo|default=''}" class="fa fa-image font-s14 margin-right-5"></a>
+                {if isset($vo.icon) && !empty($vo.icon)}<img src="{$vo.icon}" width="20px" height="20px" style="background: #0C0C0C;color: #FF5722">{/if}&nbsp;&nbsp;<a href="admin#/data/store.goods/index.html?spm=m-84-85-87&title=&cate_id={$vo.id}" >{$vo.title|default=''}</a>
+            </td>
+            <td class='text-left nowrap'>
+            </td>
+            <td class='text-center nowrap'>
+                {if $vo.status eq 1 and auth("forbid")}
+                <a class="layui-btn layui-btn-sm" data-action="{:url('forbid')}" data-value="id#{$vo.id};status#0">正常</a>
+                {elseif auth("resume")}
+                <a class="layui-btn layui-btn-sm layui-btn-danger" data-action="{:url('resume')}" data-value="id#{$vo.id};status#1">禁用</a>
+                {/if}
+            </td>
+            <td class='text-center nowrap'>
+                {if $vo.is_hot eq 1}
+                    <a data-title="编辑分类" class="layui-btn layui-btn-sm" data-modal='{:url("set_hot")}?id={$vo.id}&is_hot=0'>是</a>
+                {else}
+                    <a data-title="编辑分类" class="layui-btn  layui-btn-sm layui-btn-danger" data-modal='{:url("set_hot")}?id={$vo.id}&is_hot=1'>否</a>
+                {/if}
+            </td>
+            <td class='text-left nowrap'>
+
+                {if auth("edit")}
+                <a data-title="编辑分类" class="layui-btn  layui-btn-sm layui-btn-warm" data-modal='{:url("edit")}?id={$vo.id}'>编 辑</a>
+                {/if}
+
+
+
+                {if auth("remove")}
+                <a class="layui-btn layui-btn-sm layui-btn-danger" data-confirm="确定要删除数据吗?" data-action="{:url('remove')}" data-value="id#{$vo.id}">删 除</a>
+                {/if}
+
+            </td>
+        </tr>
+            {foreach $vo.child_cate_2 as $key2=>$vo2}
+            <tr>
+                <td class='list-table-check-td think-checkbox'>
+                    <input class="list-check-box" value='{$vo2.id}' type='checkbox'>
+                </td>
+                <td class='list-table-sort-td'>
+                    <input data-action-blur="{:request()->url()}" data-value="id#{$vo2.id};action#sort;sort#{value}" data-loading="false" value="{$vo2.sort}" class="list-sort-input">
+                </td>
+                <td class='text-center nowrap'>
+                    {$vo2.id}
+                </td>
+                <td class='text-left nowrap color-green'>
+                    <a data-tips-image="{$vo2.logo|default=''}" class="fa fa-image font-s14 margin-right-5"></a>
+                    &nbsp;&nbsp;&nbsp;&nbsp;{if $vo2 === end($vo.child_cate_2)} ╚ {else} ╠ {/if} <a href="admin#/data/store.goods/index.html?spm=m-84-85-87&title=&cate_id={$vo.id}" >{$vo2.title|default=''}</a>
+                </td>
+                <td class='text-left nowrap'>
+                </td>
+                <td class='text-center nowrap'>
+                    {if $vo2.status eq 1 and auth("forbid")}
+                    <a class="layui-btn layui-btn-sm" data-action="{:url('forbid')}" data-value="id#{$vo2.id};status#0">正常</a>
+                    {elseif auth("resume")}
+                    <a class="layui-btn layui-btn-sm layui-btn-danger" data-action="{:url('resume')}" data-value="id#{$vo2.id};status#1">禁用</a>
+                    {/if}
+                </td>
+                <td class='text-center nowrap'>
+                    {if $vo2.is_hot eq 1}
+                    <a data-title="编辑分类" class="layui-btn layui-btn-sm" data-modal='{:url("set_hot")}?id={$vo2.id}&is_hot=0'>是</a>
+                    {else}
+                    <a data-title="编辑分类" class="layui-btn  layui-btn-sm layui-btn-danger" data-modal='{:url("set_hot")}?id={$vo2.id}&is_hot=1'>否</a>
+                    {/if}
+                </td>
+                <td class='text-left nowrap'>
+
+                    {if auth("edit")}
+                    <a data-title="编辑分类" class="layui-btn  layui-btn-sm layui-btn-warm" data-modal='{:url("edit")}?id={$vo2.id}'>编 辑</a>
+                    {/if}
+
+
+
+                    {if auth("remove")}
+                    <a class="layui-btn layui-btn-sm layui-btn-danger" data-confirm="确定要删除数据吗?" data-action="{:url('remove')}" data-value="id#{$vo2.id}">删 除</a>
+                    {/if}
+
+                </td>
+            </tr>
+
+                {foreach $vo2.child_cate_3 as $key3=>$vo3}
+                <tr>
+                    <td class='list-table-check-td think-checkbox'>
+                        <input class="list-check-box" value='{$vo3.id}' type='checkbox'>
+                    </td>
+                    <td class='list-table-sort-td'>
+                        <input data-action-blur="{:request()->url()}" data-value="id#{$vo3.id};action#sort;sort#{value}" data-loading="false" value="{$vo3.sort}" class="list-sort-input">
+                    </td>
+                    <td class='text-center nowrap'>
+                        {$vo3.id}
+                    </td>
+                    <td class='text-left nowrap'>
+                        <a data-tips-image="{$vo3.logo|default=''}" class="fa fa-image font-s14 margin-right-5"></a>
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{if $vo3 === end($vo2.child_cate_3)} └ {else} ├ {/if} <a href="admin#/data/store.goods/index.html?spm=m-84-85-87&title=&cate_id={$vo3.id}" >{$vo3.title|default=''}</a>
+                    </td>
+                    <td class='text-left nowrap'>
+                        {$vo3.goods_count|default=''}
+                    </td>
+                    <td class='text-center nowrap'>
+                        {if $vo3.status eq 1 and auth("forbid")}
+                        <a class="layui-btn layui-btn-sm" data-action="{:url('forbid')}" data-value="id#{$vo3.id};status#0">正常</a>
+                        {elseif auth("resume")}
+                        <a class="layui-btn layui-btn-sm layui-btn-danger" data-action="{:url('resume')}" data-value="id#{$vo3.id};status#1">禁用</a>
+                        {/if}
+                    </td>
+                    <td class='text-center nowrap'>
+                        {if $vo3.is_hot eq 1}
+                        <a data-title="编辑分类" class="layui-btn layui-btn-sm" data-modal='{:url("set_hot")}?id={$vo3.id}&is_hot=0'>是</a>
+                        {else}
+                        <a data-title="编辑分类" class="layui-btn  layui-btn-sm layui-btn-danger" data-modal='{:url("set_hot")}?id={$vo3.id}&is_hot=1'>否</a>
+                        {/if}
+                    </td>
+                    <td class='text-left nowrap'>
+
+                        {if auth("edit")}
+                        <a data-title="编辑分类" class="layui-btn  layui-btn-sm layui-btn-warm" data-modal='{:url("edit")}?id={$vo3.id}'>编 辑</a>
+                        {/if}
+
+
+
+                        {if auth("remove")}
+                        <a class="layui-btn layui-btn-sm layui-btn-danger" data-confirm="确定要删除数据吗?" data-action="{:url('remove')}" data-value="id#{$vo3.id}">删 除</a>
+                        {/if}
+
+                    </td>
+                </tr>
+                {/foreach}
+            {/foreach}
+
+
+
+        {/foreach}
+        </tbody>
+    </table>
+    {empty name='list'}<span class="notdata">没有记录哦</span>{else}{$pagehtml|raw|default=''}{/empty}
+</div>
+{/block}

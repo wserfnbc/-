@@ -1,0 +1,100 @@
+<fieldset>
+    <legend>条件搜索</legend>
+    <form class="layui-form layui-form-pane form-search" action="{:request()->url()}" onsubmit="return false" method="get" autocomplete="off">
+        <div class="layui-form-item layui-inline {if $formId}layui-hide{/if}">
+            <label class="layui-form-label">表单类型</label>
+            <div class="layui-input-inline">
+                <select class="layui-select" name="type">
+                    <option value="">全部</option>
+                    {foreach $typeList as $v}
+                    <!--{{if $v.'' eq input('type')}-->
+                    <option selected value="{$v}">{$v}</option>
+                    <!--{else}-->
+                    <option value="{$v}">{$v}</option>
+                    <!--{/if}-->
+                    {/foreach}
+                </select>
+            </div>
+        </div>
+        <div class="layui-form-item layui-inline">
+            <label class="layui-form-label">提交日期</label>
+            <div class="layui-input-inline">
+                <input data-date-range name="add_time" value="{$get.add_time|default=''}" placeholder="请选择提交日期" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item layui-inline layui-hide">
+            <label class="layui-form-label">会员帐号</label>
+            <div class="layui-input-inline">
+                <input name="username" value="{$get.username|default=''}" placeholder="请输入会员帐号" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item layui-inline layui-hide">
+            <label class="layui-form-label">姓名</label>
+            <div class="layui-input-inline">
+                <input name="form_name" value="{$get.form_name|default=''}" placeholder="请输入姓名" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item layui-inline layui-hide">
+            <label class="layui-form-label">电话</label>
+            <div class="layui-input-inline">
+                <input name="form_phone" value="{$get.form_phone|default=''}" placeholder="请输入电话" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item layui-inline">
+            <label class="layui-form-label">IP地址</label>
+            <div class="layui-input-inline">
+                <input name="member_IP" value="{$get.member_IP|default=''}" placeholder="请输入IP" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item layui-inline">
+            <label class="layui-form-label">状态</label>
+            <div class="layui-input-inline">
+                <select class="layui-select" name="status">
+                    {foreach [''=>'- 全部 -','1'=>'已确认','0'=>'审核中'] as $k=>$v}
+                    <!--{{if $k.'' eq input('status')}-->
+                    <option selected value="{$k}">{$v}</option>
+                    <!--{else}-->
+                    <option value="{$k}">{$v}</option>
+                    <!--{/if}-->
+                    {/foreach}
+                </select>
+            </div>
+        </div>
+        <div class="layui-form-item layui-inline">
+            <button class="layui-btn layui-btn-primary"><i class="layui-icon">&#xe615;</i> 搜索</button>
+        </div>
+
+        <div class="layui-form-item layui-inline">
+            <button class="layui-btn layui-btn-primary" data-form-export="{:url('list')}?is_excel=1" type="button">
+                <i class="layui-icon layui-icon-export"></i> 导 出
+            </button>
+        </div>
+
+
+    </form>
+    <script>
+        window.form.render();
+        $('[data-export-list]').on('click', function () {
+            window.location.href = '{:url("@")}?s=store/order/index&' + $(this).parents('form').serialize() + '&action=export'
+        });
+        laydate.render({range: true, elem: '[name="add_time"]', lang:'cn'})
+
+        require(['excel'], function (excel) {
+            excel.bind(function (data) {
+                var items = [];
+                items.push(['用户', {foreach name="labels" item="label"}'{$label}', {/foreach}'提交IP', '提交日期']);
+                data.forEach(function (info) {
+                    items.push([
+                        info.username,
+                        {foreach name="labels" item="label" key="n"}
+                        info.form_content_arr[{$n}],
+                        {/foreach}
+                        info.member_IP,
+                        info.add_time
+                    ]);
+                });
+                return items;
+            }, '表单信息记录');
+        });
+    </script>
+</fieldset>

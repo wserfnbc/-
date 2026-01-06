@@ -1,0 +1,48 @@
+<style>
+    .layui-form.layui-card > .layui-card-body {
+        padding: 20px 40px !important;
+    }
+</style>
+<form onsubmit="return false;" action="{:request()->url()}" data-auto="true" method="post" class='layui-form layui-card' autocomplete="off">
+
+    <div class="layui-card-body">
+        <div class="layui-row margin-bottom-15">
+            <label class="layui-col-xs2 think-form-label">模型名称</label>
+            <label class="layui-col-xs10">
+                <input name="template_name" required value='{$vo.template_name|default=""}' placeholder="请输入模型名称" class="layui-input">
+            </label>
+        </div>
+
+        <div class="layui-row margin-bottom-15">
+            <label class="layui-col-xs2 think-form-label">模型文件</label>
+            <div class="layui-col-xs3">
+                <select required class="layui-select" name="file_name">
+                    {foreach $find_file_list AS $file}
+                        {if isset($vo.file_name) and $vo.file_name eq $file}
+                            <option selected value="{$file}">{$file}</option>
+                        {else}
+                            <option value="{$file}">{$file}</option>
+                        {/if}
+                    {/foreach}
+                </select>
+            </div>
+        </div>
+
+        <div class="layui-row margin-bottom-15">
+            <label class="layui-col-xs2 think-form-label">模型描述</label>
+            <label class="layui-col-xs10">
+                <textarea class="layui-textarea" name="template_desc" placeholder="请输入模型描述">{$vo.template_desc|default=''}</textarea>
+            </label>
+        </div>
+    </div>
+
+    <div class="hr-line-dashed"></div>
+    <div class="layui-form-item text-center">
+        {notempty name='vo.id'}<input type='hidden' value='{$vo.id}' name='id'>{/notempty}
+        <input type='hidden' value='{$template_type}' name='template_type'>
+        <button class="layui-btn" type='submit'>保存数据</button>
+        <button class="layui-btn layui-btn-danger" type='button' data-confirm="确定要返回吗？" data-close>取消</button>
+    </div>
+</form>
+<script>form.render()</script>
+

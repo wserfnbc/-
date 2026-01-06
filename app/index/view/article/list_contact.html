@@ -1,0 +1,318 @@
+{include file="common/header" /}
+<main class="Contact">
+    <!--<div class="img_100">-->
+    <!--    <img src="{$catInfo.logo_s}">-->
+    <!--</div>-->
+    <section>
+        <div class="layui-main">
+            <h1 class="desc">{$catInfo.desc_text|raw|nl2br}</h1>
+            <form class="grid-row" onsubmit="return false;" id="thisForm" data-auto="true" method="post"
+                autocomplete="off">
+                <!-- 原有联系信息部分 -->
+                <h3 class="md12 xs12">Contact Details</h3>
+                <div class="formItem md6 xs6">
+                    <label class="label must">First Name </label>
+                    <input type="text" name="firstName" class="input-text">
+                </div>
+                <div class="formItem md6 xs6">
+                    <label class="label must">Last Name </label>
+                    <input type="text" name="lastName" class="input-text">
+                </div>
+                <div class="formItem md6 xs12">
+                    <label class="label must">Email </label>
+                    <input type="text" name="email" class="input-text">
+                </div>
+                <div class="formItem md6 xs12">
+                    <label class="label must">Phone number </label>
+                    <input type="text" name="phoneNumber" class="input-text">
+                </div>
+                <div class="formItem md6 xs12">
+                    <label class="label must">Number of pets </label>
+                    <input type="text" name="numberOfPets" class="input-text" id="petCount" value="1">
+                </div>
+                <div class="md6 xs12"></div>
+
+                <div class="md12 xs12" id="serviceTypeModule">
+                    <h3>Fur baby’s Info <button data-btn="add" type="button">+</button></h3>
+                </div>
+
+                <div id="petContainer"></div>
+
+                <!-- 服务类型模块 -->
+                <!--<div class="formItem md12 xs12">-->
+                <!--    <label class="label must">Type of Service </label>-->
+                <!--    <label for="hotel" class="input-checkbox-label">-->
+                <!--        <input type="checkbox" name="serviceType[]" value="Hotel" id="hotel"-->
+                <!--            class="input-checkbox checkbox-service"> Hotel-->
+                <!--    </label>-->
+                <!--    <label for="daycare" class="input-checkbox-label">-->
+                <!--        <input type="checkbox" name="serviceType[]" value="Daycare" id="daycare"-->
+                <!--            class="input-checkbox checkbox-service"> Daycare-->
+                <!--    </label>-->
+                <!--</div>-->
+
+                <!-- 剩余原有内容 -->
+                <!--<div class="formItem md12 xs12">-->
+                <!--    <label class="label">Select Boarding Room</label>-->
+                <!--    <label for="room89" class="input-radio-label">-->
+                <!--        <input type="radio" name="roomType" value="ROOM / $89" id="room89"-->
+                <!--            class="input-radio radio-room"> Open Area / $78 per-->
+                <!--        night-->
+                <!--    </label>-->
+                <!--    <label for="room129" class="input-radio-label"> <input type="radio" name="roomType"-->
+                <!--            value="ROOM / $129" id="room129" class="input-radio radio-room"> Standard Room/ $108 per-->
+                <!--        night</label>-->
+                <!--    <label for="room229" class="input-radio-label"> <input type="radio" name="roomType"-->
+                <!--            value="ROOM / $229" id="room229" class="input-radio radio-room"> Deluxe Room / $128 per-->
+                <!--        night</label>-->
+                <!--    <label for="room599" class="input-radio-label"> <input type="radio" name="roomType"-->
+                <!--            value="ROOM / $599" id="room599" class="input-radio radio-room"> VIP Room / $148 per-->
+                <!--        night</label>-->
+                <!--</div>-->
+                <!--<div class="formItem md6 xs12">-->
+                <!--    <label class="label must">Start Date </label>-->
+                <!--    <label class="input-date layui-form">-->
+                <!--        <div class="img_box"><img src="/public/home/images/rili.png"></div>-->
+                <!--        <input name="startDate" required placeholder="Choose a date" class=" date date-reservation">-->
+                <!--    </label>-->
+                <!--</div>-->
+                <!--<div class="formItem md6 xs12">-->
+                <!--    <label class="label must">End Date </label>-->
+                <!--    <label class="input-date layui-form">-->
+                <!--        <div class="img_box"><img src="/public/home/images/rili.png"></div>-->
+                <!--        <input name="endDate" required placeholder="Choose a date" class="date date-reservation">-->
+                <!--    </label>-->
+                <!--</div>-->
+                <div class=" md12 xs12">
+                    <p class="tips">We will contact you for additional supporting documents if required</p>
+                    <div class="tips" style="color:#000;">I have read and fully understand Pawliday boarding’s and daycare’s 
+                        <a class="item" style="color:#3A80F2;text-decoration: underline;text-decoration-color: blue;text-decoration-offset: 0.2em;" lay-on="dialog">Terms and Conditions
+                            <div class="layui-hide">
+                                <h5>{$function->getArticle('4','9')['title']}</h5>
+                                <div class="con s_content">
+                                      {$function->getArticle('4','9')['content']|raw|nl2br}
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                    
+                    <label for="agree" class="input-checkbox-label" style="font-size:22px;">
+                        <input type="checkbox"value="agree" id="agree"
+                            class="input-checkbox checkbox-service" required> I agree</label>
+                    <input type="hidden" name="form_id" value="{$function->getForm(1)['form']['id']}">
+                    <input type="hidden" name="type" value="{$function->getForm(1)['form']['form_type']}">
+                    <button class="layui-btn" type="submit" id="submitAdd">Submit</button>
+                </div>
+            </form>
+        </div>
+    </section>
+</main>
+<script src="__ROOT__/public/home/js/index.js"></script>
+<script>
+    $('header').addClass('contact');
+    layui.use(function () {
+        var laydate = layui.laydate;
+        var form = layui.form;
+        laydate.render({
+            elem: '.date',
+            lang: 'en'
+        });
+        let petIndex = 0;
+        const $serviceModule = $('#serviceTypeModule');
+        const $petContainer = $('#petContainer');
+        const $addBtn = $('[data-btn="add"]');
+        const $petCount = $('#petCount');
+
+        const petTemplate = `
+            <div class="pet-group grid-row" data-pet-index="__PET_INDEX__">
+                <div class="formItem md12 xs12 delete-container"></div>
+                <div class="formItem md6 xs12">
+                    <label class="label must"> Name </label>
+                    <input type="text" data-field="petName" required class="input-text">
+                </div>
+                <div class="formItem md6 xs12">
+                    <label class="label must"> Breed </label>
+                    <input type="text" data-field="petBreed" required class="input-text">
+                </div>
+                <div class="formItem md12 xs12">
+                    <label class="label must">Gender </label>
+                    <label class="input-radio-label"> <input type="radio" name="gender__PET_INDEX__" data-field="gender" value="Male"
+                            class="input-radio radio-gender"> Male</label>
+                    <label class="input-radio-label"> <input type="radio" name="gender__PET_INDEX__" data-field="gender" value="Female"
+                            class="input-radio radio-gender"> Female</label>
+                </div>
+                <div class="formItem md12 xs12">
+                    <label class="label must">Weight </label>
+                    <input type="text" data-field="petWeight" required class="input-text">
+                </div>
+                <div class="formItem md12 xs12">
+                    <label class="label must">Birthday </label>
+                    <label class="input-date layui-form">
+                        <div class="img_box"><img src="/public/home/images/rili.png"></div>
+                        <input data-field="petBirthday" placeholder="Choose a date" required class="date">
+                    </label>
+                </div>
+                <div class="formItem md12 xs12">
+                    <label class="label must">Microchip Number </label>
+                    <input type="text" data-field="microchipNumber" required class="input-text">
+                </div>
+                <div class="formItem md12 xs12">
+                    <div class="d-flex">
+                        <label class="label must">Vaccination Status (
+                        Mandatory vaccination: <span class="tip1"> <span>Canine distemper virus (CDv), Canine
+                                parvovirus
+                                (CPV), Canine adenovirus (CAV)</span></span> )</label>
+                    </div>
+                    <label class="input-radio-label"> <input type="radio" name="vaccinationStatus__PET_INDEX__" data-field="vaccinationStatus"
+                            value="Vaccinated" class="input-radio radio-vaccine"> Vaccinated</label>
+                    <label class="input-radio-label"> <input type="radio" name="vaccinationStatus__PET_INDEX__" data-field="vaccinationStatus"
+                            value="Not Vaccinated" class="input-radio radio-vaccine"> Not Vaccinated</label>
+
+                    <p class="tip1">Strongly recommended: <span>Leptospirosis, Canine influenza virus & Bordetella
+                            bronchiseptica</span></p>
+                    <div>
+                        <br>
+                        {foreach name="function->getCatArticle('6')" item="art"}
+                        <p>{$art.title}</p>
+
+                        {/foreach}
+                    </div>
+                    <div style=" width:50%;margin-top: 15px; padding: 15px; border: 1px dashed #ddd; border-radius: 4px;">
+                        <input type="file" class="upload-file-input" data-field="vaccinationRecord" accept="image/*,.pdf" style="display: none;">
+                        <button type="button" class="upload-file-btn" style="padding: 8px 15px; background: #f5f5f5; border: 1px solid #ddd; border-radius: 4px; cursor: pointer;">Choose File</button>
+                        <div class="upload-file-preview" style="margin-top: 10px; display: none;">
+                            <div class="upload-file-item" style="display: inline-block; margin-right: 10px; margin-top: 10px; position: relative;">
+                                <img src="" class="upload-file-img" style="max-width: 100px; max-height: 100px; border: 1px solid #ddd; border-radius: 4px; display: none;">
+                                <a href="" target="_blank" class="upload-file-link" style="display: none; color: #333; text-decoration: none;">View File</a>
+                                <button type="button" class="upload-file-remove" style="position: absolute; top: -8px; right: -8px; background: #ff4444; color: white; border: none; border-radius: 50%; width: 20px; height: 20px; cursor: pointer; font-size: 12px; line-height: 1;">×</button>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+
+                <div class="formItem md12 xs12">
+                    <label class="label must">Sterilisation Status </label>
+                    <label class="input-radio-label"> <input type="radio" name="sterilisationStatus__PET_INDEX__" data-field="sterilisationStatus" value="Yes"
+                            class="input-radio radio-steril"> Yes</label>
+                    <label class="input-radio-label"> <input type="radio" name="sterilisationStatus__PET_INDEX__" data-field="sterilisationStatus" value="No"
+                            class="input-radio radio-steril"> No</label>
+                </div>
+                <div class="formItem md12 xs12">
+                    <label class="label must">Parasite Treatment Status (internal & External) </label>
+                    <label class="input-radio-label"> <input type="radio" name="parasiteStatus__PET_INDEX__" data-field="parasiteStatus" value="Yes"
+                            class="input-radio radio-parasite"> Yes</label>
+                    <label class="input-radio-label"> <input type="radio" name="parasiteStatus__PET_INDEX__" data-field="parasiteStatus" value="No"
+                            class="input-radio radio-parasite"> No</label>
+                </div>
+                <div class="formItem md12 xs12">
+                    <label class="label must">Any aggressive/anxious behaviors </label>
+                    <label class="input-radio-label"> <input type="radio" name="aggressiveBehavior__PET_INDEX__" data-field="aggressiveBehavior" value="Yes"
+                            class="input-radio radio-behavior"> Yes</label>
+                    <label class="input-radio-label"> <input type="radio" name="aggressiveBehavior__PET_INDEX__" data-field="aggressiveBehavior" value="No"
+                            class="input-radio radio-behavior"> No</label>
+                </div>
+            </div>
+        `;
+
+        function addPetGroup(isDefault = false) {
+            let template = petTemplate.replace(/__PET_INDEX__/g, petIndex);
+            const $newGroup = $(template);
+            $newGroup.data('index', petIndex);
+            
+            if (!isDefault) {
+                $newGroup.find('.delete-container').html('<button type="button" class="delete-pet" style="margin-top:10px;color:red;">Remove</button>');
+                $newGroup.find('.delete-pet').on('click', function () {
+                    $(this).closest('.pet-group').remove();
+                    $petCount.val($('.pet-group').length);
+                });
+                $petContainer.prepend($newGroup);
+            } else {
+                $newGroup.find('.delete-container').addClass('hide');
+                $petContainer.append($newGroup);
+            }
+            petIndex++;
+            $petCount.val($('.pet-group').length);
+
+            $newGroup.find('.date').each(function () {
+                laydate.render({
+                    elem: this,
+                    lang: 'en'
+                });
+            });
+
+            $newGroup.find('.upload-file-btn').on('click', function() {
+                $(this).siblings('.upload-file-input').click();
+            });
+
+            $newGroup.find('.upload-file-input').on('change', function() {
+                const $input = $(this);
+                const file = this.files[0];
+                if (!file) return;
+
+                const formData = new FormData();
+                formData.append('file', file);
+
+                const $preview = $input.siblings('.upload-file-preview');
+                const $item = $preview.find('.upload-file-item');
+                const $img = $item.find('.upload-file-img');
+                const $link = $item.find('.upload-file-link');
+                const $remove = $item.find('.upload-file-remove');
+
+                $input.prop('disabled', true);
+                $input.siblings('.upload-file-btn').text('Uploading...').prop('disabled', true);
+
+                axios.post('/api/upload_file', formData, {
+                    headers: {
+                        'Content-Type': 'multipart/form-data'
+                    }
+                }).then(function(response) {
+                    if (response.data.code === 1) {
+                        const fileUrl = response.data.data;
+                        const isImage = /\.(jpg|jpeg|png|gif|webp)$/i.test(fileUrl);
+                        
+                        $input.data('file-url', fileUrl);
+                        
+                        if (isImage) {
+                            $img.attr('src', fileUrl).show();
+                            $link.hide();
+                        } else {
+                            $img.hide();
+                            $link.attr('href', fileUrl).text('View File').show();
+                        }
+                        
+                        $preview.show();
+                        $input.siblings('.upload-file-btn').text('Choose File').prop('disabled', false);
+                    } else {
+                        layui.layer.msg(response.data.msg || 'Upload failed', {icon: 2, time: 3000});
+                        $input.siblings('.upload-file-btn').text('Choose File').prop('disabled', false);
+                    }
+                }).catch(function(error) {
+                    layui.layer.msg('Upload failed', {icon: 2, time: 3000});
+                    $input.siblings('.upload-file-btn').text('Choose File').prop('disabled', false);
+                }).finally(function() {
+                    $input.prop('disabled', false);
+                });
+            });
+
+            $newGroup.find('.upload-file-remove').on('click', function() {
+                const $item = $(this).closest('.upload-file-item');
+                const $input = $item.closest('.upload-file-preview').siblings('.upload-file-input');
+                $input.val('').data('file-url', '');
+                $item.closest('.upload-file-preview').hide();
+            });
+        }
+
+        $(document).ready(function () {
+            addPetGroup(true);
+            $addBtn.on('click', function () {
+                addPetGroup();
+            });
+        });
+    });
+
+</script>
+<script src="__ROOT__/public/home/js/axios.js"></script>
+<script src="__ROOT__/public/home/js/Develop.js"></script>
+{include file="common/footer" /}

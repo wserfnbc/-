@@ -1,0 +1,104 @@
+<style>
+    .layui-form.layui-card > .layui-card-body {
+        padding: 20px 40px !important;
+    }
+     .think-radio input[type=radio]{
+         display: none !important;
+     }
+</style>
+<form onsubmit="return false;" action="{:request()->url()}" data-auto="true" method="post" class='layui-form layui-card' autocomplete="off">
+
+    <div class="layui-card-body">
+
+        <div class="layui-row margin-bottom-15">
+            <label class="layui-col-xs2 think-form-label">券码</label>
+            <label class="layui-col-xs10">
+                <input name="code" required value='{$vo.code|default=""}' placeholder="请输入券码" class="layui-input">
+            </label>
+        </div>
+
+        <div class="layui-row margin-bottom-15">
+            <label class="layui-col-xs2 think-form-label">有效期</label>
+            <label class="layui-col-xs10">
+                <input name="end_date" required class="layui-input" id="end_date" placeholder="请设置有效期" value="{$vo.end_date|default=''}">
+            </label>
+        </div>
+
+        <div class="layui-row margin-bottom-15">
+            <label class="layui-col-xs2 think-form-label">券类型</label>
+            <div class="layui-col-xs6">
+                <label class="think-radio"><input type="radio" name="code_type" value="0" ignore title="满减券" {if (isset($vo.code_type) and $vo.code_type eq 0) || !isset($vo.code_type)}checked{/if}></label>
+                <label class="think-radio"><input type="radio" name="code_type" value="1" ignore title="折扣券" {if isset($vo.code_type) and $vo.code_type eq 1}checked{/if}> &nbsp;</label>
+            </div>
+        </div>
+
+        <div class="layui-row margin-bottom-15">
+            <label class="layui-col-xs2 think-form-label">满减量</label>
+            <label class="layui-col-xs10">
+                <input name="reduction" required value='{$vo.reduction|default=""}' placeholder="请输入满减限制,例：比如满1000才开始计算优惠或折扣，此处就填1000；0为不限制" class="layui-input">
+            </label>
+        </div>
+
+        <div class="layui-row margin-bottom-15 discount">
+            <label class="layui-col-xs2 think-form-label">优惠量</label>
+            <label class="layui-col-xs10">
+                <input name="discount" required value='{$vo.discount|default=""}' placeholder="请输入优惠量,例：满1000减100，此处就填100" class="layui-input">
+            </label>
+        </div>
+
+        <div class="layui-row margin-bottom-15 rate">
+            <label class="layui-col-xs2 think-form-label">折扣率</label>
+            <label class="layui-col-xs10">
+                <input name="rate" required value='{$vo.rate|default=""}' placeholder="请输入折扣率,例：满1000计算80%折扣即打八折，此处就填80" class="layui-input">
+            </label>
+        </div>
+
+    </div>
+
+    <div class="hr-line-dashed"></div>
+    <div class="layui-form-item text-center">
+        {notempty name='vo.id'}<input type='hidden' value='{$vo.id}' name='id'>{/notempty}
+        <button class="layui-btn" type='submit'>保存数据</button>
+        <button class="layui-btn layui-btn-danger" type='button' data-confirm="确定取消设置？" data-close>取消</button>
+    </div>
+</form>
+<script>
+    form.render();
+    layui.use('laydate', function(){
+        var laydate = layui.laydate;
+        //日期时间选择器
+        laydate.render({
+            elem: '#end_date'
+            ,type: 'date'
+        });
+    });
+
+    if($("input[name='code_type']:checked").val() == 1){
+        $(".rate").show();
+        $(".discount").hide();
+        $("input[name='discount']").attr("disabled", true);
+        $("input[name='rate']").attr("disabled", false);
+    }else{
+        $(".rate").hide();
+        $(".discount").show();
+        $("input[name='discount']").attr("disabled", false);
+        $("input[name='rate']").attr("disabled", true);
+    }
+
+    $("input[name='code_type']").click(function(){
+        var code_type = $(this).val();
+        if(code_type == 1){
+            $(".rate").show();
+            $(".discount").hide();
+            $("input[name='discount']").attr("disabled", true);
+            $("input[name='rate']").attr("disabled", false);
+        }else{
+            $(".rate").hide();
+            $(".discount").show();
+            $("input[name='discount']").attr("disabled", false);
+            $("input[name='rate']").attr("disabled", true);
+        }
+
+    })
+</script>
+

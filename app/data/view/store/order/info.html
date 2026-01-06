@@ -1,0 +1,161 @@
+<form onsubmit="return false;" class='layui-form layui-card padding-30'>
+    <fieldset>
+        <legend>订单信息</legend>
+
+        <div class="layui-col-xs3 relative">
+            <span class="color-green font-w7">订单号</span>
+            <label class="relative block margin-top-5">
+                {$info.order_no}
+            </label>
+
+        </div>
+
+        <div class="layui-col-xs3 relative">
+            <span class="color-green font-w7">订单金额</span>
+            <label class="relative block margin-top-5">
+                <strong class="color-blue">{$info.price_total}</strong> 元
+                已支付 <strong class="color-blue">{$info.pay_price+0}</strong> 元
+            </label>
+        </div>
+
+        <div class="layui-col-xs3 relative">
+            <span class="color-green font-w7">支付方式</span>
+            <label class="relative block margin-top-5">
+                {$info.pay_type}
+            </label>
+        </div>
+
+        <div class="layui-col-xs3 relative">
+            <span class="color-green font-w7">订单创建时间</span>
+            <label class="relative block margin-top-5">
+                {$info.create_at}
+            </label>
+        </div>
+
+    </fieldset>
+    <fieldset class="margin-top-20">
+        <legend>金额详情</legend>
+
+        <div class="layui-col-xs3 relative">
+            <span class="color-green font-w7">商品总价</span>
+            <label class="relative block margin-top-5">
+                <strong class="color-blue">{$info.price_goods}</strong>
+            </label>
+        </div>
+
+        <div class="layui-col-xs3 relative">
+            <span class="color-green font-w7">快递费用</span>
+            <label class="relative block margin-top-5">
+                <strong class="color-blue">{$info.price_express}</strong>
+            </label>
+        </div>
+
+        <div class="layui-col-xs3 relative">
+            <span class="color-green font-w7">订单总额</span>
+            <label class="relative block margin-top-5">
+                <strong class="color-blue">{$info.price_total}</strong> 元
+            </label>
+        </div>
+
+        <div class="layui-col-xs3 relative">
+            <span class="color-green font-w7">已支付金额</span>
+            <label class="relative block margin-top-5">
+                <strong class="color-red">{$info.pay_price+0}</strong> 元
+            </label>
+        </div>
+
+
+
+
+    </fieldset>
+    <fieldset class="margin-top-20">
+        <legend>收货信息</legend>
+
+        <div class="layui-col-xs4 relative">
+            <span class="color-green font-w7">收货人姓名</span>
+            <label class="relative block margin-top-5">
+                {$info.express_name}
+            </label>
+
+        </div>
+
+        <div class="layui-col-xs4 relative">
+            <span class="color-green font-w7">收货人手机</span>
+            <label class="relative block margin-top-5">
+                {$info.express_phone}
+            </label>
+        </div>
+
+        <div class="layui-col-xs4 relative">
+            <span class="color-green font-w7">省市区</span>
+            <label class="relative block margin-top-5">
+                {$info.express_province}{$info.express_city}{$info.express_area}
+            </label>
+        </div>
+
+        <div class="layui-col-xs12 relative margin-top-20">
+            <span class="color-green font-w7">详细地址</span>
+            <label class="relative block margin-top-5">
+                {$info.express_address}
+            </label>
+        </div>
+
+    </fieldset>
+    <fieldset class="margin-top-20">
+        <legend>订单备注</legend>
+        <div class="layui-col-xs12 relative">
+            <label class="relative block margin-top-5">
+                {$info.order_desc|raw}
+                {empty name="info.order_desc"}未填写{/empty}
+            </label>
+        </div>
+    </fieldset>
+
+    {if !empty($info.ID_card_front) || !empty($info.ID_card_back)}
+    <fieldset class="margin-top-20">
+        <legend>用户上传身份证</legend>
+        <div class="layui-col-xs12 relative">
+            {if !empty($info.ID_card_front)}
+            <label class="relative inline-block margin-top-5 margin-right-20">
+                正面：<br>
+                <a href="{$info.ID_card_front}" target="_blank"><img src="{$info.ID_card_front}" width="200px" height="150px"></a>
+            </label>
+            {/if}
+            {if !empty($info.ID_card_back)}
+            <label class="relative inline-block margin-top-5">
+                背面：<br>
+                <a href="{$info.ID_card_back}" target="_blank"><img src="{$info.ID_card_back}" width="200px" height="150px"></a>
+            </label>
+            {/if}
+        </div>
+    </fieldset>
+    {/if}
+
+    {foreach name="goodsList" item="goods"}
+    <div class="margin-top-20">
+
+
+            <div class="layui-form-item layui-layer-border padding-5">
+                <label class="layui-col-xs3  padding-left-10"><img src="{$goods.goods_logo}" style="width:100px;height:100px;"></label>
+                <div class="layui-col-xs8 layui-text padding-10">
+                    商品名称：{$goods.goods_title}<br>
+                    商品价格：¥{$goods.price_selling}<br>
+                    购买数量：{$goods.number_goods}<br>
+                    {$goods.spec_info}
+                </div>
+
+            </div>
+
+
+
+    </div>
+    {/foreach}
+
+
+
+    <div class="hr-line-dashed"></div>
+    <div class="layui-form-item text-center">
+        <button class="layui-btn layui-btn-danger" type='button' data-close>关闭</button>
+    </div>
+</form>
+

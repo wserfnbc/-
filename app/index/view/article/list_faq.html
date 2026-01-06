@@ -1,0 +1,42 @@
+{include file="common/header" /}
+<main class="Faq">
+{include file="common/top_banner" /}
+    <section>
+        <div class="layui-main FaqCard">
+           
+            <ul class="FaqList">
+            {foreach name="function->getCatArticle($catId)" item="atc"}
+                <li>
+                    <div class="title">
+                        <h5>{$atc.title|Raw|nl2br} </h5>
+                        <svg viewBox="0 0 24 24">
+                        <div class="img_box img" style="width:1.5em;  flex-shrink: 0;">
+                            <img src="/public/home/images/qas.png">
+                        </div>
+                    </div>
+                    <div class="con">
+                        {$atc.subtitle|Raw|nl2br}
+                    </div>
+                </li>
+            {/foreach}
+            </ul>
+            
+                   
+            
+           
+        </div>
+    </section>
+</main>
+
+<script src="__ROOT__/public/home/js/index.js"></script>
+<script>
+      $('.FaqList .title').on('click', function() {
+                const $currentLi = $(this).parent('li');
+                $currentLi.toggleClass('active');
+                	$(this).next().slideToggle('slow')
+
+                $('.FaqList li').not($currentLi).removeClass('active');
+            });
+</script>
+<!-- 中间区域结束 -->
+{include file="common/footer" /}

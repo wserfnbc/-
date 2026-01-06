@@ -1,0 +1,80 @@
+<style>
+    table th {
+        padding: 5px;
+        text-align: center;
+    }
+
+    table td {
+        padding: 5px;
+        text-align: center;
+    }
+
+    .pet-info-item {
+        margin: 10px 0;
+        padding: 10px;
+        border-left: 3px solid #009688;
+        background: #f5f5f5;
+    }
+
+    .pet-info-item strong {
+        display: block;
+        margin-bottom: 8px;
+        color: #333;
+    }
+
+    .pet-info-item .pet-field {
+        margin: 5px 0;
+        padding: 3px 0;
+    }
+
+    .pet-image {
+        max-width: 200px;
+        max-height: 200px;
+        margin-top: 5px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        padding: 5px;
+        background: #fff;
+    }
+</style>
+<form onsubmit="return false;" class='layui-form layui-card padding-30'>
+    {foreach $info as $key=>$vo}
+    <div class="layui-form-item">
+        <span class="color-green font-w7">{$key}</span>
+        <label class="relative block">
+            {if isset($vo['_is_pet_info']) && $vo['_is_pet_info']}
+            {php}$petIndex = 0;{/php}
+            {foreach $vo['_pet_data'] as $index => $pet}
+            {php}$petIndex++;{/php}
+            <div class="pet-info-item">
+                <strong>Pet {php}echo $petIndex;{/php}:</strong>
+                {foreach $pet as $field => $fieldData}
+                <div class="pet-field">
+                    <span style="color: #666;">{$fieldData.label}：</span>
+                    {if $field == 'vaccinationRecord' && isset($fieldData.isImage) && $fieldData.isImage}
+                    <div>
+                        <a href="{$fieldData.imageUrl}" target="_blank">
+                            <img src="{$fieldData.imageUrl}" class="pet-image" alt="Vaccination Record" />
+                        </a>
+                    </div>
+                    {else}
+                    <span>{$fieldData.value|default=''}</span>
+                    {/if}
+                </div>
+                {/foreach}
+            </div>
+            {/foreach}
+            {elseif is_array($vo)}
+            {php}echo implode('、', $vo);{/php}
+            {else}
+            {$vo|nl2br|raw}{empty name="vo"}未填写{/empty}
+            {/if}
+        </label>
+    </div>
+    {/foreach}
+
+    <div class="hr-line-dashed"></div>
+    <div class="layui-form-item text-center">
+        <button class="layui-btn layui-btn-danger" type='button' data-close>关闭</button>
+    </div>
+</form>

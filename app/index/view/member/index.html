@@ -1,0 +1,50 @@
+﻿{include file="common/header1" /}
+<div class="user w1200">
+    <p class="title">Personal center</p>
+    <div class="user_con flex">
+        <div class="user_nav">
+            <a href="/member" class="active">Personal information</a>
+            <a href="/index/Member/orders">Order list</a>
+            <a href="/index/Member/address">My address</a>
+            <a href="javascript:;" id="logOut">Log Out</a>
+        </div>
+        <div class="user_right">
+            <div class="user_right_box">
+                <form class="user_inf">
+                    <div class="user_inf_box">
+                        <div class="user_inf_group">
+                            <label for="first_name">First Name:</label>
+                            <input type="text" disabled name="first_name" id="first_name" value="{$userInfo.first_name|default=''}">
+                        </div>
+                        <div class="user_inf_group">
+                            <label for="last_name">Last Name:</label>
+                            <input type="text" disabled name="last_name" id="last_name" value="{$userInfo.last_name|default=''}">
+                        </div>
+                    </div>
+                    <div class="user_inf_box">
+                        <label for="base_birthday">Date Of Birth：</label>
+                        <input type="text" disabled name="base_birthday" id="base_birthday" value="{$userInfo.base_birthday|default=''}">
+                    </div>
+                    <div class="user_inf_box">
+                        <label for="email">Email-Address：</label>
+                        <input type="text" disabled name="email" id="email" value="{$userInfo.email|default=''}">
+                    </div>
+                    <div class="user_inf_box">
+                        <label for="phone">Telephone：</label>
+                        <input type="text" disabled name="phone" id="phone" value="{$userInfo.phone|default=''}">
+                    </div>
+                    <div class="user_inf_box">
+                        <label for="country">Country：</label>
+                        <input type="text" disabled name="country" id="country" value="{$userInfo.country|default=''}">
+                    </div>
+                    <div class="address_btn"><a class="anniu" href="/index/Member/profile">Modify information</a></div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+{include file="common/footer" /}
+
+

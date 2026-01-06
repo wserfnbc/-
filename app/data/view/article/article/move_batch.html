@@ -1,0 +1,96 @@
+<style>
+    .layui-form.layui-card > .layui-card-body {
+        padding: 20px 40px !important;
+    }
+    .layui-layer-page .layui-layer-content{
+        overflow: unset;
+    }
+    .layui-disabled, .layui-disabled:hover{
+        background: #b7b7b7!important;
+    }
+</style>
+<form onsubmit="return false;" action="{:request()->url()}" data-auto="true" method="post" class='layui-form layui-card' autocomplete="off">
+
+    <div class="layui-card-body">
+
+        <div class="layui-row margin-bottom-15">
+            <label class="layui-col-xs2 think-form-label">当前栏目</label>
+            <div class="layui-col-xs8">
+                <select class="layui-select" disabled>
+                    <option value="0">顶级分类</option>
+                    {foreach $parent_cat as $top_c}
+                    <option {if (isset($this_cat) and $this_cat eq $top_c.id)}selected{/if} {if isset($content_template_id) and $content_template_id neq $top_c.content_template_id}disabled{/if} value="{$top_c.id}">
+                    {$top_c.title|default=''}
+                    </option>
+                    {foreach $top_c.childList as $second_c}
+                    <option {if (isset($this_cat) and $this_cat eq $second_c.id)}selected{/if} {if isset($content_template_id) and $content_template_id neq $second_c.content_template_id}disabled{/if} value="{$second_c.id}">
+                    ┕━ {$second_c.title|default=''}
+                    </option>
+                    {foreach $second_c.childList as $third_c}
+                    <option {if (isset($this_cat) and $this_cat eq $third_c.id)}selected{/if} {if isset($content_template_id) and $content_template_id neq $third_c.content_template_id}disabled{/if} value="{$third_c.id}">
+                    &nbsp;└─ {$third_c.title|default=''}
+                    {foreach $third_c.childList as $fourth}
+                    <option {if (isset($this_cat) and $this_cat eq $fourth.id)}selected{/if} {if isset($content_template_id) and $content_template_id neq $fourth.content_template_id}disabled{/if} value="{$fourth.id}">
+                    &nbsp;└─ {$third_c.title|default=''}
+                    </option>
+                    {/foreach}
+                    </option>
+                    {/foreach}
+                    {/foreach}
+                    {/foreach}
+                </select>
+            </div>
+        </div>
+
+        <div class="layui-row margin-bottom-15">
+            <label class="layui-col-xs2 think-form-label">目标栏目</label>
+            <div class="layui-col-xs8">
+                <select required class="layui-select" name="move_id">
+                    {foreach $parent_cat as $top_c}
+                        <option {if (isset($this_cat) and $this_cat eq $top_c.id)}selected{/if}
+                            {if (isset($content_template_id) and $content_template_id neq $top_c.content_template_id) || count($top_c.childList)>0}disabled{/if}
+                            value="{$top_c.id}">
+                            {$top_c.title|default=''}
+                        </option>
+                        {foreach $top_c.childList as $second_c}
+                            <option {if (isset($this_cat) and $this_cat eq $second_c.id)}selected{/if}
+                            {if (isset($content_template_id) and $content_template_id neq $second_c.content_template_id) || count($second_c.childList)>0}disabled{/if}
+                            value="{$second_c.id}">
+                            ↪ {$second_c.title|default=''}
+                            </option>
+                            {foreach $second_c.childList as $third_c}
+                                <option {if (isset($this_cat) and $this_cat eq $third_c.id)}selected{/if} {if (isset($content_template_id) and $content_template_id neq $third_c.content_template_id) || count($third_c.childList)>0}disabled{/if} value="{$third_c.id}">
+                                    &nbsp;┕━ {$third_c.title|default=''}
+                                </option>
+                                {foreach $third_c.childList as $fourth}
+                                <option {if (isset($this_cat) and $this_cat eq $fourth.id)}selected{/if} {if isset($content_template_id) and $content_template_id neq $fourth.content_template_id}disabled{/if} value="{$fourth.id}">
+                                &nbsp;&nbsp;&nbsp;└─ {$fourth.title|default=''}
+                                </option>
+                                {/foreach}
+                            {/foreach}
+                        {/foreach}
+                    {/foreach}
+                </select>
+                <span class="color-red">注意：只允许同模型之间的内容进行移动，不可移入带有子栏目的父级栏目</span>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="hr-line-dashed"></div>
+    <div class="layui-form-item text-center">
+        {notempty name='ids'}<input type='hidden' value='{$ids}' name='id'>{/notempty}
+        {notempty name='content_template_id'}<input type='hidden' value='{$content_template_id}' name='content_template_id'>{/notempty}
+
+        <button class="layui-btn" type='submit'>保存数据</button>
+        <button class="layui-btn layui-btn-danger" type='button' data-confirm="确定取消设置？" data-close>取消</button>
+    </div>
+</form>
+<script>
+    form.render();
+
+    $("select[name='move_id']").click(function (){
+        console.log(111)
+    })
+</script>
+

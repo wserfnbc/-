@@ -1,0 +1,143 @@
+﻿{include file="common/header1" /}
+<div class="user w1200">
+    <p class="title">Personal center</p>
+    <div class="user_con flex">
+        <div class="user_nav">
+            <a href="/member">Personal information</a>
+            <a href="/index/Member/orders">Order list</a>
+            <a href="/index/Member/address" class="active">My address</a>
+            <a href="javascript:;" id="logOut">Log Out</a>
+        </div>
+        <div class="user_right">
+            <div class="user_right_box">
+                <form class="form" onsubmit="return false;" id="thisForm" method="post" enctype="multipart/form-data">
+                    <div class="user_inf_box">
+                        <input type="text" disabled value="Name">
+                        <input name="name" type="text" value="{$edit_address.name}" style="width: 100%;">
+                    </div>
+
+                    <div class="user_inf_box" id="province_span">
+                        <input type="text" disabled value="省">
+                        <select id="province" name="province">
+                            <option value="">请选择省份</option>
+                            {foreach name="province" item="pvc"}
+                            <option value="{$pvc.id}.{$pvc.name}" {if $edit_address.province == $pvc['id'].".".$pvc['name']}selected{/if}>{$pvc.name}</option>
+                            {/foreach}
+                        </select>
+                    </div>
+                    <div class="user_inf_box" id="city_span">
+                        <input type="text" disabled value="市">
+                        <select id="city" name="city">
+                            {if $edit_address.city}
+                            {foreach name="city" item="cty"}
+                            <option value="{$cty.id}.{$cty.name}" {if $edit_address.city == $cty['id'].".".$cty['name']}selected{/if}>{$cty.name}</option>
+                            {/foreach}
+                            {/if}
+                        </select>
+                    </div>
+                    <div class="user_inf_box" id="district_span">
+                        <input type="text" disabled value="区">
+                        <select id="district" name="area">
+                            {if $edit_address.area}
+                            {foreach name="district" item="area"}
+                            <option value="{$area.id}.{$area.name}" {if $edit_address.area == $area['id'].".".$area['name']}selected{/if}>{$area.name}</option>
+                            {/foreach}
+                            {/if}
+                        </select>
+                    </div>
+
+                    <div class="user_inf_box">
+                        <input type="text" disabled value="Address">
+                        <input type="text" name="address" value="{$edit_address.address}" style="width: 100%;">
+                    </div>
+
+                    <div class="user_inf_box">
+                        <input type="text" disabled value="Phone">
+                        <input name="phone" type="text" value="{$edit_address.phone}" style="width: 100%;">
+                    </div>
+                    <input type="checkbox" name="is_default" value="1" {if $edit_address.is_default == 1}checked{/if}>Set Default
+                    <input type="hidden" name="id" value="{$edit_address.id}">
+                    <button class="address_btn" id="submitEditAddress">Modify</button>
+                </form>
+
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    /* ★☆★☆★☆★☆★☆★☆★☆ 地区联动菜单 START ★☆★☆★☆★☆★☆★☆★☆ */
+    {if empty($edit_address.city)}$("#city_span").hide();{/if}
+    {if empty($edit_address.area)}$("#district_span").hide();{/if}
+
+    //初始化数据
+    var url = '/index/Member/region'; //后台地址
+
+    $("select[name='province']").change(function () { //监听下拉列表的change事件
+        var region_id = $(this).val(); //获取下拉列表选中的值
+        //发送一个post请求
+        $.ajax({
+            type: 'post',
+            url: url,
+            data: {key: region_id},
+            dataType: 'json',
+            success: function (data) { //请求成功回调函数
+                var m_status = data.status;
+                var datalist = data.data
+
+                if (m_status == 200) { //判断状态码，200为成功
+                    $("#city_span").show();
+                    $("#district_span").hide();
+                    var option = '';
+                    console.log(data)
+                    option = '<option value="">请选择城市</option>';
+                    for (var i = 0; i < datalist.length; i++) { //循环获取返回值，并组装成html代码
+                        option += '<option value="' + datalist[i].id + '.' + datalist[i].name + '">' + datalist[i].name + '</option>';
+                    }
+                    $("#city").html(option); //js刷新第二个下拉框的值
+                } else {
+                    $("#city_span").hide();
+                    $("#district_span").hide();
+                }
+            }, error: function (data) {
+
+            }
+        });
+    });
+
+    $("select[name='city']").change(function () { //监听下拉列表的change事件
+        var region_id = $(this).val(); //获取下拉列表选中的值
+        //发送一个post请求
+        $.ajax({
+            type: 'post',
+            url: url,
+            data: {key: region_id},
+            dataType: 'json',
+            success: function (data) { //请求成功回调函数
+                var m_status = data.status;
+                var datalist = data.data
+
+                if (m_status == 200) { //判断状态码，200为成功
+                    $("#district_span").show();
+                    var option = '';
+                    console.log(data)
+                    option = '<option value="">请选择县区</option>';
+                    for (var i = 0; i < datalist.length; i++) { //循环获取返回值，并组装成html代码
+                        option += '<option value="' + datalist[i].id + '.' + datalist[i].name + '">' + datalist[i].name + '</option>';
+                    }
+                    $("#district").html(option); //js刷新第二个下拉框的值
+                } else {
+                    $("#district_span").hide();
+                }
+            }, error: function (data) {
+
+            }
+        });
+    });
+    /* ★☆★☆★☆★☆★☆★☆★☆ 地区联动菜单 END ★☆★☆★☆★☆★☆★☆★☆ */
+
+</script>
+{include file="common/footer" /}
+
+

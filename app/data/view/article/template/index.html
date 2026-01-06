@@ -1,0 +1,84 @@
+{extend name="../../admin/view/main"}
+
+{block name="button"}
+{if auth("add")}
+<button data-modal='{:url("add")}?template_type={$template_type}' data-title="添加模型" class='layui-btn layui-btn-sm layui-btn-primary'>添加模型</button>
+{/if}
+{if auth("remove")}
+<button data-action='{:url("remove")}' data-rule="id#{key}" class='layui-btn layui-btn-sm layui-btn-primary'>删除模型</button>
+{/if}
+{/block}
+
+{block name="content"}
+<div class="think-box-shadow">
+    <table class="layui-table margin-top-10" lay-skin="line">
+        {notempty name='list'}
+        <thead>
+        <tr>
+            <th class='list-table-check-td think-checkbox'>
+                <input data-auto-none data-check-target='.list-check-box' type='checkbox'>
+            </th>
+            <th class='list-table-sort-td'>
+                <button type="button" data-reload class="layui-btn layui-btn-xs">排序</button>
+            </th>
+            <th class='text-left nowrap'>模型名称</th>
+            <th class="text-center">模型文件</th>
+            {if $template_type neq 0}
+                <th class="text-center">数据表</th>
+            {/if}
+            <th class="text-center">状态</th>
+            <th></th>
+        </tr>
+        </thead>
+        {/notempty}
+        <tbody>
+        {foreach $list as $key=>$vo}
+            <tr>
+                <td class='list-table-check-td think-checkbox'>
+                    <input class="list-check-box" value='{$vo.id}' type='checkbox'>
+                </td>
+                <td class='list-table-sort-td'>
+                    <input data-action-blur="{:request()->url()}" data-value="id#{$vo.id};action#sort;sort#{value}" data-loading="false" value="{$vo.sort}" class="list-sort-input">
+                </td>
+                <td class='text-left nowrap'>
+                    <b>{$vo.template_name|default=''}</b>
+                </td>
+
+                <td class='text-center nowrap'>
+                    {$vo.file_name|raw}
+                </td>
+
+                {if $template_type neq 0}
+                <td class='text-center nowrap'>
+                    {$vo.table_name}
+                </td>
+                {/if}
+
+                <td class='text-center nowrap'>
+                    {if $vo.status eq 1 and auth("forbid")}
+                    <a class="layui-btn layui-btn-sm" data-action="{:url('forbid')}" data-value="id#{$vo.id};status#0">正常</a>
+                    {elseif auth("resume")}
+                    <a class="layui-btn layui-btn-sm layui-btn-danger" data-action="{:url('resume')}" data-value="id#{$vo.id};status#1">停用</a>
+                    {/if}
+                </td>
+
+                <td class='text-right nowrap'>
+                    {if $vo.template_type neq 0}
+                    <a data-title="字段管理" class="layui-btn layui-btn-sm layui-btn-normal" data-open='{:url("data/article.field/index")}?id={$vo.id}'>字段管理</a>
+                    {/if}
+
+                    {if auth("edit")}
+                    <a data-title="修改模型" class="layui-btn  layui-btn-sm layui-btn-warm" data-modal='{:url("edit")}?id={$vo.id}&template_type={$template_type}'>修改</a>
+                    {/if}
+                    {if auth("remove")}
+                    <a class="layui-btn layui-btn-sm layui-btn-danger" data-confirm="确定删除吗?" data-action="{:url('remove')}" data-value="id#{$vo.id}">删除</a>
+                    {/if}
+
+                </td>
+            </tr>
+        {/foreach}
+        </tbody>
+    </table>
+    {empty name='list'}<span class="notdata">No record</span>{else}{$pagehtml|raw|default=''}{/empty}
+</div>
+{/block}

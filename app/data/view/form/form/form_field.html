@@ -1,0 +1,59 @@
+{include file='form/form/form_style'}
+<form onsubmit="return false;" action="{:request()->url()}" data-auto="true" method="post" class='layui-form layui-card' autocomplete="off">
+
+    <div class="layui-card-body padding-left-40">
+        <div class="layui-form-item margin-bottom-15">
+            <label class="layui-col-xs2 think-form-label">参数名称</label>
+            <label class="layui-col-xs10">
+                <input name="form_name" required value='{$vo.form_name|default=""}' placeholder="请输入参数名称" class="layui-input">
+            </label>
+        </div>
+
+        <div class="layui-form-item margin-bottom-15">
+            <label class="layui-col-xs2 think-form-label">参数别名</label>
+            <label class="layui-col-xs10">
+                <input name="form_label" required value='{$vo.form_label|default=""}' placeholder="请输入参数别名" class="layui-input">
+            </label>
+        </div>
+
+        <div class="layui-form-item margin-bottom-15">
+            <label class="layui-col-xs2 think-form-label">参数类型</label>
+            <div class="layui-col-xs10">
+                <div class="think-radio">
+                    <input type="radio" name="type" value="1" title="下拉选项" {if (isset($vo.type) and $vo.type eq 1) || !isset($vo.type)}checked{/if}>
+                    <input type="radio" name="type" value="2" title="文本" {if isset($vo.type) and $vo.type eq 2}checked{/if}>
+                    <input type="radio" name="type" value="3" title="多行文本" {if isset($vo.type) and $vo.type eq 3}checked{/if}>
+                    <input type="radio" name="type" value="4" title="多选项" {if isset($vo.type) and $vo.type eq 4}checked{/if}>
+                    <input type="radio" name="type" value="5" title="上传文件" {if isset($vo.type) and $vo.type eq 5}checked{/if}>
+                </div>
+            </div>
+        </div>
+
+        <div class="layui-form-item margin-bottom-15">
+            <label class="layui-col-xs2 think-form-label">参数值</label>
+            <label class="layui-col-xs10">
+                <input name="form_value" value='{$vo.form_value|default=""}' placeholder="请输入参数值" class="layui-input">
+                如果参数类型是下拉单选，请在此填写各选值并用 | 号隔开。如果是文本或多行文本则填写提示信息。
+            </label>
+        </div>
+
+        <div class="layui-form-item margin-bottom-15">
+            <label class="layui-col-xs2 think-form-label">是否必填</label>
+            <div class="layui-col-xs10">
+                <div class="think-radio">
+                    <input type="radio" name="is_required" value="1" title="是" {if (isset($vo.is_required) and $vo.is_required eq 1) || !isset($vo.is_required)}checked{/if}>
+                    <input type="radio" name="is_required" value="0" title="否" {if isset($vo.is_required) and $vo.is_required eq 0}checked{/if}>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="hr-line-dashed"></div>
+    <div class="layui-form-item text-center">
+        {notempty name='vo.id'}<input type='hidden' value='{$vo.id}' name='id'>{/notempty}
+        <input type='hidden' value='{$formId}' name='form_id'>
+        <button class="layui-btn" type='submit'>保存数据</button>
+        <button class="layui-btn layui-btn-danger" type='button' data-confirm="确定取消编辑吗？" data-close>取消编辑</button>
+    </div>
+</form>
+

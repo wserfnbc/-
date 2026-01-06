@@ -1,0 +1,88 @@
+{extend name="../../admin/view/main"}
+
+{block name="button"}
+{if auth("add")}
+<button data-open='{:url("add")}?template_id={$template_id}' data-title="添加字段" class='layui-btn layui-btn-sm layui-btn-primary'>添加字段</button>
+{/if}
+{if auth("remove")}
+<button data-action='{:url("remove")}' data-rule="id#{key};template_id#{$template_id}" class='layui-btn layui-btn-sm layui-btn-primary'>删除字段</button>
+{/if}
+{/block}
+
+{block name="content"}
+<style>
+    .layui-table td, .layui-table th {
+        padding: 7px 15px !important;
+    }
+</style>
+<div class="think-box-shadow">
+    <table class="layui-table margin-top-10" lay-skin="line">
+        {notempty name='list'}
+        <thead>
+        <tr>
+            <th class='list-table-check-td think-checkbox'>
+                <input data-auto-none data-check-target='.list-check-box' type='checkbox'>
+            </th>
+            <th class='list-table-sort-td'>
+                <button type="button" data-reload class="layui-btn layui-btn-xs">排序</button>
+            </th>
+            <th class='text-left nowrap'>名称</th>
+            <th class='text-left nowrap'>别名</th>
+            <th class='text-left nowrap'>类型</th>
+            <th class="text-center">状态</th>
+
+            <th></th>
+        </tr>
+        </thead>
+        {/notempty}
+        <tbody>
+        {foreach $list as $key=>$vo}
+            <tr>
+                <td class='list-table-check-td think-checkbox'>
+                    {if $vo.is_sys == 0}<input class="list-check-box" value='{$vo.id}' type='checkbox'>{/if}
+                </td>
+                <td class='list-table-sort-td'>
+                    {if $vo.is_sys == 0}<input data-action-blur="{:request()->url()}" data-value="id#{$vo.id};action#sort;sort#{value}" data-loading="false" value="{$vo.sort}" class="list-sort-input">{/if}
+                </td>
+                <td class='text-left nowrap'>
+                    <b>{$vo.field_name|default=''}</b>
+                </td>
+
+                <td class='text-left nowrap'>
+                    <b>{$vo.field_other_name|default=''}</b>
+                </td>
+
+                <td class='text-left nowrap'>
+                    <b>{$vo.filed_type|default=''}</b>
+                </td>
+
+                <td class='text-center nowrap'>
+                    {if $vo.is_sys == 0}
+                        {if $vo.status eq 1 and auth("forbid")}
+                        <a class="layui-btn layui-btn-sm" data-action="{:url('forbid')}" data-value="id#{$vo.id};status#0">正常</a>
+                        {elseif auth("resume")}
+                        <a class="layui-btn layui-btn-sm layui-btn-danger" data-action="{:url('resume')}" data-value="id#{$vo.id};status#1">停用</a>
+                        {/if}
+                    {/if}
+                </td>
+
+                <td class='text-left nowrap'>
+                    {if $vo.is_sys == 0}
+                        {if auth("edit")}
+                        <a data-title="修改" class="layui-btn  layui-btn-sm layui-btn-warm" data-open='{:url("edit")}?id={$vo.id}&template_id={$template_id}'>修改</a>
+                        {/if}
+
+                        {if auth("remove")}
+                        <a class="layui-btn layui-btn-sm layui-btn-danger" data-confirm="确定删除吗?" data-action="{:url('remove')}" data-value="id#{$vo.id};template_id#{$template_id}">删除</a>
+                        {/if}
+                    {/if}
+                </td>
+            </tr>
+
+
+        {/foreach}
+        </tbody>
+    </table>
+    {empty name='list'}<span class="notdata">No record</span>{else}{$pagehtml|raw|default=''}{/empty}
+</div>
+{/block}

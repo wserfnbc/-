@@ -1,0 +1,92 @@
+{extend name="../../admin/view/main"}
+
+{block name="content"}
+
+{include file='poster/poster//form_style'}
+
+<form onsubmit="return false;" id=ArticleForm" data-auto="true" method="post" class='layui-form layui-card' autocomplete="off">
+
+    <div class="layui-card-body think-box-shadow padding-left-40">
+
+        <div class="layui-form-item layui-row layui-col-space15">
+            <label class="layui-col-xs3 relative">
+                <span class="color-green">广告位</span>
+                <select required class="layui-select" name="position_id">
+                    {foreach $position as $cate}
+                    {if (isset($vo.position_id) and $vo.position_id eq $cate.id) || (isset($position_id) && $cate.id eq $position_id)}
+                    <option selected value="{$cate.id}">{$cate.id|default=''} - {$cate.title|default=''}</option>
+                    {else}
+                    <option value="{$cate.id}">{$cate.id|default=''} - {$cate.title|default=''}</option>
+                    {/if}
+                    {/foreach}
+                </select>
+            </label>
+            <label class="layui-col-xs9 relative">
+                <span class="color-green">广告文字</span>
+                <input name="title" required class="layui-input" placeholder="请输入广告文字" value="{$vo.title|default=''}">
+            </label>
+        </div>
+
+        <div class="layui-form-item layui-row layui-col-space15">
+            <label class="layui-col-xs9 relative">
+                <span class="color-green">广告描述</span>
+                <textarea class="layui-textarea" name="ad_text">{$vo.ad_text|default=''}</textarea>
+            </label>
+        </div>
+
+        <div class="layui-form-item">
+            <span class="color-green">广告图片</span>
+            <table class="layui-table layui-col-xs6">
+                <thead>
+                <tr>
+                    <th class="text-center" style="width:90px;">上传图片</th>
+                </tr>
+                <tr>
+                    <td class="text-center"><input name="ad_img" type="hidden" value="{$vo.ad_img|default=''}"></td>
+                </tr>
+                </thead>
+            </table>
+            <script>$('[name="ad_img"]').uploadOneImage()</script>
+        </div>
+
+        <div class="layui-row margin-bottom-15">
+            <label class="color-green block">广告视频</label>
+            <label class="layui-col-xs7 think-form-group-left">
+                <input name="ad_file" value='{$vo.ad_file|default=""}' placeholder="请上传视频文件(mp4格式)" class="layui-input">
+            </label>
+            <a class="layui-col-xs2 layui-btn think-form-group-right" data-file="btn" data-field="ad_file" data-type="mp4">
+                <i class="layui-icon layui-icon-upload"></i> 上传
+            </a>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-col-xs9 relative">
+                <span class="color-green">跳转链接</span>
+                <input name="url" class="layui-input" placeholder="请输入跳转链接" value="{$vo.url|default=''}">
+            </label>
+        </div>
+
+        <div class="layui-form-item text-center">
+            {notempty name='vo.id'}<input type="hidden" name="id" value="{$vo.id}">{/notempty}
+            <button class="layui-btn layui-btn-danger" id="hsitoryBack" ng-click="hsitoryBack()" type="button">取消</button>
+            <button class="layui-btn" type="submit">保存</button>
+        </div>
+
+    </div>
+</form>
+{/block}
+
+{block name='script'}
+<script>
+    window.form.render();
+    require(['ckeditor', 'angular'], function () {
+        window.createEditor('[name="content"]', {height: 500});
+
+        $("#hsitoryBack").click(function () {
+            $.msg.confirm('确定取消修改吗？', function (index) {
+                history.back(), $.msg.close(index);
+            });
+        })
+    })
+</script>
+{/block}

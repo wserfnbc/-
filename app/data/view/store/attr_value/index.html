@@ -1,0 +1,73 @@
+{extend name="../../admin/view/main"}
+
+{block name="button"}
+{if auth("add")}
+<button data-modal='{:url("add")}?attr_id={$attr_id}' data-title="添加属性" class='layui-btn layui-btn-sm layui-btn-primary'>添加属性</button>
+{/if}
+{if auth("remove")}
+<button data-action='{:url("remove")}' data-rule="id#{key}" class='layui-btn layui-btn-sm layui-btn-primary'>删除属性</button>
+{/if}
+{/block}
+
+{block name="content"}
+<div class="think-box-shadow">
+    <div class="layui-card-header layui-anim layui-anim-fadein notselect">
+        <div class="pull-right"><a data-dbclick class="layui-btn layui-btn-sm layui-btn-primary" data-open='{:url("Attr/index")}'>返回属性分类</a></div>
+    </div>
+    {include file='store/attr_value/index_search'}
+
+    <table class="layui-table margin-top-10" lay-skin="line">
+        {notempty name='list'}
+        <thead>
+        <tr>
+            <th class='list-table-check-td think-checkbox'>
+                <input data-auto-none data-check-target='.list-check-box' type='checkbox'>
+            </th>
+            <th class='list-table-sort-td'>
+                <button type="button" data-reload class="layui-btn layui-btn-xs">刷 新</button>
+            </th>
+            <th class='text-left nowrap'>属性名称</th>
+            <th class='text-left nowrap'>属性类型</th>
+            <th class="text-center">状态</th>
+            <th></th>
+        </tr>
+        </thead>
+        {/notempty}
+        <tbody>
+        {foreach $list as $key=>$vo}
+        <tr>
+            <td class='list-table-check-td think-checkbox'>
+                <input class="list-check-box" value='{$vo.id}' type='checkbox'>
+            </td>
+            <td class='list-table-sort-td'>
+                <input data-action-blur="{:request()->url()}" data-value="id#{$vo.id};action#sort;sort#{value}" data-loading="false" value="{$vo.sort}" class="list-sort-input">
+            </td>
+            <td class='text-left nowrap'>
+                {$vo.attr_value_name|default=''}
+            </td>
+            <td class='text-left nowrap'>
+                {$vo.attr_value_type|default=''}
+            </td>
+            <td class='text-center nowrap'>
+                {if $vo.status eq 1 and auth("forbid")}
+                <a class="layui-btn layui-btn-sm" data-action="{:url('forbid')}" data-value="id#{$vo.id};status#0">正常</a>
+                {elseif auth("resume")}
+                <a class="layui-btn layui-btn-sm layui-btn-danger" data-action="{:url('resume')}" data-value="id#{$vo.id};status#1">禁用</a>
+                {/if}
+            </td>
+            <td class='text-left nowrap'>
+                {if auth("edit")}
+                <a data-title="编辑属性" class="layui-btn  layui-btn-sm layui-btn-warm" data-modal='{:url("edit")}?id={$vo.id}'>编 辑</a>
+                {/if}
+                {if auth("remove")}
+                <a class="layui-btn layui-btn-sm layui-btn-danger" data-confirm="确定要删除数据吗?" data-action="{:url('remove')}" data-value="id#{$vo.id}">删 除</a>
+                {/if}
+
+            </td>
+        </tr>
+        {/foreach}
+        </tbody>
+    </table>
+    {empty name='list'}<span class="notdata">没有记录哦</span>{else}{$pagehtml|raw|default=''}{/empty}
+</div>
+{/block}

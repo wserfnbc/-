@@ -1,0 +1,62 @@
+{extend name="../../admin/view/main"}
+
+{block name="content"}
+<style>
+    .layui-form.layui-card > .layui-card-body {
+        padding: 20px 40px !important;
+    }
+     .think-radio input[type=radio]{
+         display: none !important;
+     }
+</style>
+<form onsubmit="return false;" action="{:request()->url()}" data-auto="true" method="post" class='layui-form layui-card' autocomplete="off">
+
+    <div class="layui-card-body">
+
+        <div class="layui-row margin-bottom-15">
+            <label class="layui-col-xs2 think-form-label">阿里云帐号ID</label>
+            <label class="layui-col-xs10">
+                <input name="access_key_id" required value='{$vo.access_key_id|default=""}' placeholder="请输入阿里云帐号ID" class="layui-input">
+            </label>
+        </div>
+
+        <div class="layui-row margin-bottom-15">
+            <label class="layui-col-xs2 think-form-label">密钥</label>
+            <label class="layui-col-xs10">
+                <input name="access_key_Secret" required value='{$vo.access_key_Secret|default=""}' placeholder="请输入密钥" class="layui-input">
+            </label>
+        </div>
+
+        <div class="layui-row margin-bottom-15">
+            <label class="layui-col-xs2 think-form-label">短信签名</label>
+            <label class="layui-col-xs10">
+                <input name="sign_name" required value='{$vo.sign_name|default=""}' placeholder="请输入短信签名" class="layui-input">
+            </label>
+        </div>
+
+        <div class="layui-row margin-bottom-15">
+            <label class="layui-col-xs2 think-form-label">短信模板</label>
+            <label class="layui-col-xs10">
+                <input name="template_code" required value='{$vo.template_code|default=""}' placeholder="请输入短信模板" class="layui-input">
+            </label>
+        </div>
+
+    </div>
+
+    <div class="hr-line-dashed"></div>
+    <div class="layui-card-body text-center">
+        {notempty name='vo.id'}<input type='hidden' value='{$vo.id}' name='id'>{/notempty}
+        <button class="layui-btn" type='submit'>保存数据</button>
+        <button class="layui-btn layui-btn-danger" type='button' data-confirm="确定取消设置？" data-close>取消</button>
+    </div>
+</form>
+
+{/block}
+
+{block name='script'}
+<script>
+    form.render();
+</script>
+{/block}
+
+

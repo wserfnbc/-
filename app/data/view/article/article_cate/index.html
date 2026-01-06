@@ -1,0 +1,337 @@
+{extend name="../../admin/view/main"}
+
+{block name="button"}
+{if auth("add_batch")}
+<button data-modal='{:url("add_batch")}' data-title="批量添加分类" class='layui-btn layui-btn-sm layui-btn-primary'>批量添加分类</button>
+{/if}
+{if auth("add")}
+<button data-modal='{:url("add")}' data-title="添加分类" class='layui-btn layui-btn-sm layui-btn-primary'>添加分类</button>
+{/if}
+{if auth("remove")}
+<button data-action='{:url("remove")}' data-rule="id#{key}" class='layui-btn layui-btn-sm layui-btn-primary'>删除分类</button>
+{/if}
+{/block}
+
+{block name="content"}
+<style>
+    .layui-table td, .layui-table th {
+        padding: 5px 15px !important;
+    }
+</style>
+<div class="think-box-shadow">
+
+    <table class="layui-table margin-top-10" lay-skin="line">
+        {notempty name='list'}
+        <thead>
+        <tr>
+            <th class='list-table-check-td think-checkbox'>
+                <input data-auto-none data-check-target='.list-check-box' type='checkbox'>
+            </th>
+            <th class='list-table-sort-td'>
+                <button type="button" data-reload class="layui-btn layui-btn-xs">排序</button>
+            </th>
+            <th class='text-center'>ID</th>
+            <th class='text-left nowrap'>栏目名称</th>
+            <th class="text-center">栏目模型</th>
+            <th class="text-center">内容模型</th>
+            <th class="text-center">导航显示</th>
+            <th class="text-center">是否推荐</th>
+            <th class="text-center">状态</th>
+
+            <th></th>
+        </tr>
+        </thead>
+        {/notempty}
+        <tbody>
+        {foreach $list as $keyTop=>$vo}
+            <tr>
+                <td class='list-table-check-td think-checkbox'>
+                    <input class="list-check-box" value='{$vo.id}' type='checkbox'>
+                </td>
+                <td class='list-table-sort-td'>
+                    <input data-action-blur="{:request()->url()}" data-value="id#{$vo.id};action#sort;sort#{value}" data-loading="false" value="{$vo.sort}" class="list-sort-input">
+                </td>
+                <td class='text-center nowrap'>
+                    {$vo.id}
+                </td>
+                <td class='text-left nowrap'>
+                    <a data-tips-image="{$vo.logo|default=''}" class="fa fa-image font-s14 margin-right-5"></a>
+                    {if $vo.is_page == 1}
+                            <!-- 单页跳转 -->
+                        <a href="/index/article/list/id/{$vo.id}" target="_blank"><b>{$vo.title|default=''}</b></a>
+                    {else}
+                        {if $vo.childCount > 0}
+                        <a href="/index/article/list/id/{$vo.id}" target="_blank"><b>{$vo.title|default=''}</b></a>
+                        {else}
+                        <a href="/index/article/list/id/{$vo.id}" target="_blank"><b>{$vo.title|default=''}</b></a>
+                        {/if}
+                    {/if}
+                </td>
+
+                <td class='text-center nowrap'>
+                    {$vo.template_name}
+                </td>
+
+                <td class='text-center nowrap'>
+                    {if $vo.content_file_name && $vo.is_page == 0}{$vo.content_template_name}{/if}
+                </td>
+
+                <td class='text-center nowrap'>
+                {if $vo.is_nav eq 1 and auth("is_nav")}
+                    <a class="layui-btn layui-btn-sm" data-action="{:url('is_nav')}" data-value="id#{$vo.id};is_nav#0">是</a>
+                {elseif auth("is_nav")}
+                    <a class="layui-btn layui-btn-sm layui-btn-danger" data-action="{:url('is_nav')}" data-value="id#{$vo.id};is_nav#1">否</a>
+                {/if}
+                </td>
+
+                <td class='text-center nowrap'>
+
+                </td>
+
+                <td class='text-center nowrap'>
+                    {if $vo.status eq 1 and auth("forbid")}
+                    <a class="layui-btn layui-btn-sm" data-action="{:url('forbid')}" data-value="id#{$vo.id};status#0">正常</a>
+                    {elseif auth("resume")}
+                    <a class="layui-btn layui-btn-sm layui-btn-danger" data-action="{:url('resume')}" data-value="id#{$vo.id};status#1">停用</a>
+                    {/if}
+                </td>
+
+                <td class='text-right nowrap'>
+                    {if auth("add")}
+                    <button data-modal='{:url("add")}?set_parent_id={$vo.id}' data-title="添加分类" class='layui-btn layui-btn-sm layui-btn-primary'>添加分类</button>
+                    {/if}
+
+                    {if auth("edit")}
+                    <a data-title="修改分类" class="layui-btn  layui-btn-sm layui-btn-warm" data-modal='{:url("edit")}?id={$vo.id}'>修改</a>
+                    {/if}
+                    {if auth("remove")}
+                    <a class="layui-btn layui-btn-sm layui-btn-danger" data-confirm="确定删除吗?" data-action="{:url('remove')}" data-value="id#{$vo.id}">删除</a>
+                    {/if}
+
+                </td>
+            </tr>
+            {foreach $vo.childList as $key=>$vc}
+            <tr>
+                <td class='list-table-check-td think-checkbox'>
+                    <input class="list-check-box" value='{$vc.id}' type='checkbox'>
+                </td>
+                <td class='list-table-sort-td'>
+                    <input data-action-blur="{:request()->url()}" data-value="id#{$vc.id};action#sort;sort#{value}" data-loading="false" value="{$vc.sort}" class="list-sort-input">
+                </td>
+                <td class='text-center nowrap'>
+                    {$vc.id}
+                </td>
+                <td class='text-left nowrap'>
+                    <a data-tips-image="{$vc.logo|default=''}" class="fa fa-image font-s14 margin-right-5"></a>
+
+                    {if $vc.is_page == 1}
+                        <!-- 单页跳转 -->
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        <a href="/index/article/list/id/{$vc.id}" target="_blank"><b>↪ {$vc.title|default=''}</b></a>
+                    {else}
+                        {if $vc.childCount > 0}
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="/index/article/list/id/{$vc.id}" target="_blank"><b>↪ {$vc.title|default=''}</b></a>
+                        {else}
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        <a href="/index/article/list/id/{$vc.id}" target="_blank"><b>↪ {$vc.title|default=''}</b></a>
+                        {/if}
+                    {/if}
+                </td>
+
+                <td class='text-center nowrap'>
+                    {$vc.template_name}
+                </td>
+
+                <td class='text-center nowrap'>
+                    {if $vc.content_file_name && $vc.is_page == 0}{$vc.content_template_name}{/if}
+                </td>
+
+                <td class='text-center nowrap'>
+                {if $vc.is_nav eq 1 and auth("is_nav")}
+                    <a class="layui-btn layui-btn-sm" data-action="{:url('is_nav')}" data-value="id#{$vc.id};is_nav#0">是</a>
+                {elseif auth("is_nav")}
+                    <a class="layui-btn layui-btn-sm layui-btn-danger" data-action="{:url('is_nav')}" data-value="id#{$vc.id};is_nav#1">否</a>
+                {/if}
+                </td>
+
+                <td class='text-center nowrap'>
+                    {if $vc.is_best eq 1 and auth("is_best")}
+                    <a class="layui-btn layui-btn-sm" data-action="{:url('is_best')}" data-value="id#{$vc.id};is_best#0">是</a>
+                    {elseif auth("is_best")}
+                    <a class="layui-btn layui-btn-sm layui-btn-danger" data-action="{:url('is_best')}" data-value="id#{$vc.id};is_best#1">否</a>
+                    {/if}
+                </td>
+
+                <td class='text-center nowrap'>
+                    {if $vc.status eq 1 and auth("forbid")}
+                    <a class="layui-btn layui-btn-sm" data-action="{:url('forbid')}" data-value="id#{$vc.id};status#0">正常</a>
+                    {elseif auth("resume")}
+                    <a class="layui-btn layui-btn-sm layui-btn-danger" data-action="{:url('resume')}" data-value="id#{$vc.id};status#1">停用</a>
+                    {/if}
+                </td>
+
+                <td class='text-right nowrap'>
+                    {if auth("add")}
+                        <button data-modal='{:url("add")}?set_parent_id={$vc.id}' data-title="添加分类" class='layui-btn layui-btn-sm layui-btn-primary'>添加分类</button>
+                    {/if}
+
+                    {if auth("edit")}
+                    <a data-title="修改分类" class="layui-btn  layui-btn-sm layui-btn-warm" data-modal='{:url("edit")}?id={$vc.id}'>修改</a>
+                    {/if}
+
+                    {if auth("remove")}
+                    <a class="layui-btn layui-btn-sm layui-btn-danger" data-confirm="确定删除吗?" data-action="{:url('remove')}" data-value="id#{$vc.id}">删除</a>
+                    {/if}
+
+                </td>
+            </tr>
+
+                {foreach $vc.childList as $k=>$v}
+                <tr>
+                    <td class='list-table-check-td think-checkbox'>
+                        <input class="list-check-box" value='{$v.id}' type='checkbox'>
+                    </td>
+                    <td class='list-table-sort-td'>
+                        <input data-action-blur="{:request()->url()}" data-value="id#{$v.id};action#sort;sort#{value}" data-loading="false" value="{$v.sort}" class="list-sort-input">
+                    </td>
+                    <td class='text-center nowrap'>
+                        {$v.id}
+                    </td>
+                    <td class='text-left nowrap'>
+                        <a data-tips-image="{$v.logo|default=''}" class="fa fa-image font-s14 margin-right-5"></a>
+
+                    {if $v.is_page == 1}
+                        <!-- 单页跳转 -->
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        <a href="/index/article/list/id/{$v.id}" target="_blank"><b>┕━ {$v.title|default=''}</b></a>
+                    {else}
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        <a href="/index/article/list/id/{$v.id}" target="_blank"><b>┕━ {$v.title|default=''}</b></a>
+                    {/if}
+                    </td>
+
+                    <td class='text-center nowrap'>
+                        {$v.template_name}
+                    </td>
+
+                    <td class='text-center nowrap'>
+                        {if $v.content_file_name && $v.is_page == 0}{$v.content_template_name}{/if}
+                    </td>
+
+                    <td class='text-center nowrap'>
+                    {if $v.is_nav eq 1 and auth("is_nav")}
+                        <a class="layui-btn layui-btn-sm" data-action="{:url('is_nav')}" data-value="id#{$v.id};is_nav#0">是</a>
+                    {elseif auth("is_nav")}
+                        <a class="layui-btn layui-btn-sm layui-btn-danger" data-action="{:url('is_nav')}" data-value="id#{$v.id};is_nav#1">否</a>
+                    {/if}
+                    </td>
+
+                    <td class='text-center nowrap'>
+                        {if $v.is_best eq 1 and auth("is_best")}
+                        <a class="layui-btn layui-btn-sm" data-action="{:url('is_best')}" data-value="id#{$v.id};is_best#0">是</a>
+                        {elseif auth("is_best")}
+                        <a class="layui-btn layui-btn-sm layui-btn-danger" data-action="{:url('is_best')}" data-value="id#{$v.id};is_best#1">否</a>
+                        {/if}
+                    </td>
+
+                    <td class='text-center nowrap'>
+                    {if $v.status eq 1 and auth("forbid")}
+                        <a class="layui-btn layui-btn-sm" data-action="{:url('forbid')}" data-value="id#{$v.id};status#0">正常</a>
+                    {elseif auth("resume")}
+                        <a class="layui-btn layui-btn-sm layui-btn-danger" data-action="{:url('resume')}" data-value="id#{$v.id};status#1">停用</a>
+                    {/if}
+                    </td>
+
+                    <td class='text-right nowrap'>
+                    {if auth("add")}
+                    <button data-modal='{:url("add")}?set_parent_id={$v.id}' data-title="添加分类" class='layui-btn layui-btn-sm layui-btn-primary'>添加分类</button>
+                    {/if}
+
+                    {if auth("edit")}
+                        <a data-title="修改分类" class="layui-btn  layui-btn-sm layui-btn-warm" data-modal='{:url("edit")}?id={$v.id}'>修改</a>
+                    {/if}
+                    {if auth("remove")}
+                        <a class="layui-btn layui-btn-sm layui-btn-danger" data-confirm="确定删除吗?" data-action="{:url('remove')}" data-value="id#{$v.id}">删除</a>
+                    {/if}
+
+                    </td>
+                </tr>
+                    {foreach $v.childList as $k4=>$v4}
+                    <tr>
+                        <td class='list-table-check-td think-checkbox'>
+                            <input class="list-check-box" value='{$v4.id}' type='checkbox'>
+                        </td>
+                        <td class='list-table-sort-td'>
+                            <input data-action-blur="{:request()->url()}" data-value="id#{$v4.id};action#sort;sort#{value}" data-loading="false" value="{$v4.sort}" class="list-sort-input">
+                        </td>
+                        <td class='text-center nowrap'>
+                            {$v4.id}
+                        </td>
+                        <td class='text-left nowrap'>
+                            <a data-tips-image="{$v4.logo|default=''}" class="fa fa-image font-s14 margin-right-5"></a>
+
+                            {if $v4.is_page == 1}
+                            <!-- 单页跳转 -->
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                            <a href="/index/article/list/id/{$v4.id}" target="_blank"><b>└─ {$v4.title|default=''}</b></a>
+                            {else}
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                            <a href="/index/article/list/id/{$v4.id}" target="_blank"><b>└─ {$v4.title|default=''}</b></a>
+                            {/if}
+                        </td>
+
+                        <td class='text-center nowrap'>
+                            {$v4.template_name}
+                        </td>
+
+                        <td class='text-center nowrap'>
+                            {if $v4.content_file_name && $v4.is_page == 0}{$v4.content_template_name}{/if}
+                        </td>
+
+                        <td class='text-center nowrap'>
+                            {if $v4.is_nav eq 1 and auth("is_nav")}
+                            <a class="layui-btn layui-btn-sm" data-action="{:url('is_nav')}" data-value="id#{$v4.id};is_nav#0">是</a>
+                            {elseif auth("is_nav")}
+                            <a class="layui-btn layui-btn-sm layui-btn-danger" data-action="{:url('is_nav')}" data-value="id#{$v4.id};is_nav#1">否</a>
+                            {/if}
+                        </td>
+
+                        <td class='text-center nowrap'>
+                            {if $v4.is_best eq 1 and auth("is_best")}
+                            <a class="layui-btn layui-btn-sm" data-action="{:url('is_best')}" data-value="id#{$v4.id};is_best#0">是</a>
+                            {elseif auth("is_best")}
+                            <a class="layui-btn layui-btn-sm layui-btn-danger" data-action="{:url('is_best')}" data-value="id#{$v4.id};is_best#1">否</a>
+                            {/if}
+                        </td>
+
+                        <td class='text-center nowrap'>
+                            {if $v4.status eq 1 and auth("forbid")}
+                            <a class="layui-btn layui-btn-sm" data-action="{:url('forbid')}" data-value="id#{$v4.id};status#0">正常</a>
+                            {elseif auth("resume")}
+                            <a class="layui-btn layui-btn-sm layui-btn-danger" data-action="{:url('resume')}" data-value="id#{$v4.id};status#1">停用</a>
+                            {/if}
+                        </td>
+
+                        <td class='text-right nowrap'>
+
+                            {if auth("edit")}
+                            <a data-title="修改分类" class="layui-btn  layui-btn-sm layui-btn-warm" data-modal='{:url("edit")}?id={$v4.id}'>修改</a>
+                            {/if}
+                            {if auth("remove")}
+                            <a class="layui-btn layui-btn-sm layui-btn-danger" data-confirm="确定删除吗?" data-action="{:url('remove')}" data-value="id#{$v4.id}">删除</a>
+                            {/if}
+
+                        </td>
+                    </tr>
+                    {/foreach}
+
+                {/foreach}
+
+            {/foreach}
+
+        {/foreach}
+        </tbody>
+    </table>
+    {empty name='list'}<span class="notdata">No record</span>{else}{$pagehtml|raw|default=''}{/empty}
+</div>
+{/block}

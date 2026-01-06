@@ -1,0 +1,100 @@
+﻿{include file="common/header" /}
+<!-- 中间区域 -->
+<style>
+	.detailsMain {
+		section {
+			padding: var(--p30) 0 var(--p80);
+		}
+
+
+		h3 {
+			font-size: var(--ft24);
+			margin-bottom: vaR(--p30);
+			text-align: center;
+		}
+
+		.time {
+			text-align: center;
+			color: #666;
+		}
+
+		.con {
+			margin: var(--p20) 0;
+			min-height: 20vh;
+		}
+
+		.foot {
+			.d-grid;
+
+			a {
+				.line-clamp1;
+
+				&:hover {
+					color: vaR(--ftc);
+				}
+			}
+
+			gap: var(--p10);
+		}
+	}
+</style>
+<main>
+	<style>
+		.NavTop {
+			background: #F9F9F9;
+			border-radius: 0px 0px 0px 0px;
+			border: 1px solid #E2E2E2;
+			padding: var(--p20);
+			background: #F9F9F9;
+			border: 1px solid #E2E2E2;
+			color: #9499A5;
+
+			a:hover {
+				.ftc;
+			}
+
+			span {
+				margin: 0 0.1em;
+			}
+		}
+	</style>
+	<div class="NavTop">
+		<div class="layui-main">
+			<a href="/">
+				<i class="layui-icon layui-icon-home"></i>
+				<span>{$function->getCatInfo('1')['title']}</span>
+			</a>
+			<span>/</span>
+			<a href="/site-List-{$catTreeList.topCate.id}.html">{$catTreeList.topCate.title}</a>
+			<span>/</span>
+			<a class="ftc">{$article.title}</a>
+		</div>
+
+	</div>
+	<section class="detailsMain">
+		<div class="layui-main">
+
+			<h3>{$article.title}</h3>
+			<div class="time">
+
+				<span><?=date("Y-m-d h:i",strtotime($article['create_at']))?></span>
+			</div>
+
+			<div class="s_content con">
+				{$article.content|raw|nl2br}
+			</div>
+			<div class="foot">
+				{if $prev}<div class=""><a href="/index/Article/show/id/{$prev.id}/cat_id/{$prev.cat_id}">上一篇：
+						{$prev.title}</a></div>{/if} <!-- 当前内容的上一篇 -->
+				{if $next}<div class=""><a href="/index/Article/show/id/{$next.id}/cat_id/{$next.cat_id}">下一篇：
+						{$next.title}</a></div>{/if} <!-- 当前内容的下一篇 -->
+
+			</div>
+		</div>
+	</section>
+</main>
+
+<script src="__ROOT__/public/home/js/index.js"></script>
+
+<!-- 中间区域结束 -->
+{include file="common/footer" /}

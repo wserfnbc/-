@@ -1,0 +1,35 @@
+﻿{include file="common/header" /}
+{include file="common/top_banner" /}
+{php}
+$commonArticles = $GLOBALS['function']->getCatArticleAllPage($catId, $catInfo['page_num']);
+{/php}
+<main class="">
+	<section>
+	 
+	 <div class="layui-main">
+			<ul class="">
+				{foreach name="commonArticles['list']" item="atc" key="n"}
+				<a class="item" href="/index/Article/show/cat_id/{$atc.cat_id}/id/{$atc.id}">
+					<div class="img_100 img">
+						<img src="{$atc.logo}">
+					</div>
+					<div class="con">
+						<h5>{$atc.title}|raw|nl2br</h5>
+						<div class="sub">{$atc.subtitle|raw|nl2br}</div>
+						<div class="date">
+							<p><?=date("Y-m-d",strtotime($atc['create_at']))?></p>
+							<p>了解详情</p>
+						</div>
+					</div>
+				</a>
+				{/foreach}
+			</ul>
+			<div class="pagenum">{$commonArticles['page']|raw}</div>
+		</div>
+	 
+	</section>
+</main>
+
+<script src="__ROOT__/public/home/js/index.js"></script>
+
+{include file="common/footer" /}

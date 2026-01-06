@@ -1,0 +1,42 @@
+<form onsubmit="return false;" class='layui-form layui-card padding-30'>
+    <div class="layui-form-item">
+        <label class="layui-col-xs3 relative">
+            <span class="color-green font-w7">收件人</span>
+            <label class="relative block">
+                {$info.nickname|default='--'}[{$info.username|default='--'}]
+            </label>
+        </label>
+
+        <label class="layui-col-xs8 relative">
+            <span class="color-green font-w7">发件时间</span>
+            <label class="relative block">
+                {$info.create_at|format_datetime}
+            </label>
+        </label>
+
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-col-xs12 relative">
+            <span class="color-green font-w7">消息标题</span>
+            <label class="relative block">
+                {$info.title|default='--'}
+            </label>
+        </label>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-col-xs12 relative">
+            <span class="color-green font-w7">消息内容</span>
+            <label class="relative block">
+                {$info.content|raw|nl2br|default='--'}
+            </label>
+        </label>
+    </div>
+
+    <div class="hr-line-dashed"></div>
+    <div class="layui-form-item text-center">
+        <button class="layui-btn layui-btn-danger" type='button' data-close>关闭</button>
+    </div>
+</form>
+

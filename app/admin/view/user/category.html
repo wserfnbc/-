@@ -1,0 +1,173 @@
+<style>
+    .layui-table td, .layui-table th {
+        padding: 5px 15px !important;
+    }
+
+     .layui-form-checkbox{
+         display: none !important;
+     }
+>
+</style>
+<form class="layui-form layui-card" data-table-id="UserTable" action="{:sysuri()}" data-auto="true" method="post">
+    <table class="layui-table margin-top-10" lay-skin="line">
+        {notempty name='list'}
+        <thead>
+        <tr>
+            <th class='list-table-check-td think-checkbox'>
+                <input data-auto-none data-check-target='.list-check-box' type='checkbox'>
+            </th>
+            <th class='text-center'>ID</th>
+            <th class='text-left nowrap'>栏目名称</th>
+            <th class="text-center">栏目模型</th>
+            <th class="text-center">内容模型</th>
+
+            <th></th>
+        </tr>
+        </thead>
+        {/notempty}
+        <tbody>
+        {foreach $list as $keyTop=>$vo}
+        <tr>
+            <td class='list-table-check-td think-checkbox'>
+                <input class="list-check-box" name="cat_id[]" value='{$vo.id}' type='checkbox' {if in_array($vo.id, $category_ids)}checked{/if}>
+            </td>
+            <td class='text-center nowrap'>
+                {$vo.id}
+            </td>
+            <td class='text-left nowrap'>
+                <a data-tips-image="{$vo.logo|default=''}" class="fa fa-image font-s14 margin-right-5"></a>
+                {if $vo.is_page == 1}
+                <!-- 单页跳转 -->
+                <b>{$vo.title|default=''}</b>
+                {else}
+                {if $vo.childCount > 0}
+                <b>{$vo.title|default=''}</b>
+                {else}
+                <b>{$vo.title|default=''}</b>
+                {/if}
+                {/if}
+            </td>
+
+            <td class='text-center nowrap'>
+                {$vo.template_name}
+            </td>
+
+            <td class='text-center nowrap'>
+                {if $vo.content_file_name && $vo.is_page == 0}{$vo.content_template_name}{/if}
+            </td>
+
+
+        </tr>
+        {foreach $vo.childList as $key=>$vc}
+        <tr>
+            <td class='list-table-check-td think-checkbox'>
+                <input class="list-check-box" name="cat_id[]" value='{$vc.id}' type='checkbox' {if in_array($vc.id, $category_ids)}checked{/if}>
+            </td>
+            <td class='text-center nowrap'>
+                {$vc.id}
+            </td>
+            <td class='text-left nowrap'>
+                <a data-tips-image="{$vc.logo|default=''}" class="fa fa-image font-s14 margin-right-5"></a>
+
+                {if $vc.is_page == 1}
+                <!-- 单页跳转 -->
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                <b>↪ {$vc.title|default=''}</b>
+                {else}
+                {if $vc.childCount > 0}
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>↪ {$vc.title|default=''}</b>
+                {else}
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                <b>↪ {$vc.title|default=''}</b>
+                {/if}
+                {/if}
+            </td>
+
+            <td class='text-center nowrap'>
+                {$vc.template_name}
+            </td>
+
+            <td class='text-center nowrap'>
+                {if $vc.content_file_name && $vc.is_page == 0}{$vc.content_template_name}{/if}
+            </td>
+
+
+        </tr>
+
+        {foreach $vc.childList as $k=>$v}
+        <tr>
+            <td class='list-table-check-td think-checkbox'>
+                <input class="list-check-box" name="cat_id[]" value='{$v.id}' type='checkbox' {if in_array($v.id, $category_ids)}checked{/if}>
+            </td>
+            <td class='text-center nowrap'>
+                {$v.id}
+            </td>
+            <td class='text-left nowrap'>
+                <a data-tips-image="{$v.logo|default=''}" class="fa fa-image font-s14 margin-right-5"></a>
+
+                {if $v.is_page == 1}
+                <!-- 单页跳转 -->
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                <b>┕━ {$v.title|default=''}</b>
+                {else}
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                <b>┕━ {$v.title|default=''}</b>
+                {/if}
+            </td>
+
+            <td class='text-center nowrap'>
+                {$v.template_name}
+            </td>
+
+            <td class='text-center nowrap'>
+                {if $v.content_file_name && $v.is_page == 0}{$v.content_template_name}{/if}
+            </td>
+
+        </tr>
+
+        {foreach $v.childList as $k4=>$v4}
+        <tr>
+            <td class='list-table-check-td think-checkbox'>
+                <input class="list-check-box" name="cat_id[]" value='{$v4.id}' type='checkbox' {if in_array($v4.id, $category_ids)}checked{/if}>
+            </td>
+            <td class='text-center nowrap'>
+                {$v4.id}
+            </td>
+            <td class='text-left nowrap'>
+                <a data-tips-image="{$v4.logo|default=''}" class="fa fa-image font-s14 margin-right-5"></a>
+
+                {if $v4.is_page == 1}
+                <!-- 单页跳转 -->
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                <b>└─ {$v4.title|default=''}</b>
+                {else}
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                <b>└─ {$v4.title|default=''}</b>
+                {/if}
+            </td>
+
+            <td class='text-center nowrap'>
+                {$v4.template_name}
+            </td>
+
+            <td class='text-center nowrap'>
+                {if $v4.content_file_name && $v4.is_page == 0}{$v4.content_template_name}{/if}
+            </td>
+        </tr>
+        {/foreach}
+
+        {/foreach}
+
+        {/foreach}
+
+        {/foreach}
+        </tbody>
+    </table>
+    {empty name='list'}<span class="notdata">No record</span>{else}{$pagehtml|raw|default=''}{/empty}
+
+    <div class="layui-form-item text-center">
+        <input type='hidden' value='{$uid}' name='uid'>
+        <button class="layui-btn" type='submit'>保存数据</button>
+        <button class="layui-btn layui-btn-danger" type='button' data-confirm="确定要取消编辑吗？" data-close>取消编辑</button>
+    </div>
+</form>

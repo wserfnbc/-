@@ -1,0 +1,151 @@
+{extend name="../../admin/view/main"}
+
+{block name="button"}
+{if auth("add")}
+<button data-modal='{:url("add")}' data-title="新建导航" class='layui-btn layui-btn-sm layui-btn-primary'>新建导航</button>
+{/if}
+{if auth("remove")}
+<button data-action='{:url("remove")}' data-rule="id#{key}" class='layui-btn layui-btn-sm layui-btn-primary'>删除导航</button>
+{/if}
+{/block}
+
+{block name="content"}
+<div class="think-box-shadow">
+
+    <table class="layui-table margin-top-10" lay-skin="line">
+        {notempty name='list'}
+        <thead>
+        <tr>
+            <th class='list-table-check-td think-checkbox'>
+                <input data-auto-none data-check-target='.list-check-box' type='checkbox'>
+            </th>
+            <th class='list-table-sort-td'>
+                <button type="button" data-reload class="layui-btn layui-btn-xs">排序</button>
+            </th>
+            <th class='text-center nowrap'>ID</th>
+            <th class='text-left nowrap'>导航名称</th>
+            <th class='text-left nowrap'>导航位置</th>
+            <th class="text-center">导航链接</th>
+            <th class="text-center">状态</th>
+            <th></th>
+        </tr>
+        </thead>
+        {/notempty}
+        <tbody>
+        {foreach $list as $key=>$vo}
+        <tr>
+            <td class='list-table-check-td think-checkbox'>
+                <input class="list-check-box" value='{$vo.id}' type='checkbox'>
+            </td>
+            <td class='list-table-sort-td'>
+                <input data-action-blur="{:request()->url()}" data-value="id#{$vo.id};action#sort;sort#{value}" data-loading="false" value="{$vo.sort}" class="list-sort-input">
+            </td>
+            <td class='text-center nowrap'>
+                {$vo.id}
+            </td>
+            <td class='text-left nowrap'>
+                <a data-tips-image="{$vo.icon|default=''}" class="fa fa-image font-s14 margin-right-5"></a>
+                <a href="{$vo.url}" target="_blank">{$vo.title|default=''}</a>
+            </td>
+            <td class='text-left nowrap'>
+                {$vo.type}
+            </td>
+            <td class='text-left nowrap'>
+                {$vo.url|default=''}
+            </td>
+            <td class='text-center nowrap'>
+                {if $vo.status eq 1 and auth("store/nav/forbid")}
+                <a class="layui-btn layui-btn-sm" data-action="{:url('forbid')}" data-value="id#{$vo.id};status#0">正常</a>
+                {elseif auth("resume")}
+                <a class="layui-btn layui-btn-sm layui-btn-danger" data-action="{:url('resume')}" data-value="id#{$vo.id};status#1">停用</a>
+                {/if}
+            </td>
+            <td class='text-left nowrap'>
+                {if auth("edit")}
+                <a data-title="修改" class="layui-btn  layui-btn-sm layui-btn-warm" data-modal='{:url("edit")}?id={$vo.id}'>修改</a>
+                {/if}
+                {if auth("remove")}
+                <a class="layui-btn layui-btn-sm layui-btn-danger" data-confirm="确定要删除该导航吗?" data-action="{:url('remove')}" data-value="id#{$vo.id}">删除</a>
+                {/if}
+
+            </td>
+        </tr>
+            {foreach $vo.child_cate_2 as $key2=>$vo2}
+            <tr>
+                <td class='list-table-check-td think-checkbox'>
+                    <input class="list-check-box" value='{$vo2.id}' type='checkbox'>
+                </td>
+                <td class='list-table-sort-td'>
+                    <input data-action-blur="{:request()->url()}" data-value="id#{$vo2.id};action#sort;sort#{value}" data-loading="false" value="{$vo2.sort}" class="list-sort-input">
+                </td>
+                <td class='text-left nowrap'>
+                    <a data-tips-image="{$vo2.icon|default=''}" class="fa fa-image font-s14 margin-right-5"></a>
+                    &nbsp;&nbsp;&nbsp;&nbsp;{if $vo2 === end($vo.child_cate_2)} ╚ {else} ╠ {/if} <a href="{$vo2.url}" target="_blank">{$vo2.title|default=''}</a>
+                </td>
+                <td class='text-left nowrap'>
+                    {$vo2.type}
+                </td>
+                <td class='text-left nowrap'>
+                    {$vo2.url|default=''}
+                </td>
+                <td class='text-center nowrap'>
+                    {if $vo2.status eq 1 and auth("forbid")}
+                    <a class="layui-btn layui-btn-sm" data-action="{:url('forbid')}" data-value="id#{$vo2.id};status#0">正常</a>
+                    {elseif auth("resume")}
+                    <a class="layui-btn layui-btn-sm layui-btn-danger" data-action="{:url('resume')}" data-value="id#{$vo2.id};status#1">停用</a>
+                    {/if}
+                </td>
+                <td class='text-left nowrap'>
+                    {if auth("edit")}
+                    <a data-title="修改" class="layui-btn  layui-btn-sm layui-btn-warm" data-modal='{:url("edit")}?id={$vo2.id}'>修改</a>
+                    {/if}
+                    {if auth("remove")}
+                    <a class="layui-btn layui-btn-sm layui-btn-danger" data-confirm="确定要删除该导航吗?" data-action="{:url('remove')}" data-value="id#{$vo2.id}">删除</a>
+                    {/if}
+                </td>
+            </tr>
+
+                {foreach $vo2.child_cate_3 as $key3=>$vo3}
+                <tr>
+                    <td class='list-table-check-td think-checkbox'>
+                        <input class="list-check-box" value='{$vo3.id}' type='checkbox'>
+                    </td>
+                    <td class='list-table-sort-td'>
+                        <input data-action-blur="{:request()->url()}" data-value="id#{$vo3.id};action#sort;sort#{value}" data-loading="false" value="{$vo3.sort}" class="list-sort-input">
+                    </td>
+                    <td class='text-left nowrap'>
+                        <a data-tips-image="{$vo3.icon|default=''}" class="fa fa-image font-s14 margin-right-5"></a>
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{if $vo3 === end($vo2.child_cate_3)} └ {else} ├ {/if} <a href="{$vo3.url}" target="_blank">{$vo3.title|default=''}</a>
+                    </td>
+                    <td class='text-left nowrap'>
+                        {$vo3.type}
+                    </td>
+                    <td class='text-left nowrap'>
+                        {$vo3.url|default=''}
+                    </td>
+                    <td class='text-center nowrap'>
+                        {if $vo3.status eq 1 and auth("forbid")}
+                        <a class="layui-btn layui-btn-sm" data-action="{:url('forbid')}" data-value="id#{$vo3.id};status#0">正常</a>
+                        {elseif auth("resume")}
+                        <a class="layui-btn layui-btn-sm layui-btn-danger" data-action="{:url('resume')}" data-value="id#{$vo3.id};status#1">停用</a>
+                        {/if}
+                    </td>
+                    <td class='text-left nowrap'>
+                        {if auth("edit")}
+                        <a data-title="修改" class="layui-btn  layui-btn-sm layui-btn-warm" data-modal='{:url("edit")}?id={$vo3.id}'>修改</a>
+                        {/if}
+                        {if auth("remove")}
+                        <a class="layui-btn layui-btn-sm layui-btn-danger" data-confirm="确定要删除该导航吗?" data-action="{:url('remove')}" data-value="id#{$vo3.id}">删除</a>
+                        {/if}
+                    </td>
+                </tr>
+                {/foreach}
+            {/foreach}
+
+        {/foreach}
+
+        </tbody>
+    </table>
+    {empty name='list'}<span class="notdata">No record</span>{else}{$pagehtml|raw|default=''}{/empty}
+</div>
+{/block}

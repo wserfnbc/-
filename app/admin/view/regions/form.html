@@ -1,0 +1,69 @@
+<style>
+    .layui-form.layui-card > .layui-card-body {
+        padding: 20px 40px !important;
+    }
+     .think-radio input[type=radio]{
+         display: none !important;
+     }
+</style>
+<form onsubmit="return false;" action="{:request()->url()}" data-auto="true" method="post" class='layui-form layui-card' autocomplete="off">
+
+    <div class="layui-card-body">
+
+        <div class="layui-row margin-bottom-15">
+            <label class="layui-col-xs2 think-form-label">地区名称</label>
+            <label class="layui-col-xs10">
+                <input name="region_name" required value='{$vo.region_name|default=""}' placeholder="请输入地区名称" class="layui-input">
+            </label>
+        </div>
+
+
+    </div>
+
+    <div class="hr-line-dashed"></div>
+    <div class="layui-form-item text-center">
+        {notempty name='vo.id'}<input type='hidden' value='{$vo.id}' name='id'>{/notempty}
+        <input type='hidden' value='{$vo.parent_id|default=$parent_id}' name='parent_id'>
+        <input type='hidden' value='{$vo.region_type|default=$region_type}' name='region_type'>
+        <button class="layui-btn" type='submit'>保存数据</button>
+        <button class="layui-btn layui-btn-danger" type='button' data-confirm="确定取消设置？" data-close>取消</button>
+    </div>
+</form>
+<script>
+    form.render();
+    $("input[name='is_page']").click(function(){
+        var is_page = $(this).val();
+        if(is_page == 1){
+            var type = 2;
+            $("select[name='content_template_id']").attr("disabled", true);
+        }else{
+            var type = 0
+            $("select[name='content_template_id']").attr("disabled", false);
+        }
+        $.ajax({
+            type:'post',
+            url:"/data/article.ArticleCate/get_template",
+
+            data: {type:type},  //获得单页模板列表
+            success:function(data){
+                $("select[name='template_id'] option").remove();
+
+                //循环加入下拉框
+                $.each($.parseJSON(data),function(index,t){
+                    $("select[name='template_id']").append("<option value='"+ t.id +"'>"+ t.template_name +" ["+ t.file_name +"]</option>");
+                });
+                form.render();
+
+            },error:function(){
+                layer.msg("获取失败，请稍后再试！", {
+                    icon: 5,
+                    time: 2000 //2秒关闭（如果不配置，默认是3秒）
+                }, function () {
+                    return false
+                });
+            }
+        })
+
+    })
+</script>
+

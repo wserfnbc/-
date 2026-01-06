@@ -1,0 +1,51 @@
+{extend name="../../admin/view/main"}
+
+{block name="content"}
+
+<form class="layui-tab layui-tab-brief" lay-filter="docDemoTabBrief" onsubmit="return false;" id=ArticleForm" data-auto="true" method="post" enctype="multipart/form-data" autocomplete="off">
+
+    <div class='layui-tab-content'>
+        <div class="layui-tab-item layui-show">
+            <div class='layui-form layui-card'>
+                <div class="layui-form-item layui-row layui-col-space15">
+
+                    <label class="layui-col-xs9 relative">
+                        <span class="color-green block">名称</span>
+                        {if $is_add == 1}
+                            <input name="name" required class="layui-input" placeholder="请输入语言名称" value="{$name|default=''}">
+                        {else}
+                            {$name|default=''}
+                            <input name="name" type="hidden" value="{$name|default=''}">
+                        {/if}
+                    </label>
+                </div>
+
+                <div class="layui-form-item layui-row layui-col-space15">
+                    <label class="layui-col-xs12 relative">
+                        <span class="color-green">文件内容</span>
+                        <textarea name="file_content" class="layui-textarea layui-border-blue color-green" style="height:60vh;">{$file_content|default=''}</textarea>
+                    </label>
+                </div>
+            </div>
+
+            <div class='layui-card'>
+                <div class="layui-form-item text-center block">
+                    {notempty name='vo.id'}<input type="hidden" name="id" value="{$vo.id}">{/notempty}
+                    <button class="layui-btn layui-btn-danger" data-history-back data-confirm="确定要取消编辑吗？" type='button'>取消编辑</button>
+                    <button class="layui-btn" type="submit">保存数据</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+</form>
+{/block}
+
+{block name='script'}
+
+<script>
+    window.form.render();
+
+</script>
+{/block}

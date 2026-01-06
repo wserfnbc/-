@@ -1,0 +1,38 @@
+# 运行时文件（服务器会自动生成）
+runtime/
+.env
+
+# Composer 依赖（可以通过 composer install 恢复）
+vendor/
+
+# 大型静态资源（建议单独存储）
+public/uploads/
+public/storage/
+
+# 用户上传的图片和视频
+public/**/*.jpg
+public/**/*.jpeg
+public/**/*.png
+public/**/*.gif
+public/**/*.mp4
+public/**/*.avi
+public/**/*.mov
+
+# 临时文件
+*.log
+*.cache
+.DS_Store
+Thumbs.db
+
+# IDE 配置
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# 备份文件
+*.bak
+*.zip
+*.tar
+*.tar.gz
+*.sql

@@ -1,0 +1,58 @@
+<form onsubmit="return false;" class='layui-form layui-card padding-30'>
+    <div class="layui-form-item">
+        <label class="layui-col-xs3 relative">
+            <span class="color-green font-w7">姓名</span>
+            <label class="relative block">
+                {$info.realname}{empty name="info.realname"}未填写{/empty}
+            </label>
+        </label>
+
+        <label class="layui-col-xs8 relative">
+            <span class="color-green font-w7">身份证号</span>
+            <label class="relative block">
+                {$info.idcard_no}{empty name="info.idcard_no"}未填写{/empty}
+            </label>
+        </label>
+
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-col-xs6 relative">
+            <span class="color-green font-w7">身份证正面</span>
+            <label class="relative block">
+            {empty name="info.idcard_front"}
+                未上传
+            {else}
+                <a href="{$info.idcard_front}" target="_blank" class="block">下载查看</a>
+                <img src="{$info.idcard_front}" class="layui-col-xs11 relative">
+            {/empty}
+            </label>
+        </label>
+
+        <label class="layui-col-xs6 relative">
+            <span class="color-green font-w7">身份证反面</span>
+            <label class="relative block">
+            {empty name="info.idcard_back"}
+                未上传
+            {else}
+                <a href="{$info.idcard_back}" target="_blank" class="block">下载查看</a>
+                <img src="{$info.idcard_back}" class="layui-col-xs11 relative">
+            {/empty}
+
+            </label>
+        </label>
+
+    </div>
+
+
+    <div class="hr-line-dashed"></div>
+    <div class="layui-form-item text-center">
+        {if isset($info.auth_type) and $info.auth_type eq 0}
+            <button class="layui-btn" data-action="{:url('auth_type')}" data-confirm="确认该会员为认证通过？" data-value="id#{$info.id};auth_type#1">通过认证</button>
+            <!-- <button class="layui-btn layui-btn-warm" data-action="{:url('auth_type')}" data-confirm="拒绝该会员认证？" data-value="id#{$info.id};auth_type#0">认证拒绝</button> -->
+        {/if}
+
+        <button class="layui-btn layui-btn-danger" type='button' data-close>关闭</button>
+    </div>
+</form>
+

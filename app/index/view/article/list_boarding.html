@@ -1,0 +1,186 @@
+{include file="common/header" /}
+
+<main class="Boarding"  style="background-image: url({$catInfo.logo})">
+    {include file="common/top_banner" /}
+
+    {foreach name="function->getCatChildList($catId)" item="cat"}
+      {if $cat.id == 19}
+    <section class="BoardingRoom"  style="background-image: url({$cat.logo_s})">
+        <div class="layui-main">
+                <div class="titleCom">
+                <h1>{$cat.title}</h1>
+            </div>
+          
+          <div class="box">
+              
+			{foreach name="function->getCatArticle($cat.id)" item="atc"}
+			<?php $imgs = explode("|", $atc['imgs']);  ?>
+			<div class="Item">
+                	<div class="swiper ">
+                		<div class="swiper-wrapper">
+                		    
+                         {foreach name="$imgs" item="val"}
+                			<div class="swiper-slide img_100">
+                			    <img src="{$val}">
+                			</div>
+                            {/foreach}
+                		</div>
+                		<div class="button-prev img_box">
+                		    <img src="/public/home/images/left.png">
+                		</div>
+                		<div class="button-next img_box">
+                		    <img src="/public/home/images/right.png"></div>
+                	</div>
+			      <div class="con">
+                     <h5>{$atc.title|raw|nl2br}</h5>
+                     <div class="sub">{$atc.subtitle|raw|nl2br}</div>
+                    
+                </div>
+			</div>
+			{/foreach}
+            </div>
+              
+          </div>
+            
+                <div class="footCom">
+                    <a class="btn" {if $cat.force_link}href="{$cat.force_link}"{/if} target="_blank">
+                         {if $cat.force_link}
+                        <svg class="highlight" viewBox="0 0 144.75738 77.18431" preserveAspectRatio="none">
+                            <g transform="translate(-171.52826,-126.11624)">
+                                <g fill="none" stroke-width="17" stroke-linecap="round" stroke-miterlimit="10">
+                                    <path
+                                        d="M180.02826,169.45123c0,0 12.65228,-25.55115 24.2441,-25.66863c6.39271,-0.06479 -5.89143,46.12943 4.90937,50.63857c10.22345,4.2681 24.14292,-52.38336 37.86455,-59.80493c3.31715,-1.79413 -5.35094,45.88889 -0.78872,58.34589c5.19371,14.18125 33.36934,-58.38221 36.43049,-56.91633c4.67078,2.23667 -0.06338,44.42744 5.22574,47.53647c6.04041,3.55065 19.87185,-20.77286 19.87185,-20.77286">
+                                    </path>
+                                </g>
+                            </g>
+                        </svg>
+                        {/if}
+                        <span class="text">{$cat.desc_text|raw|nl2br}</span>
+                    </a>
+                </div>
+        </div>
+    
+    </section>
+    {/if}
+    {if $cat.id == 20}
+    <section class="BoardingIntro"  style="background-image: url({$cat.logo_s})">
+        <div class="layui-main">
+                <div class="titleCom">
+                <h1>{$cat.title}</h1>
+            </div>
+            <div class="box">
+                  <div class="bg img_100">
+                        <img src="{$cat.logo}">
+                    </div>  
+                <ul>
+                
+                    {foreach name="function->getCatArticle($cat.id)" item="atc"}
+                    <li class="item ">
+                        <div class="img_100 img">
+                            <img src="{$atc.logo}">
+                        </div>
+                        <div class="con">
+                                
+                         <h5>{$atc.title|raw|nl2br}</h5>
+                         <div class="sub">{$atc.subtitle|raw|nl2br}</div>
+                        
+                        </div>
+                    </li>
+                    {/foreach}
+                </ul>
+            </div>
+                <div class="footCom">
+                    <a class="btn" href="{$cat.url}" target="_blank">
+                        <svg class="highlight" viewBox="0 0 144.75738 77.18431" preserveAspectRatio="none">
+                            <g transform="translate(-171.52826,-126.11624)">
+                                <g fill="none" stroke-width="17" stroke-linecap="round" stroke-miterlimit="10">
+                                    <path
+                                        d="M180.02826,169.45123c0,0 12.65228,-25.55115 24.2441,-25.66863c6.39271,-0.06479 -5.89143,46.12943 4.90937,50.63857c10.22345,4.2681 24.14292,-52.38336 37.86455,-59.80493c3.31715,-1.79413 -5.35094,45.88889 -0.78872,58.34589c5.19371,14.18125 33.36934,-58.38221 36.43049,-56.91633c4.67078,2.23667 -0.06338,44.42744 5.22574,47.53647c6.04041,3.55065 19.87185,-20.77286 19.87185,-20.77286">
+                                    </path>
+                                </g>
+                            </g>
+                        </svg>
+                        <span class="text"> Book an Appointment With Us</span>
+                    </a>
+                </div>
+        </div>
+    
+    </section>
+    {/if}
+       {if $cat.id == 21}
+    <section class="DaycareSerive"  >
+        <div class="layui-main">
+            <div class="titleCom ">
+                <h1>{$cat.title}</h1>
+            </div>
+            <ul>
+                {foreach name="function->getCatArticle($cat.id)" item="atc" key="n"}
+                <li class="item">
+                    <div class="img_box img">
+                        <img src="{$atc.logo}">
+                    </div>
+                    <h5>{$atc.title|raw|nl2br}</h5>
+                </li>
+                {/foreach}
+            </ul>
+        </div>
+    </section>
+    {/if}
+    {if $cat.id == 22}
+    <section class="BoardingPrecautions" >
+        <div class="bg img_100">
+            <img src="{$cat.logo_s}">
+        </div>
+        <div class="layui-main">
+            <div class="titleCom ">
+                <h1>{$cat.title}</h1>
+            </div>
+            <ul>
+                {foreach name="function->getCatChildList($cat.id)" item="cat1"}
+                <li class="item">
+                    <div class="box">
+                        
+                   <h5>{$cat1.title|raw|nl2br}</h5>
+                   <dl>
+                       
+                {foreach name="function->getCatArticle($cat1.id)" item="atc" key="n"}
+                <dd>
+                         <div class="num">{$n+1}</div>
+                        <div class="title">{$atc.title|raw|nl2br}</div>
+                </dd>
+                {/foreach}
+                   </dl>
+                    </div>
+                </li>
+                {/foreach}
+            </ul>
+        </div>
+    </section>
+    {/if}
+    {/foreach}
+
+</main>
+
+<script src="__ROOT__/public/home/js/index.js"></script>
+<script src="__ROOT__/public/home/js/swiper-bundle.min.js"></script>
+<script>
+    $(function() {
+  $('.Boarding .swiper').each(function(index, element) {
+    var $swiperContainer = $(element);
+
+    var mySwiper = new Swiper($swiperContainer[0], {
+   
+      loop: true, 
+      slidesPerView: 1,
+      spaceBetween: 0, 
+      navigation: {
+        nextEl: $swiperContainer.find('.button-next')[0], 
+        prevEl: $swiperContainer.find('.button-prev')[0], 
+        clickable: true 
+      },
+ 
+    });
+  });
+});
+</script>
+{include file="common/footer" /}

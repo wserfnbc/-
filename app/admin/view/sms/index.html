@@ -1,0 +1,71 @@
+{extend name="../../admin/view/main"}
+
+{block name="button"}
+{if auth("add")}
+<button data-modal='{:url("add")}?parent_id={$addSetParent}&region_type={$region_type}' data-title="添加地区" class='layui-btn layui-btn-sm layui-btn-primary'>添加地区</button>
+{/if}
+{if auth("remove")}
+<button data-action='{:url("remove")}' data-rule="id#{key}" class='layui-btn layui-btn-sm layui-btn-primary'>删除地区</button>
+{/if}
+{/block}
+
+{block name="content"}
+<style>
+    .layui-table td, .layui-table th {
+        padding: 5px 15px !important;
+    }
+</style>
+<div class="think-box-shadow">
+    {if !empty($region_type)}
+    <button data-open='{:url("index")}?parent_id={if $region_type==1}0{else}{$parent_id}{/if}' data-title="上级地区" class='layui-btn layui-btn-sm layui-btn-primary'>上级地区</button>
+    {/if}
+    <table class="layui-table margin-top-10" lay-skin="line">
+        {notempty name='list'}
+        <thead>
+        <tr>
+            <th class='list-table-check-td think-checkbox'>
+                <input data-auto-none data-check-target='.list-check-box' type='checkbox'>
+            </th>
+
+            <th class='text-center'>ID</th>
+            <th class="text-center">地区名称</th>
+
+
+            <th></th>
+        </tr>
+        </thead>
+        {/notempty}
+        <tbody>
+        {foreach $list as $keyTop=>$vo}
+            <tr>
+                <td class='list-table-check-td think-checkbox'>
+                    <input class="list-check-box" value='{$vo.id}' type='checkbox'>
+                </td>
+                <td class='text-center nowrap'>
+                    {$vo.id}
+                </td>
+                <td class='text-left nowrap'>
+                    {$vo.region_name}
+                </td>
+                <td class='text-right nowrap'>
+                    {if $vo.region_type <3}
+                    <button data-open='{:url("index")}?id={$vo.id}' data-title="下级地区" class='layui-btn layui-btn-sm layui-btn-primary'>下级地区</button>
+                    {/if}
+
+                    {if auth("edit")}
+                    <a data-title="修改分类" class="layui-btn  layui-btn-sm layui-btn-warm" data-modal='{:url("edit")}?id={$vo.id}&region_type={$region_type}'>修改</a>
+                    {/if}
+                    {if auth("remove")}
+                    <a class="layui-btn layui-btn-sm layui-btn-danger" data-confirm="确定删除吗?" data-action="{:url('remove')}" data-value="id#{$vo.id}">删除</a>
+                    {/if}
+
+                </td>
+            </tr>
+
+
+        {/foreach}
+        </tbody>
+    </table>
+    {empty name='list'}<span class="notdata">No record</span>{else}{$pagehtml|raw|default=''}{/empty}
+</div>
+{/block}

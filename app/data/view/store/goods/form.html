@@ -1,0 +1,401 @@
+{extend name="../../admin/view/main"}
+
+{block name="content"}
+
+{include file='store/goods/form_style'}
+<style id="lay-ext-mulitsel-style">
+    .lay-ext-mulitsel .layui-form-select dl dd div{
+        margin-top:0px!important;
+    }
+    .lay-ext-mulitsel .layui-form-select dl dd.layui-this{
+        background-color:#fff
+    }
+    .lay-ext-mulitsel .layui-input.multiple{
+        height:auto;padding:4px 10px 4px 10px;overflow:hidden;min-height:38px;margin-top:-38px;left:0;z-index:99;position:relative;background:#fff;
+    }
+    .lay-ext-mulitsel .layui-input.multiple a{
+        padding:2px 5px;background:#5FB878;border-radius:2px;color:#fff;display:block;line-height:20px;height:20px;margin:2px 5px 2px 0;float:left;
+    }
+    .lay-ext-mulitsel .layui-input.multiple a i{
+        margin-left:4px;font-size:14px;
+    }
+    .lay-ext-mulitsel .layui-input.multiple a i:hover{
+        background-color:#009E94;border-radius:2px;
+    }
+    .lay-ext-mulitsel .danger{
+        border-color:#FF5722!important
+    }
+    .lay-ext-mulitsel .tips{
+        pointer-events: none;position: absolute;left: 10px;top: 0;color:#757575;
+    }
+</style>
+<form onsubmit="return false;" id="GoodsForm" data-auto="true" method="post" class='layui-form layui-card' autocomplete="off">
+
+    <div class="layui-card-body think-box-shadow padding-left-40">
+
+        <div class="layui-form-item layui-row layui-col-space15">
+            <label class="layui-col-xs3 relative">
+                <span class="color-green">商品分类</span>
+                <select class="layui-select" required name="cate_id" lay-search>
+                    {foreach $cates as $cate}
+                        {if (isset($vo.cate_id) and $vo.cate_id eq $cate.id) || $get_cate_id eq $cate.id}
+                        <option selected value="{$cate.id}">{$cate.title|default=''}</option>
+                        {else}
+                        <option value="{$cate.id}">{$cate.title|default=''}</option>
+                        {/if}
+                            {foreach $cate.child_cate_2 as $cate2}
+                                {if $cate2 === end($cate.child_cate_2)}
+                                <option {if (isset($vo.cate_id) and $vo.cate_id eq $cate2.id) || (isset($get_cate_id) and $get_cate_id eq $cate2.id)} selected{/if} value="{$cate2.id}"> ╚ {$cate2.title|default=''}</option>
+                                {else}
+                                <option {if (isset($vo.cate_id) and $vo.cate_id eq $cate2.id) || (isset($get_cate_id) and $get_cate_id eq $cate2.id)} selected{/if} value="{$cate2.id}"> ╠ {$cate2.title|default=''}</option>
+                                {/if}
+                                    {foreach $cate2.child_cate_3 as $cate3}
+                                    {if $cate3 === end($cate2.child_cate_3)}
+                                    <option {if (isset($vo.cate_id) and $vo.cate_id eq $cate3.id) || (isset($get_cate_id) and $get_cate_id eq $cate3.id)} selected{/if} value="{$cate3.id}">  └── {$cate3.title|default=''}</option>
+                                    {else}
+                                    <option {if (isset($vo.cate_id) and $vo.cate_id eq $cate3.id) || (isset($get_cate_id) and $get_cate_id eq $cate3.id)} selected{/if} value="{$cate3.id}">  ├── {$cate3.title|default=''}</option>
+                                    {/if}
+                                    {/foreach}
+                            {/foreach}
+                    {/foreach}
+                </select>
+            </label>
+            <label class="layui-col-xs9 relative">
+                <span class="color-green">商品名称</span>
+                <input name="title" required class="layui-input" placeholder="请输入商品名称" value="{$vo.title|default=''}">
+            </label>
+        </div>
+
+        <div class="layui-form-item layui-row layui-col-space15">
+            <span class="color-green">扩展分类</span>
+            <div id="other_cate"></div>
+        </div>
+
+
+
+        <div class="layui-form-item layui-row layui-col-space15">
+            <label class="layui-col-xs3 relative">
+                <span class="color-green">商品价格</span>
+                <input name="goods_price" required class="layui-input" placeholder="请输入商品价格" value="{$vo.goods_price|default=''}">
+            </label>
+            <label class="layui-col-xs3 relative layui-hide">
+                <span class="color-green">市场价格</span>
+                <input name="market_price" class="layui-input" placeholder="请输入商品价格" value="{$vo.market_price|default=''}">
+            </label>
+            <label class="layui-col-xs3 relative">
+                <span class="color-green">商品数量</span>
+                <input name="goods_number" required class="layui-input" placeholder="请输入商品数量" value="{$vo.goods_number|default='1'}">
+            </label>
+            <label class="layui-col-xs3 relative">
+                <span class="color-green">数量单位</span>
+                <input name="goods_unit" required class="layui-input" placeholder="请输入数量单位" value="{$vo.goods_unit|default=''}">
+            </label>
+            <label class="layui-col-xs3 relative">
+                <span class="color-green">已销售数量</span>
+                <input name="number_sales" required class="layui-input" placeholder="请输入销售数量" value="{$vo.number_sales|default=0}">
+            </label>
+        </div>
+
+<!--        <div class="layui-form-item layui-row layui-col-space15">-->
+<!--            <label class="layui-col-xs3 relative">-->
+<!--                <span class="color-green">活动折扣</span>-->
+<!--                <div>-->
+<!--                    <label class="think-radio"><input type="radio" class="think-radio" name="is_discount" value="1" title="是"  lay-ignore {if isset($vo.is_discount) and $vo.is_discount eq 1}checked{/if}> 是&nbsp;&nbsp;&nbsp;</label>-->
+<!--                    <label class="think-radio"><input type="radio" class="think-radio" name="is_discount" value="0" title="否"  lay-ignore {if isset($vo.is_discount) and $vo.is_discount eq 0}checked{/if}> 否</label><br>-->
+<!--                    注意：此商品开启活动折扣，则会员折扣会不起作用。-->
+<!--                </div>-->
+<!--            </label>-->
+<!--            <label class="layui-col-xs3 relative">-->
+<!--                <span class="color-green">活动折扣价格(非会员折扣)</span>-->
+<!--                <input name="discount_price" class="layui-input" placeholder="请输入商品活动折扣价格" value="{$vo.discount_price|default=''}">-->
+<!--            </label>-->
+<!--        </div>-->
+<!--        <div class="layui-form-item layui-row layui-col-space15" data-slider-box>-->
+<!--            <label class="layui-col-xs12 relative">-->
+<!--                <span class="color-green">会员折扣</span>-->
+<!--                <div>-->
+<!--                    <label class="think-radio"><input type="radio" name="is_member_discount" value="1" ignore title="是" {if isset($vo.is_member_discount) and $vo.is_member_discount eq 1}checked{/if}> 是&nbsp;&nbsp;&nbsp;</label>-->
+<!--                    <label class="think-radio"><input type="radio" name="is_member_discount" value="0" ignore title="否" {if isset($vo.is_member_discount) and $vo.is_member_discount eq 0}checked{/if}> 否</label>-->
+<!--                </div>-->
+<!--            </label>-->
+<!--            {foreach $rank_price_list as $price}-->
+<!--            <div class="layui-col-xs10 relative" data-slider-item>-->
+<!--                <label class="layui-col-xs3 relative">-->
+<!--                    <span class="color-green">会员等级</span>-->
+<!--                    <select class="layui-form-select" name="member_rank[]">-->
+<!--                        {foreach $member_rank as $rank}-->
+<!--                        <option value="{$rank.id}" {if $price.member_rank == $rank.id} selected{/if}>{$rank.title}</option>-->
+<!--                        {/foreach}-->
+<!--                    </select>-->
+<!--                </label>-->
+<!--                <label class="layui-col-xs3 relative margin-left-15">-->
+<!--                    <span class="color-green">等级价格</span>-->
+<!--                    <input name="member_price[]" class="layui-input" placeholder="请输入该会员等级价格" value="{$price.goods_price|default=''}">-->
+<!--                </label>-->
+<!--                <label class="layui-col-xs4">-->
+<!--                    <span class="color-green">&nbsp;</span>-->
+<!--                    <div>-->
+<!--                        <a data-item-rm class="layui-btn layui-btn-primary margin-left-5"><i class="layui-icon layui-icon-close margin-0"></i></a>-->
+<!--                    </div>-->
+<!--                </label>-->
+
+<!--            </div>-->
+<!--            {/foreach}-->
+<!--            <label class="layui-col-xs3 relative margin-top-20">-->
+<!--                <span class="color-green">&nbsp;</span>-->
+<!--                <a data-item-add class="layui-btn layui-btn-primary">添加会员等级价格</a>-->
+<!--            </label>-->
+
+<!--        </div>-->
+
+
+
+        <div class="layui-form-item">
+            <span class="color-green label-required-prev">商品LOGO及轮播展示图片</span>
+            <table class="layui-table">
+                <thead>
+                <tr>
+                    <th class="text-center">LOGO</th>
+                    <th class="text-left">展示图片</th>
+                </tr>
+                <tr>
+                    <td width="90px" class="text-center"><input name="logo" type="hidden" value="{$vo.logo|default=''}"></td>
+                    <td width="auto" class="text-left"><input name="image" type="hidden" value="{$vo.image|default=''}"></td>
+                </tr>
+                </thead>
+            </table>
+            <script>$('[name="logo"]').uploadOneImage(), $('[name="image"]').uploadMultipleImage()</script>
+        </div>
+
+        <div class="layui-form-item layui-hide">
+            <span class="color-green label-required-prev">商品规格及商品SKU绑定<span class="color-red font-s12">（规格填写后不允许再次修改）</span></span>
+            <div ng-repeat="x in specs track by $index" style="display:none" class="margin-bottom-10" ng-class="{true:'layui-show'}[isAddMode&&specs.length>0]">
+                <div class="goods-spec-box padding-10 margin-0 relative" style="background:#ddd">
+                    <span class="text-center goods-spec-title">分组</span>
+                    <label class="label-required-null inline-block"><input ng-blur="x.name=trimSpace(x.name)" ng-model="x.name" required placeholder="请输入分组名称"></label>
+                    <div class="pull-right">
+                        <a class="layui-btn layui-btn-sm layui-btn-primary goods-spec-btn" ng-click="addSpecVal(x.list)">增加</a>
+                        <a class="layui-btn layui-btn-sm layui-btn-primary goods-spec-btn" ng-class="{false:'layui-bg-gray'}[$index>0]" ng-click="upSpecRow(specs,$index)">上移</a>
+                        <a class="layui-btn layui-btn-sm layui-btn-primary goods-spec-btn" ng-class="{false:'layui-bg-gray'}[$index<specs.length-1]" ng-click="dnSpecRow(specs,$index)">下移</a>
+                        <a class="layui-btn layui-btn-sm layui-btn-primary goods-spec-btn" ng-click="delSpecRow(specs,$index)" ng-if="specs.length>1">删除</a>
+                    </div>
+                </div>
+                <div class="goods-spec-box padding-10 margin-0 layui-bg-gray block relative" ng-if="x.list && x.list.length > 0">
+                    <label class="label-required-null inline-block margin-right-10 margin-bottom-5 relative nowrap" ng-repeat="xx in x.list">
+                        <input type="checkbox" lay-ignore ng-model="xx.check" ng-click="xx.check=checkListChecked(x.list,$event.target.checked)">
+                        <input type="text" ng-blur="xx.name=trimSpace(xx.name)" ng-model="xx.name" ng-keyup="xx.name=$event.target.value" required placeholder="请输入规格">
+                        <a ng-if="x.list.length>1" ng-click="x.list=delSpecVal(x.list,$index)" class="layui-icon layui-icon-close font-s12 goods-spec-close"></a>
+                    </label>
+                </div>
+            </div>
+            <a ng-if="isAddMode&&specs.length<3" class="layui-btn layui-btn-sm layui-btn-primary" ng-click="addSpecRow(specs)">增加分组</a>
+            <table class="layui-table margin-top-10">
+                <thead>
+                <tr>
+                    <th ng-repeat="x in specsTreeNava track by $index" class="nowrap" ng-bind="x"></th>
+                    <th width="10%" class="text-center nowrap">商品SKU <a ng-click="batchSet('sku',0)" data-tips-text="批量设置" class="layui-icon">&#xe63c;</a></th>
+                    <th width="10%" class="text-center nowrap">市场价格 <a ng-click="batchSet('market',2)" data-tips-text="批量设置" class="layui-icon">&#xe63c;</a></th>
+                    <th width="10%" class="text-center nowrap">销售价格 <a ng-click="batchSet('selling',2)" data-tips-text="批量设置" class="layui-icon">&#xe63c;</a></th>
+                    <th width="10%" class="text-center nowrap">虚拟销量 <a ng-click="batchSet('virtual',0)" data-tips-text="批量设置" class="layui-icon">&#xe63c;</a></th>
+                    <th width="10%" class="text-center nowrap">快递计件 <a ng-click="batchSet('express',0)" data-tips-text="批量设置" class="layui-icon">&#xe63c;</a></th>
+                    <th width="10%" class="text-center nowrap">销售状态</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr ng-repeat="rows in specsTreeData track by $index">
+                    <td class="layui-bg-gray" ng-if="td.show" rowspan="{{td.span}}" ng-repeat="td in rows" ng-bind="td.name"></td>
+                    <td class="padding-0">
+                        <label class="padding-0 margin-0">
+                            <input ng-blur="rows[0].sku=setValue(rows[0].key,'sku',$event.target.value,'(parseFloat(_)||0).toFixed(0)')" class="layui-input border-0 padding-left-0 text-center" ng-model="rows[0].sku">
+                        </label>
+                    </td>
+                    <td class="padding-0">
+                        <label class="padding-0 margin-0">
+                            <input ng-blur="rows[0].market=setValue(rows[0].key,'market',$event.target.value,'(parseFloat(_)||0).toFixed(2)')" class="layui-input border-0 padding-left-0 text-center" ng-model="rows[0].market">
+                        </label>
+                    </td>
+                    <td class="padding-0">
+                        <label class="padding-0 margin-0">
+                            <input ng-blur="rows[0].selling=setValue(rows[0].key,'selling',$event.target.value,'(parseFloat(_)||0).toFixed(2)')" class="layui-input border-0 padding-left-0 text-center" ng-model="rows[0].selling">
+                        </label>
+                    </td>
+                    <td class="padding-0">
+                        <label class="padding-0 margin-0">
+                            <input ng-blur="rows[0].virtual=setValue(rows[0].key,'virtual',$event.target.value,'(parseInt(_)||0)')" class="layui-input border-0 padding-left-0 text-center" ng-model="rows[0].virtual">
+                        </label>
+                    </td>
+                    <td class="padding-0">
+                        <label class="padding-0 margin-0">
+                            <input ng-blur="rows[0].express=setValue(rows[0].key,'express',$event.target.value,'(parseInt(_)||0)')" class="layui-input border-0 padding-left-0 text-center" ng-model="rows[0].express">
+                        </label>
+                    </td>
+                    <td class="text-center layui-bg-gray">
+                        <label class="think-checkbox margin-0 full-width full-height block"><input lay-ignore type="checkbox" ng-model="rows[0].status"></label>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+            <p class="color-desc">请从仓储平台获取商品SKU与商品条码，请注意尽量不要重复，也不能产生订单后再修改！</p>
+            <textarea class="layui-textarea layui-hide" name="specs">{{specs}}</textarea>
+            <textarea class="layui-textarea layui-hide" name="lists">{{specsTreeData}}</textarea>
+        </div>
+
+        <div class="layui-form-item layui-row layui-col-space15 layui-hide">
+            <label class="layui-col-xs3 relative">
+                <span class="color-green">CDK-帐号</span>
+                <input name="cdk_code" class="layui-input" placeholder="如果商品类型是带有CDK请在此填写CDK" value="{$vo.cdk_code|default='无'}">如果商品类型是带有CDK请在此填写CDK
+            </label>
+            <label class="layui-col-xs3 relative">
+                <span class="label-required-prev color-green">CDK-密码</span>
+                <input name="cdk_psw" class="layui-input" placeholder="如果商品类型是带有CDK并带有密码请在此填写CDK密码" value="{$vo.cdk_psw|default='无'}">如果商品类型是带有CDK并带有密码请在此填写CDK密码
+            </label>
+        </div>
+
+        <div class="layui-form-item block">
+            <span class="label-required-prev color-green">商品详情</span>
+
+            <style type="text/css">
+                .clear {
+                    clear: both;
+                }
+            </style>
+            <textarea id="content" type="text/plain" name="content" style="width:100%;height:500px;">{$vo.content|default=''|raw}</textarea>
+
+        </div>
+        <div class="layui-form-item block">
+            <span class="label-required-prev color-green">其它说明</span>
+
+            <style type="text/css">
+                .clear {
+                    clear: both;
+                }
+            </style>
+            <textarea id="content2" type="text/plain" name="content2" style="width:100%;height:500px;">{$vo.content2|default=''|raw}</textarea>
+
+        </div>
+
+        <div class="layui-form-item text-center">
+            {notempty name='vo.id'}<input type="hidden" name="id" value="{$vo.id}">{/notempty}
+            <button class="layui-btn layui-btn-danger" id="hsitoryBack" ng-click="hsitoryBack()" type="button">取消编辑</button>
+            <button class="layui-btn" type="submit">保存商品</button>
+        </div>
+
+    </div>
+</form>
+
+<div data-item-tpl class="layui-hide">
+    <div class="layui-col-xs10 relative" data-slider-item>
+        <label class="layui-col-xs3 relative">
+            <span class="color-green">会员等级</span>
+            <select class="layui-form-select" name="member_rank[]">
+                {foreach $member_rank as $rank}
+                <option value="{$rank.id}">{$rank.title}</option>
+                {/foreach}
+            </select>
+        </label>
+        <label class="layui-col-xs3 relative margin-left-15">
+            <span class="color-green">等级价格</span>
+            <input name="member_price[]" class="layui-input" placeholder="请输入该会员等级价格" value="">
+        </label>
+        <label class="layui-col-xs4">
+            <span class="color-green">&nbsp;</span>
+            <div>
+                <a data-item-rm class="layui-btn layui-btn-primary margin-left-5"><i class="layui-icon layui-icon-close margin-0"></i></a>
+            </div>
+        </label>
+
+    </div>
+</div>
+
+{/block}
+
+{block name='script'}
+<script>
+    window.form.render("select"); //刷新select选择框渲染
+
+    // require(['ZeroClipboard'], function (ZeroClipboard) {
+    //     window['ZeroClipboard'] = ZeroClipboard;
+    // });
+    //
+    // UE.delEditor('content');//在初始化时把以前的编辑框清除  不能会出现textarea框
+    // // ueditor 开始调用
+    // var ue = new baidu.editor.ui.Editor('content');
+    // ue.render('content');
+    //
+    // UE.delEditor('content2');
+    // var ue = new baidu.editor.ui.Editor('content2');
+    // ue.render('content2');
+    //
+    // ue.ready(function() {
+    //     // $scope.mod_content = ue.setContent(res.data.content);
+    //
+    // });
+
+    require(['ckeditor'], function () {
+        window.createEditor('[name=content]', {height: 300});
+    });
+
+    require(['ckeditor'], function () {
+        window.createEditor('[name=content2]', {height: 300});
+    });
+
+    $('[data-slider-box]').on('click', '[data-item-add]', function () {
+        // 添加图片选项
+        $(this).parent().before($('[data-item-tpl]').html()), setTimeout(function () {
+            $.form.reInit();
+        }, 100);
+        window.form.render("select"); //刷新select选择框渲染
+    }).on('click', '[data-item-rm]', function () {
+        // 移除图片选项
+        $(this).parents('[data-slider-item]').remove();
+    });
+
+    $("#hsitoryBack").click(function () {
+        $.msg.confirm('确定要取消编辑吗？', function (index) {
+            history.back(), $.msg.close(index);
+        });
+    })
+</script>
+<script>
+    var tagData = {$other_cates|default=[]|raw};
+    layui.config({
+        base : ''
+    }).extend({
+        selectN: 'public/static/selectN',
+        selectM: 'public/static/selectM',
+    }).use(['layer','form','jquery','selectN','selectM'],function(){
+        $ = layui.jquery;
+        var form = layui.form
+            ,selectN = layui.selectN
+            ,selectM = layui.selectM;
+
+        //多选标签-所有配置
+        var tagIns2 = selectM({
+            //元素容器【必填】
+            elem: '#other_cate'
+
+            //候选数据【必填】
+            ,data: tagData
+
+            //默认值
+            ,selected: [{$vo.other_cate|default=""}]
+
+            //最多选择个数
+            ,max: 6
+
+            //input的name 不设置与选择器相同(去#.)
+            ,name: 'other_cate'
+
+            //值的分隔符
+            ,delimiter: ','
+
+            //候选项数据的键名
+            ,field: {idName:'id',titleName:'name'}
+
+
+        });
+
+
+    });
+</script>
+{/block}

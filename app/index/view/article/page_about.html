@@ -1,0 +1,132 @@
+{include file="common/header" /}
+<!-- 中间区域 -->
+{include file="common/top_banner" /}
+
+<main class="About">
+
+    {foreach name="function->getCatChildList($catId)" item="cat"}
+    {if $cat.id == 22}
+    <section class="AboutInfo">
+        <div class="layui-main">
+            <div class="Info">
+                <div>
+                    <div class="TitleLine">
+                        <div class="en">{$article.keywords}</div>
+                        <h1>{$article.title}</h1>
+                    </div>
+
+                    <div class="sub s_content">{$article.content|raw|nl2br}</div>
+                </div>
+                <div class="img_box">
+                    <img src="{$article.logo}">
+                </div>
+            </div>
+            <ul class="numList">
+
+                {foreach name="function->getCatArticle($cat.id)" item="atc"}
+                <li class="item">
+                    <div class="title">
+
+                        <span class="counter-auto" data-target="{$atc.title}">0</span>
+                        <span>{$atc.keywords}</span>
+                    </div>
+                    <h5>{$atc.subtitle|raw|nl2br}</h5>
+
+                </li>
+                {/foreach}
+            </ul>
+        </div>
+    </section>
+    {/if}
+
+    {/foreach}
+
+
+</main>
+
+<script src="__ROOT__/public/home/js/index.js"></script>
+<script>
+    function animateCounter(element, startVal = 0) {
+        // 获取目标数值和后缀符号
+        const targetText = element.getAttribute('data-target');
+        // 使用正则分离数字和后缀（如+号等）
+        const match = targetText.match(/^(\d+(\.\d+)?)(.*)$/);
+        const target = parseFloat(match[1]);
+        const suffix = match[3] || ''; // 存储后缀符号
+
+        const decimals = element.hasAttribute('data-decimals')
+            ? parseInt(element.getAttribute('data-decimals'))
+            : 0;
+        const separator = element.hasAttribute('data-separator')
+            ? element.getAttribute('data-separator')
+            : '';
+        const duration = 2000;
+        let startTime = null;
+
+        function animation(currentTime) {
+            if (!startTime) startTime = currentTime;
+            const timeElapsed = currentTime - startTime;
+            const progress = Math.min(timeElapsed / duration, 1);
+            const easeOutQuad = progress * (2 - progress);
+            const currentValue = startVal + (target - startVal) * easeOutQuad;
+
+            let formattedValue;
+            if (decimals > 0) {
+                formattedValue = currentValue.toFixed(decimals);
+            } else {
+                formattedValue = Math.floor(currentValue).toString();
+            }
+
+            if (separator && formattedValue.includes('.') && decimals > 0) {
+                const parts = formattedValue.split('.');
+                parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, separator);
+                formattedValue = parts.join('.');
+            } else if (separator) {
+                formattedValue = formattedValue.replace(/\B(?=(\d{3})+(?!\d))/g, separator);
+            }
+
+            // 动画未完成时只显示数字，完成后添加后缀
+            element.textContent = progress < 1 ? formattedValue : formattedValue + suffix;
+
+            if (timeElapsed < duration) {
+                requestAnimationFrame(animation);
+            }
+        }
+
+        requestAnimationFrame(animation);
+    }
+
+    const observerOptions = {
+        root: null,
+        rootMargin: '0px',
+        threshold: 0.1
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                const counters = entry.target.querySelectorAll('.counter-auto');
+                counters.forEach((counter, index) => {
+                    if (!counter.classList.contains('animated')) {
+                        const delay = counter.hasAttribute('data-delay')
+                            ? parseInt(counter.getAttribute('data-delay'))
+                            : index * 200;
+
+                        setTimeout(() => {
+                            animateCounter(counter);
+                            counter.classList.add('animated');
+                        }, delay);
+                    }
+                });
+                observer.unobserve(entry.target);
+            }
+        });
+    }, observerOptions);
+
+    document.querySelectorAll('.counter-auto').forEach(counter => {
+        observer.observe(counter.closest('div'));
+    });
+
+</script>
+
+{include file="common/footer" /}

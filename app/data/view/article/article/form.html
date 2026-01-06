@@ -1,0 +1,234 @@
+{extend name="../../admin/view/main"}
+
+{block name="content"}
+{include file='article/article/form_style'}
+<form class="layui-tab layui-tab-brief" lay-filter="docDemoTabBrief" onsubmit="return false;" id="ArticleForm"
+    data-auto="true" method="post" enctype="multipart/form-data" autocomplete="off">
+    <ul class="layui-tab-title">
+        <li class="layui-this">主要内容</li>
+    </ul>
+    <script type="text/javascript" charset="utf-8" src="/public/static/plugs/ueditor/ueditor.config.js"></script>
+    <script type="text/javascript" charset="utf-8" src="/public/static/plugs/ueditor/ueditor.all.min.js"> </script>
+    <!--建议手动加在语言，避免在ie下有时因为加载语言失败导致编辑器加载失败-->
+    <!--这里加载的语言文件会覆盖你在配置项目里添加的语言类型，比如你在配置项目里配置的是英文，这里加载的中文，那最后就是中文-->
+    <script type="text/javascript" charset="utf-8" src="/public/static/plugs/ueditor/lang/zh-cn/zh-cn.js"></script>
+    <script type="text/javascript" charset="utf-8" async="" data-requirecontext="_" data-requiremodule="ZeroClipboard"
+        src="/public/static/plugs/ueditor/third-party/zeroclipboard/ZeroClipboard.js"></script>
+    <script src="/public/static/plugs/ueditor/third-party/zeroclipboard/ZeroClipboard.js" type="text/javascript"
+        defer="defer"></script>
+    <div class='layui-tab-content'>
+        <div class="layui-tab-item layui-show">
+            <div class='layui-form layui-card'>
+                <div class="layui-form-item layui-row layui-col-space15">
+                    <label class="layui-col-xs12 relative">
+                        <span class="color-green block">所属栏目</span>
+                        <select Readonly="true" class="layui-select" name="cat_id">
+                            <option selected value="{$catInfo.id}">{$catInfo.title}</option>
+                        </select>
+                    </label>
+                    <label class="layui-col-xs9 relative">
+                        <span class="color-green">内容标题</span>
+
+
+                        <textarea name="title" style="min-height:2em" class="layui-textarea"
+                            placeholder="请输入内容标题">{$vo.title|default=''}</textarea>
+                    </label>
+                </div>
+
+                <div class="layui-form-item layui-row layui-col-space15">
+                    <label class="layui-col-xs12 relative">
+                        <span class="color-green">摘要</span>
+                        <textarea name="subtitle" class="layui-textarea"
+                            placeholder="请输入摘要">{$vo.subtitle|default=''}</textarea>
+                    </label>
+                </div>
+
+                <div class="layui-form-item layui-row layui-col-space15">
+                    <label class="layui-col-xs9 relative">
+                        <span class="color-green">关键字||链接</span>
+                        <input name="keywords" class="layui-input" placeholder="请输入关键字"
+                            value="{$vo.keywords|default=''}">
+                    </label>
+                </div>
+
+                <div class="layui-form-item">
+
+                    <table class="layui-table layui-col-xs6">
+                        <thead>
+                            <tr>
+                                <th class="text-center">封面图</th>
+                            </tr>
+                            <tr>
+                                <td width="90px" class="text-center"><input name="logo" type="hidden"
+                                        value="{$vo.logo|default=''}"></td>
+                            </tr>
+                        </thead>
+                    </table>
+                    <script>$('[name="logo"]').uploadOneImage()</script>
+                </div>
+                <div class='layui-form layui-card'>
+                    {foreach name="fieldsList" item="field"}
+                    <div class="layui-form-item layui-row layui-col-space15">
+                        <span class="color-green block">{$field.field_other_name}</span>
+                        {if $field.filed_type == "text"}
+                        <input name="{$field.field_name}" class="layui-input" placeholder="请输入{$field.field_other_name}"
+                            value="<?=isset($vo[$field['field_name']])?$vo[$field['field_name']]:""?>">
+                        {elseif $field.filed_type == "radio"}
+                        {foreach name="field.setting" item="setting"}
+                        <input type="radio" name="{$field.field_name}" value="{$setting.setting_value}" ignore
+                            title="{$setting.setting_name}" <?php if(isset($vo[$field['field_name']]) &&
+                            $vo[$field['field_name']]==$setting['setting_value']){?>checked
+                        <?php }?> >
+                        {/foreach}
+                        {elseif $field.filed_type == "checkbox"}
+                        <div class="layui-input-block margin-left-0">
+                            <?php
+                                        if(isset($vo[$field['field_name']]) && $vo[$field['field_name']]){
+                                            $vo[$field['field_name']] = explode("|", $vo[$field['field_name']]);
+                                        }else{
+                                            $vo[$field['field_name']] = [];
+                                        }
+                                    ?>
+
+                            {foreach name="field.setting" item="setting"}
+                            <input type="checkbox" name="{$field.field_name}['{$setting.setting_value}']"
+                                title="{$setting.setting_name}" value="{$setting.setting_name}" <?php
+                                if(isset($vo[$field['field_name']]) &&
+                                in_array($setting['setting_value'],$vo[$field['field_name']])){?>checked="checked"
+                            <?php }else{?>
+                            <?php }?> >
+                            {/foreach}
+                        </div>
+                        {elseif $field.filed_type == "textarea"}
+                        <textarea name="{$field.field_name}" class="layui-textarea"
+                            placeholder="请输入{$field.field_other_name}"><?=isset($vo[$field['field_name']])?$vo[$field['field_name']]:""?></textarea>
+
+                        {elseif $field.filed_type == "file"}
+                        <label class="layui-col-xs8 think-form-group-left">
+                            <input name="{$field.field_name}"
+                                value='<?=isset($vo[$field["field_name"]])?$vo[$field["field_name"]]:""?>'
+                                placeholder="请上传{$field.field_other_name}" class="layui-input">
+                        </label>
+                        <a class="layui-col-xs2 layui-btn think-form-group-right" data-file="btn"
+                            data-field="{$field.field_name}" data-type="{$field.filed_default_value}">
+                            <i class="layui-icon layui-icon-upload"></i> 上传
+                        </a>
+                        <!-- <table class="layui-table layui-col-xs6">
+                            <thead>
+                               
+                                <tr>
+                                    <td width="90px" class="text-center"><input name="{$field.field_name}" type="hidden"
+                                            value="<?=isset($vo[$field["field_name"]])?$vo[$field["field_name"]]:""?>"></td>
+                                </tr>
+                            </thead>
+                        </table>
+                        <script>$('[name="{$field.field_name}"]').uploadOneImage()</script> -->
+                        {elseif $field.filed_type == "files"}
+                        <table class="layui-table">
+                            <thead>
+                                <tr>
+                                    <td class="text-left padding-0">
+                                        <div class="help-images">
+                                            <input name="{$field.field_name}" type="hidden"
+                                                value="<?=isset($vo[$field['field_name']])?$vo[$field['field_name']]:""?>">
+                                            <script>
+                                                $('input[name="{$field.field_name}"]').uploadMultipleImage();
+                                                $('input[name="{$field.field_name}"]').click(function () {
+                                                    return false;
+                                                });
+                                            </script>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </thead>
+                        </table>
+                        {elseif $field.filed_type == "editor"}
+                        <!--<textarea-->
+                        <!--    name="{$field.field_name}"><?=isset($vo[$field['field_name']])?$vo[$field['field_name']]:""?></textarea>-->
+                        <!--<script>-->
+                        <!--    window.form.render();-->
+
+                        <!--    require(['ckeditor'], function () {-->
+                        <!--        window.createEditor('[name={$field.field_name}]', { height: 300 });-->
+                        <!--    });-->
+
+                        <!--</script>-->
+                        <textarea id="{$field.field_name}" type="text/plain" name="{$field.field_name}"
+                            style="width:100%;height:300px;"><?=isset($vo[$field['field_name']])?$vo[$field['field_name']]:""?></textarea>
+                        <script>
+                            window.form.render();
+
+
+                            UE.delEditor('{$field.field_name}');
+                            var ue = new baidu.editor.ui.Editor('{$field.field_name}');
+                            ue.render('{$field.field_name}');
+                        </script>
+                        {/if}
+
+                    </div>
+                    {/foreach}
+                </div>
+                <link href="/public/static/plugs/ueditor/themes/default/css/ueditor.css" type="text/css"
+                    rel="stylesheet">
+
+                <span class="color-green">内容</span>
+                <style type="text/css">
+                    .clear {
+                        clear: both;
+                    }
+                </style>
+                <textarea id="content" type="text/plain" name="content"
+                    style="width:100%;height:300px;">{$vo.content|default=''|raw}</textarea>
+
+                <div class="layui-form-item layui-row layui-col-space15">
+                    <label class="layui-col-xs3 relative">
+                        <span class="color-green">发布时间</span>
+                        <input name="create_at" class="layui-input" id="create_at" placeholder="请发布时间，不填写会自动生成创建时间"
+                            value="{$vo.create_at|default=''}">
+                    </label>
+                </div>
+
+            </div>
+        </div>
+
+
+        <div class='layui-card'>
+            <div class="layui-form-item text-center block">
+                {notempty name='vo.id'}<input type="hidden" name="id" value="{$vo.id}">{/notempty}
+                <button class="layui-btn layui-btn-danger" data-history-back data-confirm="确定要取消编辑吗？"
+                    type='button'>取消编辑</button>
+                <button class="layui-btn" type="submit">保存数据</button>
+            </div>
+        </div>
+    </div>
+
+
+</form>
+{/block}
+
+{block name='script'}
+
+<script>
+
+    window.form.render();
+    // require(['ckeditor'], function () {
+    //     window.createEditor('[name=content]', {height: 300});
+    // });
+
+    UE.delEditor('content');//在初始化时把以前的编辑框清除  不能会出现textarea框
+    // ueditor 开始调用
+    var ue = new baidu.editor.ui.Editor('content');
+    ue.render('content');
+
+
+    layui.use('laydate', function () {
+        var laydate = layui.laydate;
+
+        //日期时间选择器
+        laydate.render({
+            elem: '#create_at'
+            , type: 'datetime'
+        });
+    });
+</script>
+{/block}

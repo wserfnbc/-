@@ -1,0 +1,45 @@
+<fieldset>
+    <legend>条件搜索</legend>
+    <form class="layui-form layui-form-pane form-search" action="{:request()->url()}" onsubmit="return false" method="get" autocomplete="off">
+        <div class="layui-form-item layui-inline">
+            <label class="layui-form-label">图文标题</label>
+            <div class="layui-input-inline">
+                <input name="title" value="{$get.title|default=''}" placeholder="请输入图文标题" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item layui-inline layui-hide">
+            <label class="layui-form-label">图文分类</label>
+            <div class="layui-input-inline">
+                <select class="layui-select" name="cat">
+                    <option value="">-- 全部 --</option>
+                    {foreach $clist as $v}
+                    {if $v.id.'' eq input('cat')}
+                        <option selected value="{$v.id}">{$v.title}</option>
+                    <!--{else}-->
+                        <option value="{$v.id}">{$v.title}</option>
+                    <!--{/if}-->
+                    {/foreach}
+                </select>
+            </div>
+        </div>
+        <div class="layui-form-item layui-inline">
+            <label class="layui-form-label">状态</label>
+            <div class="layui-input-inline">
+                <select class="layui-select" name="status">
+                    {foreach [''=>'- 全部 -','1'=>'正常','0'=>'停用'] as $k=>$v}
+                    {if $k.'' eq input('status')}
+                    <option selected value="{$k}">{$v}</option>
+                    <!--{else}-->
+                    <option value="{$k}">{$v}</option>
+                    <!--{/if}-->
+                    {/foreach}
+                </select>
+            </div>
+        </div>
+        <div class="layui-form-item layui-inline">
+            <input type="hidden" name="get_cat_id" value="{$cateId}" >
+            <button class="layui-btn layui-btn-primary"><i class="layui-icon">&#xe615;</i> 搜索</button>
+        </div>
+    </form>
+    <script>form.render()</script>
+</fieldset>

@@ -1,0 +1,120 @@
+{extend name="../../admin/view/main"}
+
+{block name="content"}
+<style>
+    .layui-form.layui-card > .layui-card-body {
+        padding: 20px 40px !important;
+    }
+     .think-radio input[type=radio]{
+         display: none !important;
+     }
+</style>
+<form onsubmit="return false;" action="{:request()->url()}" data-auto="true" method="post" class='layui-form layui-card' autocomplete="off">
+
+    <div class="layui-card-body">
+
+        <div class="layui-row margin-bottom-15">
+            <label class="layui-col-xs2 think-form-label">发件邮箱</label>
+            <label class="layui-col-xs10">
+                <input name="send_from" required value='{$vo.send_from|default=""}' placeholder="请输入发件邮箱" class="layui-input">
+            </label>
+        </div>
+
+        <div class="layui-row margin-bottom-15">
+            <label class="layui-col-xs2 think-form-label">邮箱密码</label>
+            <label class="layui-col-xs10">
+                <input name="mail_password" required value='{$vo.mail_password|default=""}' placeholder="请输入邮箱密码" class="layui-input">
+            </label>
+        </div>
+
+        <div class="layui-row margin-bottom-15">
+            <label class="layui-col-xs2 think-form-label">发件人姓名</label>
+            <label class="layui-col-xs10">
+                <input name="sender_name" required value='{$vo.sender_name|default=""}' placeholder="请输入发件人姓名" class="layui-input">
+            </label>
+        </div>
+        <div class="layui-row margin-bottom-15">
+            <label class="layui-col-xs2 think-form-label">smtp服务器</label>
+            <label class="layui-col-xs10">
+                <input name="smtp" required value='{$vo.smtp|default=""}' placeholder="请输入smtp服务器" class="layui-input">
+            </label>
+        </div>
+
+        <div class="layui-row margin-bottom-15">
+            <label class="layui-col-xs2 think-form-label">发件端口号</label>
+            <label class="layui-col-xs10">
+                <input name="port" required value='{$vo.port|default=""}' placeholder="请输入发件端口号" class="layui-input">
+            </label>
+        </div>
+
+    </div>
+
+    <div class="hr-line-dashed"></div>
+    <div class="layui-card-body text-center">
+        {notempty name='vo.id'}<input type='hidden' value='{$vo.id}' name='id'>{/notempty}
+        <button class="layui-btn" type='submit'>保存数据</button>
+        <button class="layui-btn layui-btn-danger" type='button' data-confirm="确定取消设置？" data-close>取消</button>
+    </div>
+</form>
+<div class="layui-form layui-card">
+    <div class="layui-card-body text-center">
+        <div class="layui-row margin-bottom-15">
+            <label class="layui-col-xs6">
+                <input name="test_mail" placeholder="请输入测试收件邮箱" class="layui-input">
+            </label>
+            <label class="layui-col-xs3">
+                <button class="layui-btn" type='button' id="test_send">发送测试邮件</button>
+            </label>
+
+        </div>
+    </div>
+</div>
+{/block}
+
+{block name='script'}
+<script>
+    form.render();
+    $("#test_send").click(function(){
+        var mail = $("input[name='test_mail']").val();
+
+        $.ajax({
+            type:'post',
+            url:"/admin/mail/test_send",
+            data: {mail:mail},  //重点必须为一个变量如：data
+            dataType:'json',
+            success:function(data){
+                if (data.code > 0) {
+                    layer.msg(data.info, {
+                        icon: 6,
+                        time: 2000 //2秒关闭（如果不配置，默认是3秒）
+                    }, function () {
+                        setTimeout(function(){
+                            window.location.reload();
+                        },1000);
+
+                    });
+                }else{
+                    layer.msg(data.info, {
+                        icon: 5,
+                        time: 2000 //2秒关闭（如果不配置，默认是3秒）
+                    }, function () {
+                        return false
+                    });
+                }
+
+            },
+            error:function(){
+                layer.msg("发送失败，请稍后再试", {
+                    icon: 5,
+                    time: 2000 //2秒关闭（如果不配置，默认是3秒）
+                }, function () {
+                    return false
+                });
+            }
+        })
+
+    })
+</script>
+{/block}
+
+

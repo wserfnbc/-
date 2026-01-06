@@ -1,0 +1,91 @@
+{extend name='../../admin/view/main'}
+
+{block name="button"}
+
+{if isset($type) and $type eq 'all'}
+<!--{if auth("syncall")}-->
+<button data-confirm="确定要同步所有授权公众号吗？" data-queue="{:url('syncall')}" class='layui-btn layui-btn-sm layui-btn-primary'>同步所有授权公众号</button>
+<!--{/if}-->
+{/if}
+
+{/block}
+
+{block name="content"}
+
+<div class="layui-tab layui-tab-card think-bg-white">
+    <ul class="layui-tab-title">
+        {foreach ['all'=>'公众号管理','recycle'=>'回 收 站'] as $k=>$v}
+        {if isset($type) and $type eq $k}
+        <li data-open="{:url('index')}?type={$k}" class="layui-this">{$v}</li>
+        {else}
+        <li data-open="{:url('index')}?type={$k}">{$v}</li>
+        {/if}
+        {/foreach}
+    </ul>
+    <div class="layui-tab-content think-box-shadow">
+        {include file='wechat/index_search'}
+        <table class="layui-table margin-top-10" lay-skin="line">
+            {notempty name='list'}
+            <thead>
+            <tr>
+                <th class='text-left nowrap' style="width:30%">接口信息</th>
+                <th class='text-left nowrap' style="width:25%">公众号信息</th>
+                <th></th>
+            </tr>
+            </thead>
+            {/notempty}
+            <tbody>
+            {foreach $list as $key=>$vo}
+            <tr>
+                <td class='text-left nowrap'>
+                    <img class="inline-block text-top" alt="img" style="width:80px;height:80px" data-tips-image src="{$vo.user_headimg|default=''}">
+                    <div class="inline-block padding-left-10 sub-span-blue">
+                        公众号APPID：{$vo.authorizer_appid}<br>
+                        调用次数统计：共 <span>{$vo.total}</span> 次 &nbsp;&nbsp;&nbsp;实时频率 <span>{$vo.times}</span> 次/分<br>
+                        接口授权密钥：{$vo.appkey|default='<span class="color-desc">未生成接口服务密码, 请稍候授权绑定</span>'|raw}<br>
+                        <div style="width:350px" class="layui-elip inline-block" data-copy="{$vo.appuri|default='未配置消息推送地址'}">消息推送地址：{$vo.appuri|default='<i class="color-desc">未配置消息推送地址</i>'|raw}</div>
+                    </div>
+                </td>
+                <td class='text-left nowrap'>
+                    <img class="inline-block text-top" alt="img" style="width:80px;height:80px" data-tips-image src="{$vo.qrcode_url|down_file}">
+                    <div class="inline-block padding-left-10">
+                        {$vo.user_nickname|default='<span class="color-desc">未获取到公众号昵称</span>'|raw}<br>
+                        {$vo.user_company|default='<span class="color-desc">未获取到公司名字</span>'|raw}<br>
+                        {$vo.service_type|default='-'} / {$vo.service_verify == '未认证' ? '<span class="color-red">未认证</span>' : '<span class="color-green">已认证</span>'} / {if $vo.status eq 0}<span class="color-red">已禁用</span>{elseif $vo.status eq 1}<span class="color-green">使用中</span>{/if}<br>
+                        于 {$vo.auth_time|format_datetime} 授权
+                    </div>
+                </td>
+                <td class='text-left nowrap'>
+
+                    <div class="padding-bottom-5 color-desc">
+                        微信账号：{$vo.user_alias|default='--'}<br>
+                        原始账号：{$vo.user_name|default='--'}<br>
+                    </div>
+
+                    {if auth("state") and $vo.status eq 1}
+                    <a data-confirm="确定要禁用该公众号吗？" class="layui-btn layui-btn-xs layui-btn-warm" data-action="{:url('state')}" data-value="id#{$vo.id};status#0" data-csrf="{:systoken('state')}">禁 用</a>
+                    {/if}
+
+                    {if auth("state") and $vo.status eq 0}
+                    <a data-confirm="确定要恢复该公众号吗？" class="layui-btn layui-btn-xs layui-btn-warm" data-action="{:url('state')}" data-value="id#{$vo.id};status#1" data-csrf="{:systoken('state')}">恢 复</a>
+                    {/if}
+
+                    {if auth("sync")}
+                    <a class="layui-btn layui-btn-xs" data-action="{:url('sync')}" data-value="appid#{$vo.authorizer_appid}">同 步</a>
+                    {/if}
+
+                    {if auth("clear_quota")}
+                    <a class="layui-btn layui-btn-xs layui-btn-normal" data-confirm="每个公众号每个月有10次清零机会，请谨慎使用！" data-action='{:url("clear_quota")}' data-value="appid#{$vo.authorizer_appid}" data-csrf="{:systoken('clear_quota')}">清 零</a>
+                    {/if}
+
+                </td>
+            </tr>
+            {/foreach}
+            </tbody>
+        </table>
+
+        {empty name='list'}<span class="notdata">没有记录哦</span>{else}{$pagehtml|raw|default=''}{/empty}
+    </div>
+</div>
+
+{/block}

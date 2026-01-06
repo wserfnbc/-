@@ -1,0 +1,81 @@
+{extend name="../../admin/view/main"}
+<style>
+    .think-radio input[type=radio]{
+        display: none !important;
+    }
+</style>
+{block name="content"}
+{include file='article/article/form_style'}
+<div class="think-box-shadow padding-0 padding-top-10">
+    <fieldset>
+        <legend class="font-s20">查看关联</legend>
+        <form class="layui-form layui-form-pane form-search" action="{:request()->url()}" onsubmit="return false" method="get" autocomplete="off">
+            <div class="layui-form-item layui-inline">
+                <label class="layui-form-label">图文标题</label>
+                <div class="layui-input-inline">
+                    <input name="title" value="{$get.title|default=''}" placeholder="请输入图文标题" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item layui-inline">
+                <input type="hidden" name="is_search" value="1">
+                <button class="layui-btn layui-btn-primary"><i class="layui-icon">&#xe615;</i> 搜索</button>
+            </div>
+        </form>
+
+        <button data-action='{:url("cancel_associated")}' data-rule="id#{key};article_id#{$article_id};tableName#{$tableName};articleTable#{$articleTable}" class='layui-btn layui-btn-sm'>解除关联</button>
+        <a data-open='{:url("associated")}?article_id={$article_id}&articleTable={$articleTable}&tableName={$tableName}' data-title="添加关联" class='layui-btn layui-btn-sm layui-btn-primary'>添加关联</a>
+        <script>form.render()</script>
+    </fieldset>
+    <table class="layui-table margin-top-10" lay-skin="line">
+        {notempty name='list'}
+        <thead>
+        <tr>
+            <th class='list-table-check-td think-checkbox'>
+                <input data-auto-none data-check-target='.list-check-box' type='checkbox'>
+            </th>
+            <th class='list-table-sort-td'>
+                <button type="button" data-reload class="layui-btn layui-btn-xs">刷新</button>
+            </th>
+            <th class='text-center nowrap' width="3%">ID</th>
+            <th class='text-center nowrap' width="8%">所属栏目</th>
+            <th class='text-center wrap' width="50%">内容标题</th>
+            <th class='text-center nowrap' width="10%">创建日期</th>
+            <th></th>
+        </tr>
+        </thead>
+        {/notempty}
+        <tbody>
+        {foreach $list as $key=>$vo}
+        <tr data-dbclick>
+            <td class='list-table-check-td think-checkbox'><input class="list-check-box" value='{$vo.id}' type='checkbox'></td>
+            <td class='list-table-sort-td'><input data-action-blur="{:request()->url()}" data-value="id#{$vo.id};action#sort;sort#{value}" data-loading="false" value="{$vo.sort}" class="list-sort-input"></td>
+            <td class='text-center nowrap'>
+                {$vo.id}
+            </td>
+            <td class='text-center nowrap'>
+                <a href="/index/article/list/id/{$vo.cate.id}.html" target="_blank">{$vo.cate.title|default='--'}</a>
+            </td>
+            <td class='text-left wrap'>
+                {notempty name='vo.logo'}
+                <img data-tips-image style="width:60px;height:60px" src="{$vo.logo|default=''}" class="layui-col-sm4 margin-right-5 text-top inline-block">
+                {/notempty}
+                <div class="inline-block layui-col-sm8">
+                    <a href="/index/article/show/cat_id/{$vo.cat_id}/id/{$vo.id}.html" target="_blank">{$vo.title|default='--'}</a>
+                </div>
+            </td>
+
+            <td class='text-center nowrap'>{$vo.create_at}</td>
+            <td class='text-right nowrap'>
+                <div class="nowrap margin-bottom-5">
+                    <a href="/index/article/show/cat_id/{$vo.cat_id}/id/{$vo.id}" class="layui-btn layui-btn-sm layui-btn-primary layui-border-black" target="_blank">浏览</a>
+                </div>
+            </td>
+        </tr>
+        {/foreach}
+        </tbody>
+    </table>
+
+    {empty name='list'}<span class="notdata">No record</span>{else}{$pagehtml|raw|default=''}{/empty}
+
+</div>
+{/block}
