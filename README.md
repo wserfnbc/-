@@ -152,7 +152,7 @@ composer config repo.packagist composer https://mirrors.aliyun.com/composer/
 ## 📞 联系方式
 
 - GitHub: [@wserfnbc](https://github.com/wserfnbc)
-- Email: ljloxjlfk7046@outlook.com
+
 
 ## 📜 开源协议
 
