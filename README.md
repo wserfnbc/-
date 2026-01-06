@@ -1,5 +1,5 @@
-# 宠物网站项目
-
+# 这是一个基于 ThinkAdmin 框架开发的宠物服务预订网站（Pawliday Pet Care），提供宠物寄养（Boarding）、日托（Daycare）、美容（Grooming）等服务的在线预约管理系统，支持多语言（中/英/日）、表单提交、邮件通知等功能，采用 PHP + MySQL 技术栈构建
+    宠物网站
 基于 ThinkAdmin 框架开发的宠物管理网站系统。
 
 ## 📋 项目简介
